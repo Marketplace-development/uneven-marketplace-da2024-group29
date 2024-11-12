@@ -12,11 +12,25 @@ class TransactionStatus(enum.Enum):
     DRAFT = "Draft"
 
 class CuisineType(enum.Enum):
-    ITALIAN = "Italian"
-    BELGIAN = "Belgian"
-    INDIAN = "Indian"
-    CHINESE = "Chinese"
-    JAPANESE = "Japanese"
+    ITALIAANS = "Italiaans"
+    BELGISCH = "Belgisch"
+    INDIAAS = "Indiaas"
+    CHINEES = "Chinees"
+    JAPANS = "Japans"
+    FRANS = "Frans"
+    MEXICAANS = "Mexicaans"
+    THAIS = "Thais"
+    GRIEKS = "Grieks"
+    SPAANS = "Spaans"
+    VIETNAMEES = "Vietnamees"
+    TURKS = "Turks"
+    MAROKKAANS = "Marokkaans"
+    AMERIKAANS = "Amerikaans"
+    LIBANEES = "Libanees"
+    KOREAANS = "Koreaans"
+    PORTUGEES = "Portugees"
+    BRAZILIAANS = "Braziliaans"
+    EGYPTISCH = "Egyptisch"
 
 
 class User(db.Model):
