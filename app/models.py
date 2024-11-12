@@ -11,6 +11,13 @@ class TransactionStatus(enum.Enum):
     CANCELLED = "Cancelled"
     DRAFT = "Draft"
 
+class CuisineType(enum.Enum):
+    ITALIAN = "Italian"
+    BELGIAN = "Belgian"
+    INDIAN = "Indian"
+    CHINESE = "Chinese"
+    JAPANESE = "Japanese"
+
 
 class User(db.Model):
     __tablename__ = 'Users'                                              # Geeft de Table de naam 'Users'
@@ -68,7 +75,7 @@ class MealOffering(db.Model):
     picture = db.Column(db.String(200), nullable=True)
     status = db.Column(db.Enum(MealStatus), default=MealStatus.NOT_AVAILABLE)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    cuisine = db.Column(db.String(50), nullable=True)
+    cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     vendor = db.relationship('Vendor', backref='meal_offerings')
