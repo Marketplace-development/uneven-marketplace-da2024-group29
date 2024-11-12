@@ -2,6 +2,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class MealStatus(enum.Enum):
+    AVAILABLE = "Available"
+    NOT_AVAILABLE = "Not Available"
+
+class TransactionStatus(enum.Enum):
+    PAYED = "Payed"
+    CANCELLED = "Cancelled"
+    DRAFT = "Draft"
+
 
 class User(db.Model):
     __tablename__ = 'Users'                                              # Geeft de Table de naam 'Users'
@@ -49,6 +58,53 @@ class Vendor(User):
 
     def __repr__(self):
         return f'<Vendor {self.username}>'
+
+
+class MealOffering(db.Model):
+    __tablename__ = 'Meal_Offerings'
+    meal_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    picture = db.Column(db.String(200), nullable=True)
+    status = db.Column(db.Enum(MealStatus), default=MealStatus.NOT_AVAILABLE)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    cuisine = db.Column(db.String(50), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    vendor = db.relationship('Vendor', backref='meal_offerings')
+    categories = db.relationship('Category', secondary='meal_category_association', back_populates='meals')
+
+
+
+class Category(db.Model):
+    __tablename__ = 'Categories'
+    category_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=False)
+
+    meals = db.relationship('MealOffering', secondary='meal_category_association', back_populates='categories')
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    transaction_id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.DRAFT)
+    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    meal = db.relationship('MealOffering', backref='transactions')
+    customer = db.relationship('Customer', backref='transactions')
+
+
+
+
+
+meal_category_association = db.Table('meal_category_association',
+    db.Column('meal_id', db.Integer, db.ForeignKey('meal_offerings.meal_id')),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id'))
+)
+
+
+
     
 
 class Listing(db.Model):
