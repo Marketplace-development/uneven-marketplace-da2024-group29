@@ -1,15 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
-
+import enum
 db = SQLAlchemy()
 
-class MealStatus(enum.Enum):
-    AVAILABLE = "Available"
-    NOT_AVAILABLE = "Not Available"
+class MaaltijdStatus(enum.Enum):
+    BESCHIKBAAR = "Beschikbaar"
+    NIET_BESCHIKBAAR = "Niet Beschikbaar"
 
-class TransactionStatus(enum.Enum):
-    PAYED = "Payed"
-    CANCELLED = "Cancelled"
-    DRAFT = "Draft"
+class TransactieStatus(enum.Enum):
+    BETAALD = "Betaald"
+    GEANNULEERD = "Geannuleerd"
+    CONCEPT = "Concept"
 
 class CuisineType(enum.Enum):
     ITALIAANS = "Italiaans"
