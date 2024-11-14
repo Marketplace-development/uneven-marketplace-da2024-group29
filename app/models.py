@@ -11,7 +11,7 @@ class TransactieStatus(enum.Enum):
     GEANNULEERD = "Geannuleerd"
     CONCEPT = "Concept"
 
-class CuisineType(enum.Enum):
+class CuisineType(enum.Enum): #minder cuisines, bv thais, vietnamees onder een groep zetten aziatisch
     ITALIAANS = "Italiaans"
     BELGISCH = "Belgisch"
     INDIAAS = "Indiaas"
@@ -35,7 +35,7 @@ class CuisineType(enum.Enum):
 
 class User(db.Model):
     __tablename__ = 'Users'                                              # Geeft de Table de naam 'Users'
-    UserID = db.Column(db.Integer, primary_key=True)                     # ID
+    UserID = db.Column(db.Integer, primary_key=True, unique=True)                     # ID
     username = db.Column(db.String(80), unique=True, nullable=False)     # UserName
     Email = db.Column(db.String(60), unique=True, nullable=False)        # Mail
     Straat = db.Column(db.String(100), nullable=False)                   # Straatnaam
@@ -86,8 +86,8 @@ class MealOffering(db.Model):
     meal_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    picture = db.Column(db.String(200), nullable=True)
-    status = db.Column(db.Enum(MealStatus), default=MealStatus.NOT_AVAILABLE)
+    picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet
+    status = db.Column(db.Enum(MealStatus), default=MealStatus.NOT_AVAILABLE) #als status = not available, gwn van de website halen.
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -97,7 +97,7 @@ class MealOffering(db.Model):
 
 
 
-class Category(db.Model):
+class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
     __tablename__ = 'Categories'
     category_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=False)
