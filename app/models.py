@@ -6,31 +6,20 @@ class MaaltijdStatus(enum.Enum):
     BESCHIKBAAR = "Beschikbaar"
     NIET_BESCHIKBAAR = "Niet Beschikbaar"
 
-class TransactieStatus(enum.Enum):
-    BETAALD = "Betaald"
+class TransactieStatus(enum.Enum): # we doen niet met betalen want geven gratis weg
+    VOLTOOID = "Voltooid"
     GEANNULEERD = "Geannuleerd"
     CONCEPT = "Concept"
 
-class CuisineType(enum.Enum): #minder cuisines, bv thais, vietnamees onder een groep zetten aziatisch
+class CuisineType(enum.Enum):
     ITALIAANS = "Italiaans"
     BELGISCH = "Belgisch"
-    INDIAAS = "Indiaas"
-    CHINEES = "Chinees"
-    JAPANS = "Japans"
+    AZIATISCH = "Aziatisch"
     FRANS = "Frans"
     MEXICAANS = "Mexicaans"
-    THAIS = "Thais"
-    GRIEKS = "Grieks"
     SPAANS = "Spaans"
-    VIETNAMEES = "Vietnamees"
-    TURKS = "Turks"
-    MAROKKAANS = "Marokkaans"
     AMERIKAANS = "Amerikaans"
-    LIBANEES = "Libanees"
-    KOREAANS = "Koreaans"
-    PORTUGEES = "Portugees"
-    BRAZILIAANS = "Braziliaans"
-    EGYPTISCH = "Egyptisch"
+    ANDERE = "Andere"
 
 
 class User(db.Model):
@@ -41,10 +30,9 @@ class User(db.Model):
     Straat = db.Column(db.String(100), nullable=False)                   # Straatnaam
     Huisnummer = db.Column(db.String(10), nullable=False)                # Huisnummer
     Postcode = db.Column(db.String(20), nullable=False)                  # Postcode
-    Stad = db.Column(db.String(50), nullable=False)                      # Stad
-    Land = db.Column(db.String(50), nullable=False)                      # Land // Niet persee nodig omdat onze website alleen in Belgie is?? //
+    Stad = db.Column(db.String(50), nullable=False)                      # Stad                   
     listings = db.relationship('Listing', backref='user', lazy=True)
-
+# geen land, want enkel operationeel in België
 
     type = db.Column(db.String(50))
     __mapper_args__ = {
