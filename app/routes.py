@@ -62,3 +62,13 @@ def add_listing():
 def listings():
     all_listings = Listing.query.all()
     return render_template('listings.html', listings=all_listings)
+
+
+
+def index():
+    try:
+        # Test databaseverbinding door een eenvoudige query uit te voeren
+        db.engine.execute("SELECT 1")
+        return "Verbinding succesvol met de database!", 200
+    except Exception as e:
+        return f"Fout bij verbinding maken met de database: {str(e)}", 500
