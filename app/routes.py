@@ -3,6 +3,7 @@
 
 from flask import Blueprint, request, redirect, url_for, render_template, session
 from .models import db, User, Listing
+from flask import flash
 
 main = Blueprint('main', __name__)
 
@@ -12,7 +13,9 @@ def index():
         user = User.query.get(session['user_id'])
         listings = Listing.query.filter_by(user_id=user.id).all()  # Fetch listings for logged-in user
         return render_template('index.html', username=user.username, listings=listings)
-    return render_template('index.html', username=None)
+    else:
+        return redirect(url_for('main.register')) #als persoon niet in sessie is naar register pagina gaan.
+        #return render_template('index.html', username=None) 
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -21,10 +24,11 @@ def register():
         if User.query.filter_by(username=username).first() is None:
             new_user = User(username=username)
             db.session.add(new_user)
-            db.session.commit()
+            db.session.commit()       #is nodig om de wijziging permanenet te maken in de database.
             session['user_id'] = new_user.id
             return redirect(url_for('main.index'))
-        return 'Username already registered'
+        flash("Username already registered")
+        return redirect(url_for('main.register'))
     return render_template('register.html')
 
 @main.route('/login', methods=['GET', 'POST'])
