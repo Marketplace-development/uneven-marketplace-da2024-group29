@@ -12,10 +12,40 @@ def index():
         return render_template('index.html', username=user.username, listings=listings)
     else:
         return redirect(url_for('main.login'))  # Als niet ingelogd, stuur naar loginpagina
+    
+
+@main.route('/register', methods=['GET', 'POST'])
+def register():
+    print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
+
+    if request.method == 'POST':
+        username = request.form['username']  # Haal de gebruikersnaam op uit het formulier
+
+        # Controleer of de gebruiker al bestaat in de database
+        if User.query.filter_by(username=username).first() is None:
+            # Als de gebruiker niet bestaat, voeg deze toe aan de database
+            new_user = User(username=username)
+            db.session.add(new_user)
+            db.session.commit()  # Sla de gebruiker op in de database
+
+            # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
+            session['user_id'] = new_user.id
+            flash("Gebruiker succesvol geregistreerd!", "success")
+
+            # Redirect naar de indexpagina (na succesvolle registratie)
+            return redirect(url_for('main.index'))
+        else:
+            flash("Gebruiker bestaat al, probeer een andere naam.", "error")  # Toon foutmelding
+            return redirect(url_for('main.register'))  # Herlaad de registratiepagina als de naam al bestaat
+
+    return render_template('2. Signup_Action.html')  # Render de registratiepagina (GET-request)
+
 
 # Login route: gebruikers kunnen zich hier aanmelden met hun gebruikersnaam
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
+
     if request.method == 'POST':
         username = request.form['username']
         user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
@@ -23,7 +53,7 @@ def login():
             session['user_id'] = user.id  # Zet de gebruiker in de sessie
             return redirect(url_for('main.index'))  # Redirect naar de indexpagina
         flash("Gebruiker niet gevonden, probeer opnieuw.")  # Toon een foutmelding als de gebruiker niet bestaat
-    return render_template('Login_Action.html')  # Toon de loginpagina
+    return render_template('1.Login_Action.html')  # Toon de loginpagina
 
 # Logout route: gebruiker kan uitloggen
 @main.route('/logout', methods=['POST'])
