@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 import enum
+from datetime import datetime
+
 db = SQLAlchemy()
 
 class MaaltijdStatus(enum.Enum):
@@ -32,7 +34,6 @@ class User(db.Model):
     Postcode = db.Column(db.String(20), nullable=False)                  # Postcode
     Stad = db.Column(db.String(50), nullable=False)                      # Stad                   
     listings = db.relationship('Listing', backref='user', lazy=True)
-# geen land, want enkel operationeel in België
 
     type = db.Column(db.String(50))
     __mapper_args__ = {
@@ -44,9 +45,9 @@ class User(db.Model):
 
 class Customer(User):
     __tablename__ = 'Customers'  # Geeft de tabel 'Customers' als naam
-    id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
-    CustomerID = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False) # niet zeker of ik een aparte customerID moet maken of enkel Id genoeg is (die we kunnen hernoemen naar CutomerID)
-    
+    CustomerID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
+   
+ 
 
     __mapper_args__ = {
         'polymorphic_identity': 'customer'
@@ -57,9 +58,8 @@ class Customer(User):
 
 
 class Vendor(User):
-    __tablename__ = 'vendors'
-    id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
-    VendorID = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False) 
+    __tablename__ = 'Vendors'
+    VendorID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
     
     __mapper_args__ = {
         'polymorphic_identity': 'vendor'
@@ -75,13 +75,14 @@ class MealOffering(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet
-    status = db.Column(db.Enum(MealStatus), default=MealStatus.NOT_AVAILABLE) #als status = not available, gwn van de website halen.
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    status = db.Column(db.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
+    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     vendor = db.relationship('Vendor', backref='meal_offerings')
-    categories = db.relationship('Category', secondary='meal_category_association', back_populates='meals')
+    categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
+
 
 
 
@@ -90,20 +91,24 @@ class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
     category_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=False)
 
-    meals = db.relationship('MealOffering', secondary='meal_category_association', back_populates='categories')
+    meals = db.relationship('MealOffering', secondary='meal_category_association', backref='categories')
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     transaction_id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.DRAFT)
+    status = db.Column(db.Enum(TransactieStatus), default=TransactieStatus.CONCEPT)
     meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
     meal = db.relationship('MealOffering', backref='transactions')
     customer = db.relationship('Customer', backref='transactions')
+    vendor = db.relationship('Vendor', backref='transactions')  
 
-
+    def validate_transaction(self):
+        if self.meal.vendor_id != self.vendor_id:
+            raise ValueError("Meal does not belong to the specified vendor.")
 
 
 
@@ -113,9 +118,6 @@ meal_category_association = db.Table('meal_category_association',
 )
 
 
-
-    
-
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     listing_name = db.Column(db.String(100), nullable=False)
@@ -124,4 +126,8 @@ class Listing(db.Model):
 
     def __repr__(self):
         return f'<Listing {self.listing_name}, ${self.price}>'
+    
+
+
+
     
