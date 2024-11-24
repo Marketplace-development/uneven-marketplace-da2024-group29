@@ -4,45 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeftoverLove - Sign Up</title>
-  <!-- Link to external CSS file -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Link naar Bootstrap CSS via CDN -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
+  <div class="container mt-5">
     <!-- Logo -->
-    <img src="pictures/logo.png" alt="Logo" class="logo">
+    <img src="pictures/logo.png" alt="Logo" class="logo d-block mx-auto mb-4" style="width: 150px;">
 
-    <!-- Title and subtitle -->
-    <h1>LeftoverLove</h1>
-    <h2>Waste Less, Love More</h2>
+    <!-- Titel en subtitel -->
+    <h1 class="text-center">LeftoverLove</h1>
+    <h2 class="text-center text-muted mb-4">Waste Less, Love More</h2>
 
- 
-
-    <!-- Sign Up Form -->
-    <form method="POST">
-      <div class="input-container">
-          <label for="username" class="input-label">User name:</label>
-          <input type="text" id="username" name="username" class="input-field" placeholder="Enter your username" required>
+    <!-- Formulier -->
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <form method="POST">
+          <div class="form-group">
+            <label for="username">User name:</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+          </div>
+          <div class="form-group">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" class="form-control" placeholder="Enter your address" required>
+          </div>
+          <div class="form-group">
+            <label for="postalcode">Postal code:</label>
+            <input type="text" id="postalcode" name="postalcode" class="form-control" placeholder="Enter your postal code" required>
+          </div>
+          <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" class="form-control" placeholder="Enter your city" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
       </div>
-      <div class="input-container">
-          <label for="email" class="input-label">E-mail:</label>
-          <input type="email" id="email" name="email" class="input-field" placeholder="Enter your email" required>
-      </div>
-      <div class="input-container">
-          <label for="address" class="input-label">Address:</label>
-          <input type="text" id="address" name="address" class="input-field" placeholder="Enter your address" required>
-      </div>
-      <div class="input-container">
-          <label for="postalcode" class="input-label">Postal code:</label>
-          <input type="text" id="postalcode" name="postalcode" class="input-field" placeholder="Enter your postal code" required>
-      </div>
-      <div class="input-container">
-          <label for="city" class="input-label">City:</label>
-          <input type="text" id="city" name="city" class="input-field" placeholder="Enter your city" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Register</button>
-  </form>
-  
+    </div>
   </div>
 </body>
 </html>
