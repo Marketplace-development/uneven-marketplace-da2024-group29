@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h2>Welkom {{ username or 'gast' }}</h2>
+    <p>Bekijk de voedselrestanten hieronder:</p>
+    <ul>
+        {% for listing in listings %}
+            <li>{{ listing.listing_name }} - €{{ listing.price }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

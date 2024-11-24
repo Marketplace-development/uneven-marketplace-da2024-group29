@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Voedsel Delen Platform{% endblock %}</title>
+
+    <!-- Bootstrap CSS 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    
+    <!-- Aangepaste CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="bg-primary text-white text-center py-4">
+            <h1>Voedsel Delen Platform</h1>
+        </header>
+
+        <!-- Testknop voor Bootstrap (je kunt dit later verwijderen) -->
+        <a href="#" class="btn btn-primary mt-3">Test Bootstrap</a>
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer class="text-center mt-4">
+            <p>&copy; 2024 Voedsel Delen Platform</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
+
