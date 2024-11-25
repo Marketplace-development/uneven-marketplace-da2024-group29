@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Listing
+from .models import db, User, Listing, Vendor
 
 main = Blueprint('main', __name__)
 
@@ -83,4 +83,51 @@ def add_listing():
 def listings():
     all_listings = Listing.query.all()
     return render_template('listings.html', listings=all_listings)
+
+
+@main.route('/base')
+def base():
+    return render_template('base.html')
+
+@main.route('/add-meal', methods=['GET', 'POST'])
+def add_meal():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        picture = request.files['picture'] if 'picture' in request.files else None
+        status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar"
+        vendor_id = current_user.id  # De ingelogde gebruiker wordt als verkoper toegevoegd
+        cuisine = request.form['cuisine']
+        categories = request.form.getlist('categories')
+
+        # Verwerk de afbeelding (optioneel)
+        picture_filename = None
+        if picture:
+            picture_filename = f"static/images/{picture.filename}"
+            picture.save(picture_filename)
+
+        # Nieuwe maaltijd toevoegen aan de database
+        new_meal = MealOffering(
+            name=name,
+            description=description,
+            picture=picture_filename,
+            status=status,
+            vendor_id=vendor_id,
+            cuisine=cuisine
+        )
+        db.session.add(new_meal)
+        db.session.commit()
+
+        # Koppel de maaltijd aan de geselecteerde categorieën
+        for category_id in categories:
+            category = Category.query.get(category_id)
+            new_meal.categories.append(category)
+        db.session.commit()
+
+        return redirect(url_for('main.index'))
+
+    vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
+    categories = Category.query.all()
+    return render_template('4.Transaction_Creation.html', categories=categories)
+
 

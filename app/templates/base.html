@@ -1,36 +1,53 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Voedsel Delen Platform{% endblock %}</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <title>{% block title %}Mijn Website{% endblock %}</title>
     
-    <!-- Aangepaste CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Voeg hier de Bootstrap CSS link toe -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Stijl voor de achtergrondkleur -->
+    <style>
+        body {
+            background-color: #d4f7d5;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Navigatiebalk -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #ffffff;">
+        <div class="container-fluid">
+            <!-- Logo dat naar de indexpagina leidt -->
+            <a class="navbar-brand" href="/">
+                <img src="static/pictures/logo.png" alt="Logo" style="max-width: 150px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <!-- Knop naar de Index pagina (Maaltijden) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Maaltijden</a>
+                    </li>
+                    <!-- Knop om een nieuwe maaltijd te creëren -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/add-meal">Deel maaltijd!</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- De inhoud van de specifieke pagina -->
     <div class="container">
-        <header class="bg-primary text-white text-center py-4">
-            <h1>Voedsel Delen Platform</h1>
-        </header>
-
-        <!-- Testknop voor Bootstrap (je kunt dit later verwijderen) -->
-        <a href="#" class="btn btn-primary mt-3">Test Bootstrap</a>
-
-        <main>
-            {% block content %}
-            {% endblock %}
-        </main>
-
-        <footer class="text-center mt-4">
-            <p>&copy; 2024 Voedsel Delen Platform</p>
-        </footer>
+        {% block content %}{% endblock %}
     </div>
 
-    <!-- Bootstrap JavaScript -->
+    <!-- Voeg de Bootstrap JS toe (optioneel voor interactieve componenten zoals dropdowns) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
