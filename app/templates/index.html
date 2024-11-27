@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Beschikbare Maaltijden{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Beschikbare Maaltijden</h2>
+
+    <div class="row">
+        {% for listing in listings %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <!-- Als er een foto is, toon deze dan, anders een placeholder -->
+                {% if listing.picture %}
+                <img src="{{ url_for('static', filename=listing.picture) }}" class="card-img-top" alt="{{ listing.name }}">
+                {% else %}
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Maaltijd afbeelding">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.name }}</h5>
+                    <p class="card-text">{{ listing.description or 'Geen beschrijving beschikbaar.' }}</p>
+                    <p class="card-text"><strong>Prijs:</strong> €{{ listing.price }}</p>
+
+                    <!-- Toon de status van de maaltijd -->
+                    <p class="card-text">
+                        <span class="badge 
+                            {% if listing.status == 'Beschikbaar' %}
+                                bg-success
+                            {% else %}
+                                bg-danger
+                            {% endif %}">
+                            {{ listing.status }}
+                        </span>
+                    </p>
+
+                    <!-- Link om een maaltijd te bekijken of meer actie te ondernemen -->
+                    <a href="#" class="btn btn-primary">Bekijk Maaltijd</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center">Er zijn momenteel geen maaltijden beschikbaar.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

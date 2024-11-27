@@ -113,8 +113,8 @@ class Transaction(db.Model):
 
 
 meal_category_association = db.Table('meal_category_association',
-    db.Column('meal_id', db.Integer, db.ForeignKey('meal_offerings.meal_id')),
-    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id'))
+    db.Column('meal_id', db.Integer, db.ForeignKey('meal_offerings.meal_id', ondelete='CASCADE')),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id', ondelete='CASCADE'))
 )
 
 
@@ -126,6 +126,21 @@ class Listing(db.Model):
 
     def __repr__(self):
         return f'<Listing {self.listing_name}, ${self.price}>'
+    
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    meal = db.relationship('MealOffering', backref='reviews')
+    customer = db.relationship('Customer', backref='reviews')
+    vendor = db.relationship('Vendor', backref='reviews')
+
+
     
 
 
