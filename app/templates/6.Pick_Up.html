@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeftoverLove - Meal Saved</title>
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .message {
+      font-size: 1.7em;
+      color: white;
+      margin: 15px auto;
+      padding: 15px;
+      background-color: #28a745; /* Green background for success */
+      border-radius: 15px;
+      width: 70%;
+      text-align: center;
+    }
+
+    .pickup-container {
+      margin: 20px auto;
+      padding: 15px;
+      background-color: #eafded; /* Light green for the pickup address */
+      border-radius: 15px;
+      width: 70%;
+      text-align: center;
+      font-size: 1.5em;
+    }
+
+    .pickup-address {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .image-container img {
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo -->
+    <img src="pictures/logo.png" alt="Logo" class="logo">
+
+    <!-- Title and subtitle -->
+    <h1>LeftoverLove</h1>
+    <h2>Waste Less, Love More</h2>
+
+    <!-- Success Message -->
+    <div class="message">Well done!<br>Another meal saved!</div>
+
+    <!-- Pickup Address -->
+    <div class="pickup-container">
+      <p>Pick up your meal at:</p>
+      <p class="pickup-address">...</p>
+    </div>
+
+    <!-- Bottom Image -->
+    <div class="image-container">
+      <img src="pictures/heart.png" alt="Heart-shaped food display">
+    </div>
+  </div>
+</body>
+</html>

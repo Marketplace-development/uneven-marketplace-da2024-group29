@@ -1,116 +1,115 @@
 /* General body styling */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #c8f4d9; /* Light green background */
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-  
-  /* Container styling */
-  .container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 40px;
-    background-color: #eafded; /* Slightly lighter green container */
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  }
-  
-  /* Logo styling */
-  .logo {
-    width: 70px;
-    height: auto;
-    margin-bottom: 30px;
-  }
-  
-  /* Heading styles */
-  h1 {
-    font-size: 3.5em;
-    color: #1a663a; /* Dark green for main heading */
-    margin: 0;
-    font-weight: bold;
-  }
-  
-  h2 {
-    font-size: 1.5em;
-    color: #d17d16; /* Warm orange for subtitle */
-    margin: 10px 0 30px;
-  }
-  
-  /* Button styling */
-  .button {
-    display: block;
-    background-color: #28a745; /* Green button background */
-    color: white;
-    font-size: 1.7em;
-    padding: 15px 30px;
-    margin: 30px auto;
-    width: 250px;
-    border: none;
-    border-radius: 15px;
-    text-decoration: none;
-    text-align: center;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .button:hover {
-    background-color: #1e7d34; /* Darker green on hover */
-  }
-  
-  /* Form styling */
-  form {
-    text-align: left;
-    margin-top: 30px;
-  }
-  
-  /* Input container styling for spacing */
-  .input-container {
-    margin: 20px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  /* Label styling */
-  .input-label {
-    font-size: 1.5em;
-    color: #333; /* Darker gray for labels */
-    width: 30%;
-    text-align: right;
-    padding-right: 15px;
-  }
-  
-  /* Input field styling */
-  .input-field {
-    width: 65%;
-    padding: 15px;
-    font-size: 1.3em;
-    border: 2px solid #28a745; /* Border matches button color */
-    border-radius: 10px;
-    outline: none;
-  }
-  
-  /* Input field focus styling */
-  .input-field:focus {
-    border-color: #1e7d34; /* Darker green for focus */
-  }
-  
-  /* Image container for vegetables */
-  .image-container {
-    margin-top: 30px;
-  }
-  
-  .image {
-    width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow around the image */
-  }
-  
-  /* Specific for textareas */
+  font-family: Arial, sans-serif;
+  background-color: #c8f4d9; /* Light green background */
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Container styling */
+.container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: #eafded; /* Slightly lighter green container */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Logo styling */
+.logo {
+  width: 70px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+/* Heading styles */
+h1 {
+  font-size: 3.5em;
+  color: #1a663a; /* Dark green for main heading */
+  margin: 0;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: #d17d16; /* Warm orange for subtitle */
+  margin: 10px 0 30px;
+}
+
+/* Button styling */
+.button {
+  display: block;
+  background-color: #28a745; /* Green button background */
+  color: white;
+  font-size: 1.7em;
+  padding: 15px 30px;
+  margin: 30px auto;
+  width: 250px;
+  border: none;
+  border-radius: 15px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #1e7d34; /* Darker green on hover */
+}
+
+/* Form styling */
+form {
+  text-align: left;
+  margin-top: 30px;
+}
+
+/* Input container styling for spacing */
+.input-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Label styling */
+.input-label {
+  font-size: 1.5em;
+  color: #333; /* Darker gray for labels */
+  width: 30%;
+  text-align: right;
+  padding-right: 15px;
+}
+
+/* Input field styling */
+.input-field {
+  width: 65%;
+  padding: 15px;
+  font-size: 1.3em;
+  border: 2px solid #28a745; /* Border matches button color */
+  border-radius: 10px;
+  outline: none;
+}
+
+/* Input field focus styling */
+.input-field:focus {
+  border-color: #1e7d34; /* Darker green for focus */
+}
+
+/* Image container for vegetables */
+.image-container {
+  margin-top: 30px;
+}
+
+.image {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow around the image */
+}
+
+/* Specific for textareas */
 textarea.input-field {
-    height: 100px;
-    resize: none;
-  }
-  
+  height: 100px;
+  resize: none;
+}

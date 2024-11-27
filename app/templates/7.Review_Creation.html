@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeftoverLove - Review Creation</title>
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .review-container {
+      margin-top: 20px;
+    }
+
+    .input-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px auto;
+      width: 60%;
+    }
+
+    .input-label {
+      font-size: 1.5em;
+      color: #333; /* Darker gray for labels */
+      text-align: right;
+      width: 40%;
+      padding-right: 10px;
+    }
+
+    .image-container img {
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo -->
+    <img src="pictures/logo.png" alt="Logo" class="logo">
+
+    <!-- Title and subtitle -->
+    <h1>LeftoverLove</h1>
+    <h2>Waste Less, Love More</h2>
+
+    <!-- Review Button -->
+    <a href="#" class="button">Review</a>
+
+    <!-- Score Input -->
+    <form class="review-container">
+      <div class="input-container">
+        <label for="score" class="input-label">Score / 10:</label>
+        <input type="text" id="score" class="input-field" placeholder="Enter score">
+      </div>
+    </form>
+
+    <!-- Bottom Image -->
+    <div class="image-container">
+      <img src="pictures/love.png" alt="Delicious Meals">
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeftoverLove - Meals</title>
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .meal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Two columns */
+      gap: 20px; /* Space between boxes */
+      margin: 30px 0;
+    }
+
+    .meal-box {
+      background-color: #d5f5e3; /* Match the box color */
+      padding: 15px;
+      border: 2px solid #28a745; /* Match with green border style */
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.2em;
+      color: #333;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+
+    .meal-box:hover {
+      background-color: #c8f4d9; /* Slightly darker green on hover */
+      cursor: pointer;
+    }
+
+    .create-meal-button {
+      display: block;
+      margin-left: auto;
+      margin-right: 0;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo -->
+    <img src="pictures/logo.png" alt="Logo" class="logo">
+
+    <!-- Title and subtitle -->
+    <h1>LeftoverLove</h1>
+    <h2>Waste Less, Love More</h2>
+
+    <!-- Create Meal Button -->
+    <a href="Meal_Creation.html" class="button create-meal-button">Create Meal</a>
+
+    <!-- Meal Grid -->
+    <div class="meal-grid">
+      <!-- Meal Boxes -->
+      <div class="meal-box">Meal 1</div>
+      <div class="meal-box">Meal 2</div>
+      <div class="meal-box">Meal 3</div>
+      <div class="meal-box">Meal 4</div>
+      <div class="meal-box">Meal 5</div>
+      <div class="meal-box">Meal 6</div>
+    </div>
+  </div>
+</body>
+</html>
