@@ -38,7 +38,7 @@ def register():
             flash("Gebruiker bestaat al, probeer een andere naam.", "error")  # Toon foutmelding
             return redirect(url_for('main.register'))  # Herlaad de registratiepagina als de naam al bestaat
 
-    return render_template('2. Signup_Action.html')  # Render de registratiepagina (GET-request)
+    return render_template('2. Signup.html')  # Render de registratiepagina (GET-request)
 
 
 # Login route: gebruikers kunnen zich hier aanmelden met hun gebruikersnaam
@@ -53,7 +53,7 @@ def login():
             session['user_id'] = user.id  # Zet de gebruiker in de sessie
             return redirect(url_for('main.index'))  # Redirect naar de indexpagina
         flash("Gebruiker niet gevonden, probeer opnieuw.")  # Toon een foutmelding als de gebruiker niet bestaat
-    return render_template('1.Login_Action.html')  # Toon de loginpagina
+    return render_template('1.Login.html')  # Toon de loginpagina
 
 # Logout route: gebruiker kan uitloggen
 @main.route('/logout', methods=['POST'])
@@ -76,7 +76,7 @@ def add_listing():
         flash("Maaltijd toegevoegd!", "success")  # Bevestiging dat het toegevoegd is
         return redirect(url_for('main.index'))  # Na het toevoegen van een maaltijd, stuur terug naar de maaltijdenpagina
 
-    return render_template('add_listing.html')  # Toon het formulier voor het toevoegen van een maaltijd
+    return render_template('4.Transaction_Creation.html')  # Toon het formulier voor het toevoegen van een maaltijd
 
 # Listings route: toon alle beschikbare maaltijden
 @main.route('/listings')
