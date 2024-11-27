@@ -76,7 +76,7 @@ def add_listing():
         flash("Maaltijd toegevoegd!", "success")  # Bevestiging dat het toegevoegd is
         return redirect(url_for('main.index'))  # Na het toevoegen van een maaltijd, stuur terug naar de maaltijdenpagina
 
-    return render_template('4.Transaction_Creation.html')  # Toon het formulier voor het toevoegen van een maaltijd
+    return render_template('Meal_Creation.html')  # Toon het formulier voor het toevoegen van een maaltijd
 
 # Listings route: toon alle beschikbare maaltijden
 @main.route('/listings')
