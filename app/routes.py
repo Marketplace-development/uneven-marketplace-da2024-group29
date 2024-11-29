@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Listing, Vendor
+from .models import db, User, Vendor, Category #, Listing # Als comment aangezien deze klasse ook als comment staat in models
 from .models import MealOffering, Review, CuisineType   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
@@ -63,7 +63,11 @@ def add_meal():
         description = request.form['description']
         picture = request.files['picture'] if 'picture' in request.files else None
         status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar"
-        vendor_id = current_user.id  # De ingelogde gebruiker wordt als verkoper toegevoegd
+        username = request.form['username']
+        user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
+        if user:
+            session['user_id'] = user.id  # Zet de gebruiker in de sessie
+        vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
         cuisine = request.form['cuisine']
         categories = request.form.getlist('categories')
 

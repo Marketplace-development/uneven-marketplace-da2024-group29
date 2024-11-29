@@ -79,7 +79,7 @@ class MealOffering(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet want is nu een string
-    status = db.Column(dwab.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
+    status = db.Column(db.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
     vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
