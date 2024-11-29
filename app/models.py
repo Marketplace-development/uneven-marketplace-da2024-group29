@@ -9,7 +9,7 @@ class MaaltijdStatus(enum.Enum):
     BESCHIKBAAR = "Beschikbaar"
     NIET_BESCHIKBAAR = "Niet Beschikbaar"
 
-class TransactieStatus(enum.Enum): # we doen niet met betalen want geven gratis weg
+class TransactionStatus(enum.Enum): # we doen niet met betalen want geven gratis weg
     VOLTOOID = "Voltooid"
     GEANNULEERD = "Geannuleerd"
     CONCEPT = "Concept"
@@ -25,8 +25,8 @@ class CuisineType(enum.Enum):
     ANDERE = "Other"
 
 
-class Users(db.Model):
-    __tablename__ = "Users"                                              # Geeft de Table de naam 'Users'
+class User(db.Model):
+    __tablename__ = "Users"                                              # Geeft de Table de naam 'Users', moet zelfde zijn als naam van tabel in supabase
     userID = db.Column(db.Integer, primary_key=True, unique=True)        # ID
     username = db.Column(db.String(80), unique=True, nullable=False)     # UserName
     email = db.Column(db.String(60), unique=True, nullable=False)        # Mail
@@ -48,8 +48,8 @@ class Users(db.Model):
         return f'<User {self.username}>'
 
 class Customer(User):
-    __tablename__ = 'Customers'  # Geeft de tabel 'Customers' als naam
-    CustomerID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
+    __tablename__ = 'Customers'  # Geeft de tabel 'Customers' als naam, moet zelfde zijn als supabase tabel
+    customerID = db.Column(db.Integer, db.ForeignKey('Users.userID'), primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
    
  
 
@@ -63,7 +63,7 @@ class Customer(User):
 
 class Vendor(User):
     __tablename__ = 'Vendors'
-    VendorID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
+    vendorID = db.Column(db.Integer, db.ForeignKey('Users.userID'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
     
     __mapper_args__ = {
         'polymorphic_identity': 'vendor'
@@ -74,21 +74,21 @@ class Vendor(User):
 
 
 class MealOffering(db.Model):
-    __tablename__ = 'Meal_Offerings'
-    meal_id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'meal_offerings' #naam van supabase tabel
+    mealID = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet
+    picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet want is nu een string
     status = db.Column(dwab.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
-    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
+    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    vendor = db.relationship('Vendor', backref='meal_offerings')
+    vendorID = db.relationship('Vendor', backref='meal_offerings')
     categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
 
 
-
+# ik denk dat die Category klasse weg mag, want niet in supabase. dus lijn 88 en klasse hieronder mag weg
 
 class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
     __tablename__ = 'Categories'
@@ -99,14 +99,14 @@ class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
-    transaction_id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum(TransactieStatus), default=TransactieStatus.CONCEPT)
-    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
+    transactionID = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.CONCEPT)
+    mealID = db.Column(db.Integer, db.ForeignKey('meal_offerings.mealID'), nullable=False)
+    customerID = db.Column(db.Integer, db.ForeignKey('Customers.customerID'), nullable=False)
+    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.vendorID'), nullable=False)
+    #quantity = db.Column(db.Integer, nullable=False)  Dit mag denk ik weg want ook niet in supabase
 
-    meal = db.relationship('MealOffering', backref='transactions')
+    meal = db.relationship('MealOffering', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase
     customer = db.relationship('Customer', backref='transactions')
     vendor = db.relationship('Vendor', backref='transactions')  
 
@@ -121,21 +121,26 @@ class Transaction(db.Model):
 #    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id', ondelete='CASCADE')))
 
 
-class Listing(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    listing_name = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
 
-    def __repr__(self):
-        return f'<Listing {self.listing_name}, ${self.price}>'
+
+# deze klasse hoort er ook niet bij denk ik
+# maar er moet in de supabase denk ik wel nog een klasse aangemaakt worden met Meals, waar alle maaltijden die beschikbaar
+# zijn inzitten en
+#class Listing(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    listing_name = db.Column(db.String(100), nullable=False)
+#    price = db.Column(db.Float, nullable=False)
+#    user_id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+
+#    def __repr__(self):
+#        return f'<Listing {self.listing_name}, ${self.price}>'
     
 class Review(db.Model):
     __tablename__ = 'reviews'
-    id = db.Column(db.Integer, primary_key=True)
-    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
+    reviewID = db.Column(db.Integer, primary_key=True)
+    mealID = db.Column(db.Integer, db.ForeignKey('meal_offerings.mealID'), nullable=False)
+    customerID = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
+    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
