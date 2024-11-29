@@ -4,17 +4,6 @@ from .models import MealOffering, Review, CuisineType   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
 
-# Route voor de beschikbare maaltijdenpagina (beschikbaar voor ingelogde gebruikers)
-@main.route('/')
-def index():
-    if 'user_id' in session:  # Controleer of de gebruiker is ingelogd
-        user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
-        listings = Listing.query.all()  # Haal alle beschikbare maaltijden (advertenties) op
-        return render_template('index.html', username=user.username, listings=listings)
-    else:
-        return redirect(url_for('main.login'))  # Als niet ingelogd, stuur naar loginpagina
-    
-
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
