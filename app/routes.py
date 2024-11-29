@@ -1,5 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from .models import db, User, Listing, Vendor
+from .models import MealOffering, Review, CuisineType   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
 
@@ -76,7 +77,7 @@ def add_listing():
         flash("Maaltijd toegevoegd!", "success")  # Bevestiging dat het toegevoegd is
         return redirect(url_for('main.index'))  # Na het toevoegen van een maaltijd, stuur terug naar de maaltijdenpagina
 
-    return render_template('4.Transaction_Creation.html')  # Toon het formulier voor het toevoegen van een maaltijd
+    return render_template('Meal_Creation.html')  # Toon het formulier voor het toevoegen van een maaltijd
 
 # Listings route: toon alle beschikbare maaltijden
 @main.route('/listings')
@@ -131,3 +132,40 @@ def add_meal():
     return render_template('4.Transaction_Creation.html', categories=categories)
 
 
+
+
+
+#Begin van algoritme filteren op keuken/stad/beoordeling
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
+        city = user.Stad  # Haal de stad van de ingelogde gebruiker op
+        cuisine_filter = request.args.get('cuisine', None)  # Haal het cuisine filter op
+        
+        # Haal alle maaltijden (MealOffering) op en filteren op cuisine
+        meal_offerings = MealOffering.query.all()
+
+        # Filteren op cuisine (keuken)
+        if cuisine_filter:
+            meal_offerings = [meal for meal in meal_offerings if meal.cuisine == CuisineType[cuisine_filter]]
+
+        # Filteren op stad
+        local_meals = [meal for meal in meal_offerings if meal.vendor.Stad == city]  # Lokale maaltijden
+        other_meals = [meal for meal in meal_offerings if meal.vendor.Stad != city]  # Andere maaltijden
+        meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
+
+        # Bereken de gemiddelde beoordeling voor maaltijden
+        def get_average_rating(meal_id):
+            reviews = Review.query.filter_by(meal_id=meal_id).all()
+            if reviews:
+                total_score = sum(review.score for review in reviews)
+                return total_score / len(reviews)
+            return 0
+
+        # Sorteer maaltijden op basis van beoordeling
+        meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda meal: get_average_rating(meal.meal_id), reverse=True)
+
+        return render_template('index.html', username=user.username, listings=meal_offerings_sorted)
+    else:
+        return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
