@@ -126,14 +126,14 @@ class Transaction(db.Model):
 # deze klasse hoort er ook niet bij denk ik
 # maar er moet in de supabase denk ik wel nog een klasse aangemaakt worden met Meals, waar alle maaltijden die beschikbaar
 # zijn inzitten en
-#class Listing(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    listing_name = db.Column(db.String(100), nullable=False)
-#    price = db.Column(db.Float, nullable=False)
-#    user_id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+class Listing(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    listing_name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
 
-#    def __repr__(self):
-#        return f'<Listing {self.listing_name}, ${self.price}>'
+    def __repr__(self):
+        return f'<Listing {self.listing_name}, ${self.price}>'
     
 class Review(db.Model):
     __tablename__ = 'reviews'
