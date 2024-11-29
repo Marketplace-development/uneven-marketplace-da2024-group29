@@ -4,10 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeftoverLove - Create Meal</title>
-  <!-- Link to external CSS file -->
-  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+      padding: 20px;
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838;
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
+  </style>
 </head>
 <body>
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg" style="max-width: 500px; width: 100%;">
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <img src="pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <h1>LeftoverLove</h1>
+        <h2>Waste Less, Love More</h2>
   <div class="container">
     <!-- Logo -->
     <img src="static/pictures/logo.png" alt="Logo" class="logo">
@@ -25,15 +57,40 @@
         <label for="name" class="input-label">Name:</label>
         <input type="text" id="name" class="input-field" placeholder="Enter meal name">
       </div>
-      <div class="input-container">
-        <label for="description" class="input-label">Description:</label>
-        <input id="description" class="input-field" placeholder="Enter meal description" style="height: 100px; resize: none;">
-      </div>
-      <div class="input-container">
-        <label for="picture" class="input-label">Picture:</label>
-        <input type="text" id="picture" class="input-field" placeholder="Enter picture URL">
-      </div>
-    </form>
+
+      <!-- Create Meal Form -->
+      <form method="POST" action="/createmeal">
+        <div class="mb-3">
+          <label for="name" class="form-label">Meal Name:</label>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Enter meal name" required>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description:</label>
+          <textarea id="description" name="description" class="form-control" placeholder="Enter meal description" style="height: 100px; resize: none;" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="picture" class="form-label">Picture URL:</label>
+          <input type="text" id="picture" name="picture" class="form-control" placeholder="Enter picture URL" required>
+        </div>
+        <div class="mb-3">
+          <label for="cuisine" class="form-label">Cuisine:</label>
+          <select id="cuisine" name="cuisine" class="form-select">
+            <option value="Italian">Italian</option>
+            <option value="Belgian">Belgian</option>
+            <option value="Asian">Asian</option>
+            <option value="French">French</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Spanish">Spanish</option>
+            <option value="American">American</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Add Meal</button>
+      </form>
+    </div>
   </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
