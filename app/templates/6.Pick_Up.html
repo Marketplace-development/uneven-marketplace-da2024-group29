@@ -4,65 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeftoverLove - Meal Saved</title>
-  <!-- Link to external CSS file -->
-  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838; /* Darker green on hover */
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
     .message {
-      font-size: 1.7em;
+      font-size: 1.5em;
       color: white;
-      margin: 15px auto;
       padding: 15px;
       background-color: #28a745; /* Green background for success */
       border-radius: 15px;
-      width: 70%;
       text-align: center;
+      margin-bottom: 20px;
     }
-
     .pickup-container {
-      margin: 20px auto;
-      padding: 15px;
-      background-color: #eafded; /* Light green for the pickup address */
+      background-color: #eafded; /* Light green background */
       border-radius: 15px;
-      width: 70%;
+      padding: 15px;
       text-align: center;
-      font-size: 1.5em;
+      font-size: 1.2em;
+      margin-bottom: 20px;
     }
-
     .pickup-address {
       font-weight: bold;
       margin-top: 10px;
     }
-
-    .image-container img {
-      margin-top: 20px;
-      width: 100%;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Logo -->
-    <img src="pictures/logo.png" alt="Logo" class="logo">
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <img src="pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <h1>LeftoverLove</h1>
+        <h2>Waste Less, Love More</h2>
+      </div>
 
-    <!-- Title and subtitle -->
-    <h1>LeftoverLove</h1>
-    <h2>Waste Less, Love More</h2>
+      <!-- Success Message -->
+      <div class="message">Well done!<br>Another meal saved!</div>
 
-    <!-- Success Message -->
-    <div class="message">Well done!<br>Another meal saved!</div>
+      <!-- Pickup Address -->
+      <div class="pickup-container">
+        <p>Pick up your meal at:</p>
+        <p class="pickup-address">123 Green Street, 9000 Ghent, Belgium</p>
+      </div>
 
-    <!-- Pickup Address -->
-    <div class="pickup-container">
-      <p>Pick up your meal at:</p>
-      <p class="pickup-address">...</p>
-    </div>
-
-    <!-- Bottom Image -->
-    <div class="image-container">
-      <img src="pictures/heart.png" alt="Heart-shaped food display">
+      <!-- Bottom Image -->
+      <div class="text-center">
+        <img src="pictures/heart.png" alt="Heart-shaped food display" class="img-fluid" style="max-width: 100%; border-radius: 15px;">
+      </div>
     </div>
   </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,13 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat - Vendor & Buyer</title>
-  <!-- Link to external CSS file -->
-  <link rel="stylesheet" href="styles.css">
+  <title>LeftoverLove - Chat</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838;
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
     .chat-container {
       max-width: 800px;
-      margin: 50px auto;
+      margin: 0 auto;
       background-color: #eafded; /* Light green background for the chat box */
       border-radius: 15px;
       padding: 20px;
@@ -19,7 +41,6 @@
       height: 500px; /* Fixed height for chat area */
       overflow: hidden;
     }
-
     .messages {
       flex: 1;
       overflow-y: auto;
@@ -28,32 +49,27 @@
       flex-direction: column;
       gap: 10px;
     }
-
     .message {
       padding: 10px 15px;
       border-radius: 15px;
       max-width: 70%;
       word-wrap: break-word;
     }
-
     .message.vendor {
       background-color: #c8f4d9; /* Vendor's messages */
       align-self: flex-start;
     }
-
     .message.buyer {
       background-color: #28a745; /* Buyer's messages */
       color: white;
       align-self: flex-end;
     }
-
     .input-area {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-top: 10px;
     }
-
     .input-area input {
       flex: 1;
       padding: 10px;
@@ -62,7 +78,6 @@
       outline: none;
       font-size: 1em;
     }
-
     .input-area button {
       background-color: #28a745;
       color: white;
@@ -72,31 +87,35 @@
       cursor: pointer;
       font-size: 1em;
     }
-
     .input-area button:hover {
       background-color: #1e7d34;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Title -->
-    <h1>Chat - Vendor & Customer</h1>
-    <h2>Waste Less, Love More</h2>
-
-    <!-- Chat Container -->
-    <div class="chat-container">
-      <!-- Messages Area -->
-      <div class="messages" id="messages">
-        <!-- Example Messages -->
-        <div class="message vendor">Hello! How can I help you today?</div>
-        <div class="message buyer">Hi! I’d like to know more about the meal options.</div>
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-5" style="max-width: 800px; width: 100%;">
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <img src="pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <h1>LeftoverLove</h1>
+        <h2>Waste Less, Love More</h2>
       </div>
 
-      <!-- Input Area -->
-      <div class="input-area">
-        <input type="text" id="messageInput" placeholder="Type your message...">
-        <button onclick="sendMessage()">Send</button>
+      <!-- Chat Container -->
+      <div class="chat-container">
+        <!-- Messages Area -->
+        <div class="messages" id="messages">
+          <!-- Example Messages -->
+          <div class="message vendor">Hello! How can I help you today?</div>
+          <div class="message buyer">Hi! I’d like to know more about the meal options.</div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+          <input type="text" id="messageInput" placeholder="Type your message...">
+          <button onclick="sendMessage()">Send</button>
+        </div>
       </div>
     </div>
   </div>
