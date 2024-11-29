@@ -115,11 +115,10 @@ class Transaction(db.Model):
             raise ValueError("Meal does not belong to the specified vendor.")
 
 
-
-meal_category_association = db.Table('meal_category_association',
-    db.Column('meal_id', db.Integer, db.ForeignKey('meal_offerings.meal_id', ondelete='CASCADE')),
-    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id', ondelete='CASCADE'))
-)
+# deze drie lijnen zijn er als je bv wilt dat een maaltijd 2 categorieën heeft zoals spaans en frans
+#meal_category_association = db.Table('meal_category_association',
+#   db.Column('meal_id', db.Integer, db.ForeignKey('meal_offerings.meal_id', ondelete='CASCADE')),
+#    db.Column('category_id', db.Integer, db.ForeignKey('categories.category_id', ondelete='CASCADE')))
 
 
 class Listing(db.Model):
