@@ -15,14 +15,14 @@ class TransactieStatus(enum.Enum): # we doen niet met betalen want geven gratis 
     CONCEPT = "Concept"
 
 class CuisineType(enum.Enum):
-    ITALIAANS = "Italiaans"
-    BELGISCH = "Belgisch"
-    AZIATISCH = "Aziatisch"
-    FRANS = "Frans"
-    MEXICAANS = "Mexicaans"
-    SPAANS = "Spaans"
-    AMERIKAANS = "Amerikaans"
-    ANDERE = "Andere"
+    ITALIAANS = "Italian"
+    BELGISCH = "Belgian"
+    AZIATISCH = "Asian"
+    FRANS = "French"
+    MEXICAANS = "Mexican"
+    SPAANS = "Spanish"
+    AMERIKAANS = "American"
+    ANDERE = "Other"
 
 
 class Users(db.Model):
