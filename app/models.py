@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import enum
 from datetime import datetime
 
@@ -14,28 +15,31 @@ class TransactieStatus(enum.Enum): # we doen niet met betalen want geven gratis 
     CONCEPT = "Concept"
 
 class CuisineType(enum.Enum):
-    ITALIAANS = "Italian"
-    BELGISCH = "Belgian"
-    AZIATISCH = "Asian"
-    FRANS = "French"
-    MEXICAANS = "Mexican"
-    SPAANS = "Spanish"
-    AMERIKAANS = "American"
-    ANDERE = "Other"
+    ITALIAANS = "Italiaans"
+    BELGISCH = "Belgisch"
+    AZIATISCH = "Aziatisch"
+    FRANS = "Frans"
+    MEXICAANS = "Mexicaans"
+    SPAANS = "Spaans"
+    AMERIKAANS = "Amerikaans"
+    ANDERE = "Andere"
 
 
-class User(db.Model):
-    __tablename__ = 'Users'                                              # Geeft de Table de naam 'Users'
-    UserID = db.Column(db.Integer, primary_key=True, unique=True)                     # ID
+class Users(db.Model):
+    __tablename__ = "Users"                                              # Geeft de Table de naam 'Users'
+    userID = db.Column(db.Integer, primary_key=True, unique=True)        # ID
     username = db.Column(db.String(80), unique=True, nullable=False)     # UserName
-    Email = db.Column(db.String(60), unique=True, nullable=False)        # Mail
-    Straat = db.Column(db.String(100), nullable=False)                   # Straatnaam
-    Huisnummer = db.Column(db.String(10), nullable=False)                # Huisnummer
-    Postcode = db.Column(db.String(20), nullable=False)                  # Postcode
-    Stad = db.Column(db.String(50), nullable=False)                      # Stad                   
-    listings = db.relationship('Listing', backref='user', lazy=True)
-
+    email = db.Column(db.String(60), unique=True, nullable=False)        # Mail
+    straat = db.Column(db.String(100), nullable=False)                   # Straatnaam
+    huisnummer = db.Column(db.String(10), nullable=False)                # Huisnummer
+    postcode = db.Column(db.String(20), nullable=False)                  # Postcode
+    stad = db.Column(db.String(50), nullable=False)                      # Stad                   
     type = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    
+    listings = db.relationship("Listing", backref="user", lazy=True)
+
     __mapper_args__ = {
         'polymorphic_on': type,
         'polymorphic_identity': 'user' }
@@ -75,7 +79,7 @@ class MealOffering(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet
-    status = db.Column(db.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
+    status = db.Column(dwab.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
