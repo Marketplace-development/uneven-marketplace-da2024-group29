@@ -80,11 +80,11 @@ class MealOffering(db.Model):
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet want is nu een string
     status = db.Column(db.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
-    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
+    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.vendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    vendorID = db.relationship('Vendor', backref='meal_offerings')
+    vendor = db.relationship('Vendor', backref='meal_offerings')
     categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
 
 
@@ -130,7 +130,7 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     listing_name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.userID'), nullable=False)
 
     def __repr__(self):
         return f'<Listing {self.listing_name}, ${self.price}>'
