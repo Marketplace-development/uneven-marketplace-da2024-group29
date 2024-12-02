@@ -5,24 +5,24 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-class MaaltijdStatus(enum.Enum):
-    BESCHIKBAAR = "Beschikbaar"
-    NIET_BESCHIKBAAR = "Niet Beschikbaar"
+class MealStatus(enum.Enum):
+    AVAILABLE = "Available"
+    NOT_AVAILABLE = "Not Available"
 
 class TransactionStatus(enum.Enum): # we doen niet met betalen want geven gratis weg
-    VOLTOOID = "Voltooid"
-    GEANNULEERD = "Geannuleerd"
+    COMPLETED = "Completed"
+    CANCELLED = "Cancelled"
     CONCEPT = "Concept"
 
 class CuisineType(enum.Enum):
-    ITALIAANS = "Italian"
-    BELGISCH = "Belgian"
-    AZIATISCH = "Asian"
-    FRANS = "French"
-    MEXICAANS = "Mexican"
-    SPAANS = "Spanish"
-    AMERIKAANS = "American"
-    ANDERE = "Other"
+    ITALIAN = "Italian"
+    BELGIAN = "Belgian"
+    ASIAN = "Asian"
+    FRENCH = "French"
+    MEXICAN = "Mexican"
+    SPANISH = "Spanish"
+    AMERICAN = "American"
+    OTHER = "Other"
 
 
 class User(db.Model):
@@ -30,10 +30,10 @@ class User(db.Model):
     userID = db.Column(db.Integer, primary_key=True, unique=True)        # ID
     username = db.Column(db.String(80), unique=True, nullable=False)     # UserName
     email = db.Column(db.String(60), unique=True, nullable=False)        # Mail
-    straat = db.Column(db.String(100), nullable=False)                   # Straatnaam
-    huisnummer = db.Column(db.String(10), nullable=False)                # Huisnummer
-    postcode = db.Column(db.String(20), nullable=False)                  # Postcode
-    stad = db.Column(db.String(50), nullable=False)                      # Stad                   
+    street = db.Column(db.String(100), nullable=False)                   # Straatnaam
+    house_number = db.Column(db.String(10), nullable=False)              # Huisnummer
+    postal_code = db.Column(db.String(20), nullable=False)               # Postcode
+    city = db.Column(db.String(50), nullable=False)                      # Stad                   
     type = db.Column(db.String(50))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
 
@@ -79,7 +79,7 @@ class MealOffering(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet want is nu een string
-    status = db.Column(db.Enum(MaaltijdStatus), default=MaaltijdStatus.BESCHIKBAAR) #als status = not available, gwn van de website halen.
+    status = db.Column(db.Enum(MealStatus), default=MealStatus.AVAILABLE) #als status = not available, gwn van de website halen.
     vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.vendorID'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -130,7 +130,7 @@ class Transaction(db.Model):
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     listing_name = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=False)      #Mag dit niet weg? We werken toch niet met prijs?
     user_id = db.Column(db.Integer, db.ForeignKey('Users.userID'), nullable=False)
 
     def __repr__(self):

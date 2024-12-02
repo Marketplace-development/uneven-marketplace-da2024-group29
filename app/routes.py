@@ -11,10 +11,10 @@ def register():
     if request.method == 'POST':
         username = request.form['username']  # Haal de gebruikersnaam op uit het formulier
         email = request.form['email']
-        straat = request.form['straat']
-        huisnummer = request.form['huisnummer']
-        postcode = request.form['postcode']
-        stad = request.form['stad']
+        street = request.form['street']
+        house_number = request.form['house number']
+        postal_code = request.form['postal code']
+        city = request.form['city']
 
 
         # Controleer of de gebruiker al bestaat in de database
@@ -23,10 +23,10 @@ def register():
             new_user = User(
                 username=username,
                 email=email,
-                straat=straat,
-                huisnummer=huisnummer,
-                postcode=postcode,
-                stad=stad,
+                street=street,
+                house_number=house_number,
+                postal_code=postal_code,
+                city=city,
                 type='user'  # Standaardwaarde
             )
                 
@@ -35,12 +35,12 @@ def register():
 
             # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
             session['user_id'] = new_user.id
-            flash("Gebruiker succesvol geregistreerd!", "success")
+            flash("User registered successfully!", "success")
 
             # Redirect naar de indexpagina (na succesvolle registratie)
             return redirect(url_for('main.index'))
         else:
-            flash("Gebruiker bestaat al, probeer een andere naam.", "error")  # Toon foutmelding
+            flash("User already exists, try a different name.", "error")  # Toon foutmelding
             return redirect(url_for('main.register'))  # Herlaad de registratiepagina als de naam al bestaat
 
     return render_template('2. Signup.html')  # Render de registratiepagina (GET-request)
@@ -57,7 +57,7 @@ def login():
         if user:
             session['user_id'] = user.id  # Zet de gebruiker in de sessie
             return redirect(url_for('main.index'))  # Redirect naar de indexpagina
-        flash("Gebruiker niet gevonden, probeer opnieuw.")  # Toon een foutmelding als de gebruiker niet bestaat
+        flash("User not found, please try again")  # Toon een foutmelding als de gebruiker niet bestaat
     return render_template('1.Login.html')  # Toon de loginpagina
 
 # Logout route: gebruiker kan uitloggen
@@ -126,7 +126,7 @@ def add_meal():
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
-        city = user.Stad  # Haal de stad van de ingelogde gebruiker op
+        city = user.city  # Haal de stad van de ingelogde gebruiker op
         cuisine_filter = request.args.get('cuisine', None)  # Haal het cuisine filter op
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
@@ -137,8 +137,8 @@ def index():
             meal_offerings = [meal for meal in meal_offerings if meal.cuisine == CuisineType[cuisine_filter]]
 
         # Filteren op stad
-        local_meals = [meal for meal in meal_offerings if meal.vendor.Stad == city]  # Lokale maaltijden
-        other_meals = [meal for meal in meal_offerings if meal.vendor.Stad != city]  # Andere maaltijden
+        local_meals = [meal for meal in meal_offerings if meal.vendor.city == city]  # Lokale maaltijden
+        other_meals = [meal for meal in meal_offerings if meal.vendor.city != city]  # Andere maaltijden
         meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
 
         # Bereken de gemiddelde beoordeling voor maaltijden
