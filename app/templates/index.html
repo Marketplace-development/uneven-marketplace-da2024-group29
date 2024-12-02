@@ -12,7 +12,7 @@
             <div class="card">
                 <!-- Als er een foto is, toon deze dan, anders een placeholder -->
                 {% if listing.picture %}
-                <img src="{{ url_for('static', filename=listing.picture) }}" class="card-img-top" alt="{{ listing.name }}">
+                <img src="{{ url_for('static', filename='images/' + listing.picture) }}" class="card-img-top" alt="{{ listing.name }}">
                 {% else %}
                 <img src="https://via.placeholder.com/150" class="card-img-top" alt="Maaltijd afbeelding">
                 {% endif %}
@@ -20,12 +20,14 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.name }}</h5>
                     <p class="card-text">{{ listing.description or 'Geen beschrijving beschikbaar.' }}</p>
-                    <p class="card-text"><strong>Prijs:</strong> €{{ listing.price }}</p>
+                    
+                    <!-- Toon de keuken -->
+                    <p class="card-text"><strong>Keuken:</strong> {{ listing.cuisine.value }}</p>
 
                     <!-- Toon de status van de maaltijd -->
                     <p class="card-text">
                         <span class="badge 
-                            {% if listing.status == 'Beschikbaar' %}
+                            {% if listing.status == listing.status.BESCHIKBAAR %}
                                 bg-success
                             {% else %}
                                 bg-danger

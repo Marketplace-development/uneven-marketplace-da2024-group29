@@ -85,17 +85,18 @@ class MealOffering(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     vendor = db.relationship('Vendor', backref='meal_offerings')
-    categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
+    #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
+    #Deze lijn hierboven niet meer nodig? Want we gebruiken assocation niet!
 
 
 # ik denk dat die Category klasse weg mag, want niet in supabase. dus lijn 88 en klasse hieronder mag weg
 
-class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
-    __tablename__ = 'Categories'
-    category_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=False)
+#class Category(db.Model):    #onduidelijk wat dit is (paarse blok in ontology)??
+    #__tablename__ = 'Categories'
+    #category_id = db.Column(db.Integer, primary_key=True)
+    #name = db.Column(db.String(50), nullable=False, unique=False)
 
-    meals = db.relationship('MealOffering', secondary='meal_category_association', backref='categories')
+    #meals = db.relationship('MealOffering', secondary='meal_category_association', backref='categories')
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
@@ -139,7 +140,7 @@ class Review(db.Model):
     __tablename__ = 'reviews'
     reviewID = db.Column(db.Integer, primary_key=True)
     mealID = db.Column(db.Integer, db.ForeignKey('meal_offerings.mealID'), nullable=False)
-    customerID = db.Column(db.Integer, db.ForeignKey('Customers.CustomerID'), nullable=False)
+    customerID = db.Column(db.Integer, db.ForeignKey('Customers.customerID'), nullable=False)
     vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

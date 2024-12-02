@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Vendor, Category #, Listing # Als comment aangezien deze klasse ook als comment staat in models
+from .models import db, User, Vendor #, Listing # Als comment aangezien deze klasse ook als comment staat in models
 from .models import MealOffering, Review, CuisineType   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
@@ -69,7 +69,8 @@ def add_meal():
             session['user_id'] = user.id  # Zet de gebruiker in de sessie
         vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
         cuisine = request.form['cuisine']
-        categories = request.form.getlist('categories')
+        #categories = request.form.getlist('categories')
+        #categories verwijdert in models.py -> dus niet meer nodig
 
         # Verwerk de afbeelding (optioneel)
         picture_filename = None
@@ -84,22 +85,24 @@ def add_meal():
             picture=picture_filename,
             status=status,
             vendor_id=vendor_id,
-            cuisine=cuisine
-        )
+            cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
+            )
+
         db.session.add(new_meal)
         db.session.commit()
 
         # Koppel de maaltijd aan de geselecteerde categorieën
-        for category_id in categories:
-            category = Category.query.get(category_id)
-            new_meal.categories.append(category)
-        db.session.commit()
+        #code hieronder niet meer nodig doordat category verwijderd is
+        #for category_id in categories:
+        #    category = Category.query.get(category_id)
+        #    new_meal.categories.append(category)
+        #db.session.commit()
 
         return redirect(url_for('main.index'))
 
     vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
-    categories = Category.query.all()
-    return render_template('4.Meal_Creation.html', categories=categories)
+    #categories = Category.query.all() -> ook niet meer nodig
+    return render_template('4.Meal_Creation.html', categories=CuisineType)
 
 
 
