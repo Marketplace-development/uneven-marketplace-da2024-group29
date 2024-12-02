@@ -10,11 +10,26 @@ def register():
 
     if request.method == 'POST':
         username = request.form['username']  # Haal de gebruikersnaam op uit het formulier
+        email = request.form['email']
+        straat = request.form['straat']
+        huisnummer = request.form['huisnummer']
+        postcode = request.form['postcode']
+        stad = request.form['stad']
+
 
         # Controleer of de gebruiker al bestaat in de database
         if User.query.filter_by(username=username).first() is None:
             # Als de gebruiker niet bestaat, voeg deze toe aan de database
-            new_user = User(username=username)
+            new_user = User(
+                username=username,
+                email=email,
+                straat=straat,
+                huisnummer=huisnummer,
+                postcode=postcode,
+                stad=stad,
+                type='user'  # Standaardwaarde
+            )
+                
             db.session.add(new_user)
             db.session.commit()  # Sla de gebruiker op in de database
 
