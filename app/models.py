@@ -141,7 +141,7 @@ class Review(db.Model):
     reviewID = db.Column(db.Integer, primary_key=True)
     mealID = db.Column(db.Integer, db.ForeignKey('meal_offerings.mealID'), nullable=False)
     customerID = db.Column(db.Integer, db.ForeignKey('Customers.customerID'), nullable=False)
-    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.VendorID'), nullable=False)
+    vendorID = db.Column(db.Integer, db.ForeignKey('Vendors.vendorID'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
