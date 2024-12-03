@@ -25,7 +25,7 @@ def register():
          # Controleer of de gebruiker al bestaat
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash("User already exists. Please choose a different username.", "error")
+            flash("User already exists. Please choose a different username or log in", "error")
             return redirect(url_for('main.register'))
         
         # Als de gebruiker niet bestaat, voeg toe aan de database
