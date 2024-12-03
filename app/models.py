@@ -37,7 +37,6 @@ class User(db.Model):
     type = db.Column(db.String(50))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-    
     listings = db.relationship("Listing", backref="user", lazy=True)
 
     __mapper_args__ = {
