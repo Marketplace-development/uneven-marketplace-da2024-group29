@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from .models import db, User, Vendor #, Listing # Als comment aangezien deze klasse ook als comment staat in models
-from .models import MealOffering, Review, CuisineType   #hoort bij ons algoritme
+from .models import MealOffering, Review, CuisineType, MealStatus   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
 
@@ -9,40 +9,46 @@ def register():
     print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
 
     if request.method == 'POST':
-        username = request.form['username']  # Haal de gebruikersnaam op uit het formulier
-        email = request.form['email']
-        street = request.form['street']
-        number = request.form['number']
-        zip = request.form['zip']
-        city = request.form['city']
+        #Haal gegevens uit het formulier
+        username = request.form['username'].strip() 
+        email = request.form['email'].strip()
+        street = request.form['street'].strip()
+        number = request.form['number'].strip()
+        zip = request.form['zip'].strip()
+        city = request.form['city'].strip()
 
+        # Validatie van verplichte velden
+        if not username or not email or not street or not number or not zip or not city:
+            flash("All fields are required!", "error")
+            return redirect(url_for('main.register'))
 
-        # Controleer of de gebruiker al bestaat in de database
-        if User.query.filter_by(username=username).first() is None:
-            # Als de gebruiker niet bestaat, voeg deze toe aan de database
-            new_user = User(
-                username=username,
-                email=email,
-                street=street,
-                number=number,
-                zip=zip,
-                city=city,
-                type='user'  # Standaardwaarde
-            )
-                
-            db.session.add(new_user)
-            db.session.commit()  # Sla de gebruiker op in de database
+         # Controleer of de gebruiker al bestaat
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash("User already exists. Please choose a different username.", "error")
+            return redirect(url_for('main.register'))
+        
+        # Als de gebruiker niet bestaat, voeg toe aan de database
+        new_user = User(
+            username=username,
+            email=email,
+            street=street,
+            number=number,
+            zip=zip,
+            city=city,
+            type='user'  # Standaardwaarde
+        )  
 
-            # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
-            session['user_id'] = new_user.id
-            flash("User registered successfully!", "success")
+        db.session.add(new_user)
+        db.session.commit()  # Sla de gebruiker op in de database
 
-            # Redirect naar de indexpagina (na succesvolle registratie)
-            return redirect(url_for('main.index'))
-        else:
-            flash("User already exists, try a different name.", "error")  # Toon foutmelding
-            return redirect(url_for('main.register'))  # Herlaad de registratiepagina als de naam al bestaat
+        # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
+        session['user_id'] = new_user.user_id
+        flash("User registered successfully!", "success")
 
+        # Redirect naar de indexpagina (na succesvolle registratie)
+        return redirect(url_for('main.index'))
+        
     return render_template('2. Signup.html')  # Render de registratiepagina (GET-request)
 
 
@@ -77,13 +83,27 @@ def add_meal():
         name = request.form['name']
         description = request.form['description']
         picture = request.files['picture'] if 'picture' in request.files else None
-        status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar"
-        username = request.form['username']
-        user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
-        if user:
-            session['user_id'] = user.id  # Zet de gebruiker in de sessie
-        vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
         cuisine = request.form['cuisine']
+        #status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar", dus onnodig!
+        
+        # Validatie
+        if not name or not cuisine:
+            flash("Meal name and cuisine type are required!", "error")
+            return redirect(url_for('main.add_meal'))
+
+        # Vendor ID ophalen
+        vendor_id = session.get('user_id')
+        if not vendor_id:
+            flash("You must be logged in to add a meal.", "error")
+            return redirect(url_for('main.login'))
+        
+        #Door stappen hierboven kun je dit hieronder volgens mij weglaten:
+        #username = request.form['username']
+        #user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
+        #if user:
+            #session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
+        #vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
+
         #categories = request.form.getlist('categories')
         #categories verwijdert in models.py -> dus niet meer nodig
 
@@ -98,7 +118,7 @@ def add_meal():
             name=name,
             description=description,
             picture=picture_filename,
-            status=status,
+            status=MealStatus.AVAILABLE,  #Automatisch instellen als beschikbaar
             vendor_id=vendor_id,
             cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
             )
@@ -113,10 +133,11 @@ def add_meal():
         #    new_meal.categories.append(category)
         #db.session.commit()
 
-
+        flash("Meal added successfully!", "success")
         return redirect(url_for('main.index'))
 
-    vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
+    #lijn hieronder wordt niet gebruikt op dit moment (zegt chatgpt)
+    #vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
     #categories = Category.query.all() -> ook niet meer nodig
     return render_template('4.Meal_Creation.html', categories=CuisineType)
 
