@@ -114,7 +114,7 @@ def add_meal():
             picture.save(picture_filename)
 
         # Nieuwe maaltijd toevoegen aan de database
-        new_meal = MealOffering(
+        new_meal = Meal_offerings(
             name=name,
             description=description,
             picture=picture_filename,
