@@ -22,7 +22,7 @@
                     <p class="card-text">{{ listing.description or 'Geen beschrijving beschikbaar.' }}</p>
                     
                     <!-- Toon de keuken -->
-                    <p class="card-text"><strong>Keuken:</strong> {{ listing.cuisine.value }}</p>
+                    <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
 
                     <!-- Toon de status van de maaltijd -->
                     <p class="card-text">
@@ -37,12 +37,12 @@
                     </p>
 
                     <!-- Link om een maaltijd te bekijken of meer actie te ondernemen -->
-                    <a href="#" class="btn btn-primary">Bekijk Maaltijd</a>
+                    <a href="#" class="btn btn-primary">View Meals</a>
                 </div>
             </div>
         </div>
         {% else %}
-        <p class="text-center">Er zijn momenteel geen maaltijden beschikbaar.</p>
+        <p class="text-center">There are currently no meals available...</p>
         {% endfor %}
     </div>
 </div>
