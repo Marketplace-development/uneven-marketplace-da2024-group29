@@ -61,7 +61,7 @@ def login():
         username = request.form['username']
         user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
         if user:
-            session['user_id'] = User.user_id  # Zet de gebruiker in de sessie
+            session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
             return redirect(url_for('main.index'))  # Redirect naar de indexpagina
         flash("User not found, please try again")  # Toon een foutmelding als de gebruiker niet bestaat
     return render_template('1.Login.html')  # Toon de loginpagina
