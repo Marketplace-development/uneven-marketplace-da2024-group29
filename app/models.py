@@ -63,7 +63,7 @@ class Customer(User):
 
 class Vendor(User):
     __tablename__ = 'Vendors'
-    vendorID = db.Column(db.Integer, db.ForeignKey('Users.user_id'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
+    vendor_ID = db.Column(db.Integer, db.ForeignKey('Users.user_id'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
     
     __mapper_args__ = {
         'polymorphic_identity': 'vendor'
