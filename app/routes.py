@@ -26,7 +26,7 @@ def register():
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("User already exists. Please choose a different username or log in", "error")
-            return redirect(url_for('main.register'))
+            return redirect(url_for('main.login'))
         
         # Als de gebruiker niet bestaat, voeg toe aan de database
         new_user = User(
@@ -121,7 +121,7 @@ def add_meal():
             status=MealStatus.AVAILABLE,  #Automatisch instellen als beschikbaar
             vendor_id=vendor_id,
             cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
-            )
+        )
 
         db.session.add(new_meal)
         db.session.commit()
