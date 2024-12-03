@@ -34,34 +34,17 @@
 </head>
 <body>
   <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <!-- Create Meal Container -->
     <div class="card shadow-lg" style="max-width: 500px; width: 100%;">
-      <!-- Logo -->
+      <!-- Logo and Title -->
       <div class="text-center mb-4">
-        <img src="pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <img src="static/pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
         <h1>LeftoverLove</h1>
         <h2>Waste Less, Love More</h2>
-  <div class="container">
-    <!-- Logo -->
-    <img src="static/pictures/logo.png" alt="Logo" class="logo">
-
-    <!-- Title and subtitle -->
-    <h1>LeftoverLove</h1>
-    <h2>Waste Less, Love More</h2>
-
-    <!-- Lijn 52-53 onnodig denk ik -->
-    <!-- Create Meal Button -->
-    <!-- <a href="#" class="button">Create Meal</a> -->
-
-    <!-- Lijn 57-61 onnodig denk ik, want staat verder al -->
-    <!-- Create Meal Form -->
-    <!-- <form>  -->
-        <!-- <div class="input-container">  -->
-        <!-- <label for="name" class="input-label">Name:</label>  -->
-        <!-- <input type="text" id="name" class="input-field" placeholder="Enter meal name">  -->
-      <!-- </div>  -->
-
+      </div>
+      
       <!-- Create Meal Form -->
-      <form method="POST" action="/add-meal" enctype="multipart/form-data">   <!-- enctype nodig om foto op te slaan -->
+      <form method="POST" action="/add-meal" enctype="multipart/form-data">  <!-- enctype nodig om foto op te slaan -->
         <div class="mb-3">
           <label for="name" class="form-label">Meal Name:</label>
           <input type="text" id="name" name="name" class="form-control" placeholder="Enter meal name" required>
@@ -76,7 +59,7 @@
         </div>
         <div class="mb-3">
           <label for="cuisine" class="form-label">Cuisine:</label>
-          <select id="cuisine" name="cuisine" class="form-select">
+          <select id="cuisine" name="cuisine" class="form-select" required>
             <option value="ITALIAN">Italian</option>
             <option value="BELGIAN">Belgian</option>
             <option value="ASIAN">Asian</option>
@@ -89,6 +72,11 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Add Meal</button>
       </form>
+      
+      <!-- Bottom Image -->
+      <div class="text-center mt-4">
+        <img src="static/pictures/meal.png" alt="Delicious Meal" class="img-fluid rounded" style="max-width: 100%; height: auto;">
+      </div>
     </div>
   </div>
 
