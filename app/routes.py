@@ -12,8 +12,8 @@ def register():
         username = request.form['username']  # Haal de gebruikersnaam op uit het formulier
         email = request.form['email']
         street = request.form['street']
-        house_number = request.form['house number']
-        postal_code = request.form['postal code']
+        number = request.form['number']
+        zip = request.form['zip']
         city = request.form['city']
 
 
@@ -24,8 +24,8 @@ def register():
                 username=username,
                 email=email,
                 street=street,
-                house_number=house_number,
-                postal_code=postal_code,
+                number=number,
+                zip=zip,
                 city=city,
                 type='user'  # Standaardwaarde
             )
@@ -112,6 +112,7 @@ def add_meal():
         #    category = Category.query.get(category_id)
         #    new_meal.categories.append(category)
         #db.session.commit()
+
 
         return redirect(url_for('main.index'))
 
