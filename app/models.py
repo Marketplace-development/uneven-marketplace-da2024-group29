@@ -90,7 +90,7 @@ class Meal_offerings(db.Model):
 
 
 class Transaction(db.Model):
-    __tablename__ = 'transactions'
+    __tablename__ = 'Transactions'
     transaction_id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.CONCEPT)
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
@@ -119,7 +119,7 @@ class Listing(db.Model):
         return f'<Listing {self.listing_name}, ${self.price}>'
     
 class Review(db.Model):
-    __tablename__ = 'reviews'
+    __tablename__ = 'Reviews'
     review_id = db.Column(db.Integer, primary_key=True)
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
