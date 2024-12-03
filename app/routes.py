@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from .models import db, User, Vendor #, Listing # Als comment aangezien deze klasse ook als comment staat in models
-from .models import MealOffering, Review, CuisineType, MealStatus   #hoort bij ons algoritme
+from .models import Meal_offerings, Review, CuisineType, MealStatus   #hoort bij ons algoritme
 
 main = Blueprint('main', __name__)
 
@@ -152,15 +152,15 @@ def index():
         cuisine_filter = request.args.get('cuisine', None)  # Haal het cuisine filter op
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
-        meal_offerings = MealOffering.query.all()
+        meal_offerings = Meal_offerings.query.all()
 
         # Filteren op cuisine (keuken)
         if cuisine_filter:
-            meal_offerings = [meal for meal in meal_offerings if meal.cuisine == CuisineType[cuisine_filter]]
+            meal_offerings = [meal for meal in meal_offerings if Meal_offerings.cuisine == CuisineType[cuisine_filter]]
 
         # Filteren op stad
-        local_meals = [meal for meal in meal_offerings if meal.vendor.city == city]  # Lokale maaltijden
-        other_meals = [meal for meal in meal_offerings if meal.vendor.city != city]  # Andere maaltijden
+        local_meals = [meal for meal in meal_offerings if Meal_offerings.vendor.city == city]  # Lokale maaltijden
+        other_meals = [meal for meal in meal_offerings if Meal_offerings.vendor.city != city]  # Andere maaltijden
         meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
 
         # Bereken de gemiddelde beoordeling voor maaltijden
@@ -172,8 +172,8 @@ def index():
             return 0
 
         # Sorteer maaltijden op basis van beoordeling
-        meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda meal: get_average_rating(meal.meal_id), reverse=True)
+        meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=user.username, listings=meal_offerings_sorted)
+        return render_template('index.html', username=User.username, listings=meal_offerings_sorted)
     else:
         return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina

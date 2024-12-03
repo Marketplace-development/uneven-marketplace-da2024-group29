@@ -73,8 +73,8 @@ class Vendor(User):
         return f'<Vendor {self.username}>'
 
 
-class MealOffering(db.Model):
-    __tablename__ = 'meal_offerings' #naam van supabase tabel
+class Meal_offerings(db.Model):
+    __tablename__ = 'Meal_offerings' #naam van supabase tabel
     meal_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
@@ -84,8 +84,8 @@ class MealOffering(db.Model):
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    vendor = db.relationship('Vendor', backref='meal_offerings')
-    #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('meal_offerings', lazy=True))
+    vendor = db.relationship('Vendor', backref='Meal_offerings')
+    #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('Meal_offerings', lazy=True))
     #Deze lijn hierboven nog niet nodig? Want we gebruiken assocation en category nog niet
 
 
@@ -93,12 +93,12 @@ class Transaction(db.Model):
     __tablename__ = 'transactions'
     transaction_id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.CONCEPT)
-    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
+    meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
     #quantity = db.Column(db.Integer, nullable=False)  Dit mag denk ik weg want ook niet in supabase
 
-    meal = db.relationship('MealOffering', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase
+    meal = db.relationship('Meal_offerings', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase
     customer = db.relationship('Customer', backref='transactions')
     vendor = db.relationship('Vendor', backref='transactions')  
 
@@ -121,13 +121,13 @@ class Listing(db.Model):
 class Review(db.Model):
     __tablename__ = 'reviews'
     review_id = db.Column(db.Integer, primary_key=True)
-    meal_id = db.Column(db.Integer, db.ForeignKey('meal_offerings.meal_id'), nullable=False)
+    meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    meal = db.relationship('MealOffering', backref='reviews')
+    meal = db.relationship('Meal_offerings', backref='reviews')
     customer = db.relationship('Customer', backref='reviews')
     vendor = db.relationship('Vendor', backref='reviews')
 
