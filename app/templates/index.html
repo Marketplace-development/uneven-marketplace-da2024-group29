@@ -23,19 +23,7 @@
                     
                     <!-- Display the cuisine -->
                     <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
-
-                    <!-- Display meal status -->
-                    <p class="card-text">
-                        <span class="badge 
-                            {% if listing.status == listing.status.BESCHIKBAAR %}
-                                bg-success
-                            {% else %}
-                                bg-danger
-                            {% endif %}">
-                            {{ listing.status }}
-                        </span>
-                    </p>
-
+                    
                     <!-- Link to view meal -->
                     <a href="#" class="btn btn-primary">View Meal</a>
                 </div>
