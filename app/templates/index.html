@@ -5,7 +5,37 @@
 {% block content %}
 <div class="container mt-5 text-white">
     <h2 class="text-center mb-4">Available Meals</h2>
-
+    <form method="GET" action="{{ url_for('main.index') }}" class="mb-4">
+        <div class="row">
+            <!-- Cuisine Filter -->
+            <div class="col-md-4">
+                <label for="cuisine" class="form-label">Filter by Cuisine:</label>
+                <select class="form-select" id="cuisine" name="cuisine">
+                    <option value="ALL" {% if request.args.get('cuisine', 'ALL') == 'ALL' %}selected{% endif %}>All</option>
+                    <option value="ITALIAN" {% if request.args.get('cuisine') == 'ITALIAN' %}selected{% endif %}>Italian</option>
+                    <option value="BELGIAN" {% if request.args.get('cuisine') == 'BELGIAN' %}selected{% endif %}>Belgian</option>
+                    <option value="ASIAN" {% if request.args.get('cuisine') == 'ASIAN' %}selected{% endif %}>Asian</option>
+                    <option value="FRENCH" {% if request.args.get('cuisine') == 'FRENCH' %}selected{% endif %}>French</option>
+                    <option value="MEXICAN" {% if request.args.get('cuisine') == 'MEXICAN' %}selected{% endif %}>Mexican</option>
+                    <option value="SPANISH" {% if request.args.get('cuisine') == 'SPANISH' %}selected{% endif %}>Spanish</option>
+                    <option value="AMERICAN" {% if request.args.get('cuisine') == 'AMERICAN' %}selected{% endif %}>American</option>
+                    <option value="OTHER" {% if request.args.get('cuisine') == 'OTHER' %}selected{% endif %}>Other</option>
+                </select>
+                <small class="form-text">Select "All" to see all cuisines, or choose a specific cuisine.</small>
+            </div>
+    
+            <!-- Other Filters (Optional) -->
+            <div class="col-md-4">
+                <label for="distance" class="form-label">Max Distance (km):</label>
+                <input type="number" id="distance" name="distance" class="form-control" placeholder="e.g., 10" value="{{ request.args.get('distance', '') }}">
+            </div>
+            <div class="col-md-4">
+                <label for="rating" class="form-label">Minimum Vendor Rating:</label>
+                <input type="number" id="rating" name="rating" class="form-control" step="0.1" placeholder="e.g., 4.5" value="{{ request.args.get('rating', '') }}" min="0" max="5">
+            </div>
+        </div>
+    </form>
+    
     <div class="row">
         {% for listing in listings %}
         <div class="col-md-4 mb-4">

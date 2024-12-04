@@ -207,17 +207,25 @@ def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
         city = user.city  # Haal de stad van de ingelogde gebruiker op
-        cuisine_filter = request.args.get('cuisine', None)  # Haal het cuisine filter op
+        cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
-        if cuisine_filter:
-            meal_offerings = [meal for meal in meal_offerings if Meal_offerings.cuisine == CuisineType[cuisine_filter]]
 
+        if cuisine_filter != 'ALL':
+            try:
+                selected_cuisine = CuisineType(cuisine_filter)  # Converteer naar enum
+                selected_cuisine_upper = selected_cuisine
+                meal_offerings = [
+                    meal for meal in meal_offerings if meal.cuisine == selected_cuisine_upper
+                ]
+            except KeyError:
+                # Ongeldig cuisine_filter (fallback naar geen resultaten)
+                meal_offerings = []
         # Filteren op stad
-        local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
-        other_meals = [meal for meal in meal_offerings if User.city != city]  # Andere maaltijden
-        meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
+        # local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
+        # other_meals = [meal for meal in meal_offerings if User.city != city]  # Andere maaltijden
+        # meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
 
         # Bereken de gemiddelde beoordeling voor maaltijden
         # def get_average_rating(meal_id):
@@ -230,6 +238,6 @@ def index():
         # Sorteer maaltijden op basis van beoordeling
         # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=User.username, listings=meal_offerings_sorted)
+        return render_template('index.html', username=User.username, listings=meal_offerings)
     else:
         return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
