@@ -11,11 +11,13 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 <!-- Display a picture if available, otherwise a placeholder -->
+                <!-- Display a picture if available, otherwise a placeholder -->
                 {% if listing.picture %}
-                <img src="{{ url_for('static', filename='images/' + listing.picture) }}" class="card-img-top" alt="{{ listing.name }}">
+                <img src="{{ listing.picture }}" class="card-img-top" alt="{{ listing.name }}">
                 {% else %}
                 <img src="https://via.placeholder.com/150" class="card-img-top" alt="Meal Image">
                 {% endif %}
+
 
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.name }}</h5>
