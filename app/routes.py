@@ -27,7 +27,7 @@ def register():
          # Controleer of de gebruiker al bestaat
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash("User already exists. Please choose a different username or log in", "error")
+            flash("User already exists. Please choose a different username or log in.", "error")
             return redirect(url_for('main.register'))
         
         # Als de gebruiker niet bestaat, voeg toe aan de database
@@ -46,6 +46,8 @@ def register():
 
         # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
         session['user_id'] = new_user.user_id
+        vendor_id = new_user.user_id
+        customer_id = new_user.user_id
         flash("User registered successfully!", "success")
 
         # Redirect naar de indexpagina (na succesvolle registratie)
@@ -85,7 +87,7 @@ def add_meal():
         #haal formuliergegevens op
         name = request.form['name']
         description = request.form['description']
-        picture = request.files['picture'] if 'picture' in request.files else None
+        #picture = request.files['picture'] if 'picture' in request.files else None
         cuisine = request.form['cuisine']
         #status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar", dus onnodig!
         
@@ -100,27 +102,19 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
         
-        #Door stappen hierboven kun je dit hieronder volgens mij weglaten:
-        #username = request.form['username']
-        #user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
-        #if user:
-            #session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
-        #vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
-
-        #categories = request.form.getlist('categories')
-        #categories verwijdert in models.py -> dus niet meer nodig
+       
 
         # Verwerk de afbeelding (optioneel)
-        picture_filename = None
-        if picture:
-            picture_filename = f"static/images/{picture.filename}"
-            picture.save(picture_filename)
+        #picture_filename = None
+        #if picture:
+        #    picture_filename = f"static/images/{picture.filename}"
+        #    picture.save(picture_filename)
 
         # Nieuwe maaltijd toevoegen aan de database
         new_meal = Meal_offerings(
             name=name,
             description=description,
-            picture=picture_filename,
+            #picture=picture_filename,
             status=MealStatus.AVAILABLE,  #Automatisch instellen als beschikbaar
             vendor_id=vendor_id,
             cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
