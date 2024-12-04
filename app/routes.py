@@ -4,7 +4,7 @@ import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
 from datetime import datetime
-
+import re
 
 SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
@@ -91,11 +91,11 @@ def base():
     return render_template('base.html')
 
 def upload_to_supabase_storage(bucket_name, file, filename):
-    response = supabase.storage().from_(bucket_name).upload(filename, file)
+    response = supabase.storage.from_(bucket_name).upload(filename, file)
     if response.get("error"):
         print("Error uploading file:", response["error"])
         return None
-    return supabase.storage().from_(bucket_name).get_public_url(filename)
+    return supabase.storage.from_(bucket_name).get_public_url(filename)
 
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
@@ -118,12 +118,29 @@ def add_meal():
 
         picture_url = None
         if picture:
-            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
-            response = supabase.storage().from_('picture').upload(filename, picture.read())
-            if response.get("error"):
+            def sanitize_filename(filename):
+                cleaned_filename = re.sub(r'[^\w\-_\.]', '_', filename)
+                return cleaned_filename
+            
+            original_filename = picture.filename
+            sanitized_filename = sanitize_filename(original_filename)
+
+            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{sanitized_filename}"
+            
+            response = supabase.storage.from_('picture').upload(filename, picture.read())
+            if not response:
                 flash("Error uploading image to Supabase.", "error")
                 return redirect(url_for('main.add_meal'))
-            picture_url = supabase.storage().from_('picture').get_public_url(filename)
+            picture_url = supabase.storage.from_('picture').get_public_url(filename)
+        
+        # Controleer of user_id al bestaat in Vendors.vendor_id
+        existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
+
+        if not existing_vendor:
+            # Als de gebruiker nog geen vendor is, voeg toe
+            vendor = Vendor(vendor_id=user_id)
+            db.session.add(vendor)
+            db.session.commit()
 
         # Create the new meal record in the database
         new_meal = Meal_offerings(
@@ -138,14 +155,7 @@ def add_meal():
         db.session.add(new_meal)
         db.session.commit()
 
-        # Controleer of user_id al bestaat in Vendors.vendor_id
-        existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
-
-        if not existing_vendor:
-            # Als de gebruiker nog geen vendor is, voeg toe
-            vendor = Vendor(vendor_id=user_id)
-            db.session.add(vendor)
-            db.session.commit()
+        
 
         # Flash a success message and redirect to the index page
         flash("Meal added successfully!", "success")
@@ -191,7 +201,7 @@ def buy_meal(meal_id):
 
 
 
-#Begin van algoritme filteren op keuken/stad/beoordeling
+# Begin van algoritme filteren op keuken/stad/beoordeling
 @main.route('/', methods=['GET', 'POST'])
 def index():
     if 'user_id' in session:
@@ -201,26 +211,24 @@ def index():
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
-
-        # Filteren op cuisine (keuken)
         if cuisine_filter:
             meal_offerings = [meal for meal in meal_offerings if Meal_offerings.cuisine == CuisineType[cuisine_filter]]
 
         # Filteren op stad
-        local_meals = [meal for meal in meal_offerings if Meal_offerings.vendor.city == city]  # Lokale maaltijden
-        other_meals = [meal for meal in meal_offerings if Meal_offerings.vendor.city != city]  # Andere maaltijden
+        local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
+        other_meals = [meal for meal in meal_offerings if User.city != city]  # Andere maaltijden
         meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
 
         # Bereken de gemiddelde beoordeling voor maaltijden
-        def get_average_rating(meal_id):
-            reviews = Review.query.filter_by(meal_id=meal_id).all()
-            if reviews:
-                total_score = sum(review.score for review in reviews)
-                return total_score / len(reviews)
-            return 0
+        # def get_average_rating(meal_id):
+            # reviews = Review.query.filter_by(meal_id=meal_id).all()
+            # if reviews:
+                # total_score = sum(review.score for review in reviews)
+                # return total_score / len(reviews)
+            # return 0
 
         # Sorteer maaltijden op basis van beoordeling
-        meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
+        # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
         return render_template('index.html', username=User.username, listings=meal_offerings_sorted)
     else:
