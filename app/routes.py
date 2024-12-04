@@ -21,13 +21,13 @@ def register():
 
         # Validatie van verplichte velden
         if not username or not email or not street or not number or not zip or not city:
-            flash("All fields are required!", "error")
+            flash("All fields are required!")
             return redirect(url_for('main.register'))
 
          # Controleer of de gebruiker al bestaat
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash("User already exists. Please choose a different username or log in.", "error")
+            flash("User already exists. Please choose a different username or log in.")
             return redirect(url_for('main.register'))
         
         # Als de gebruiker niet bestaat, voeg toe aan de database
@@ -48,7 +48,7 @@ def register():
         session['user_id'] = new_user.user_id
         vendor_id = new_user.user_id
         customer_id = new_user.user_id
-        flash("User registered successfully!", "success")
+        flash("User registered successfully!")
 
         # Redirect naar de indexpagina (na succesvolle registratie)
         return redirect(url_for('main.index'))
@@ -87,19 +87,19 @@ def add_meal():
         #haal formuliergegevens op
         name = request.form['name']
         description = request.form['description']
-        #picture = request.files['picture'] if 'picture' in request.files else None
+        picture = request.files['picture'] if 'picture' in request.files else None
         cuisine = request.form['cuisine']
         #status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar", dus onnodig!
         
         # Validatie
         if not name or not cuisine:
-            flash("Meal name and cuisine type are required!", "error")
+            flash("Meal name and cuisine type are required!")
             return redirect(url_for('main.add_meal'))
               
         #Vendor ID ophalen
         vendor_id = session.get('user_id')
         if not vendor_id:
-            flash("You must be logged in to add a meal.", "error")
+            flash("You must be logged in to add a meal.")
             return redirect(url_for('main.login'))
         
        
@@ -130,8 +130,8 @@ def add_meal():
         db.session.add(new_meal)
         db.session.commit()
 
-        #Flash bericht bij succes
-        flash("Meal added successfully!", "success")
+        
+        flash("Meal added successfully!")
         return redirect(url_for('main.index'))
         
     #lijn hieronder wordt niet gebruikt op dit moment (zegt chatgpt)
@@ -147,18 +147,18 @@ def buy_meal(meal_id):
     user_id = session.get('user_id')
     user = User.query.get(user_id)
     if not user:
-        flash("You must be logged in to buy a meal.", "danger")
+        flash("You must be logged in to buy a meal.")
         return redirect(url_for('main.login'))
 
     # Haal de maaltijd op
     meal = Meal_offerings.query.get(meal_id)
     if not meal:
-        flash("Meal not found.", "danger")
+        flash("Meal not found.")
         return redirect(url_for('main.index'))
 
     # Controleer of de gebruiker de maaltijd niet zelf heeft toegevoegd
     if meal.vendor_id == user.user_id:
-        flash("You cannot buy your own meal!", "danger")
+        flash("You cannot buy your own meal!")
         return redirect(url_for('main.index'))
 
     # Maak een nieuwe transactie
@@ -171,7 +171,7 @@ def buy_meal(meal_id):
 
     db.session.add(new_transaction)
     db.session.commit()
-    flash("Transaction started successfully!", "success")
+    flash("Transaction started successfully!")
     return redirect(url_for('main.index'))
 
 
