@@ -241,3 +241,46 @@ def index():
         return render_template('index.html', username=User.username, listings=meal_offerings)
     else:
         return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
+
+#mealdetails
+@main.route('/claim-meal/<int:meal_id>', methods=['POST'])
+def claim_meal(meal_id):
+    # Fetch the logged-in user
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("You must be logged in to claim a meal.", "error")
+        return redirect(url_for('main.login'))
+
+    # Fetch the meal
+    meal = Meal_offerings.query.get_or_404(meal_id)
+    
+    # Ensure the user is not claiming their own meal
+    if meal.vendor_id == user_id:
+        flash("You cannot claim your own meal!", "error")
+        return redirect(url_for('main.index'))
+
+    # Update the meal or transaction status as needed
+    transaction = Transaction(
+        status=TransactionStatus.COMPLETED,
+        meal_id=meal_id,
+        customer_id=user_id,
+        vendor_id=meal.vendor_id
+    )
+    db.session.add(transaction)
+    db.session.commit()
+
+    flash("Meal successfully claimed!", "success")
+    return redirect(url_for('main.pick_up', meal_id=meal_id))
+
+@main.route('/pick-up/<int:meal_id>', methods=['GET'])
+def pick_up(meal_id):
+    meal = Meal_offerings.query.get_or_404(meal_id)
+    return render_template('6.Pick_Up.html', meal=meal)
+
+
+@main.route('/meal/<int:meal_id>')
+def meal_details(meal_id):
+    meal = Meal_offerings.query.get_or_404(meal_id)
+    vendor = User.query.get(meal.vendor_id)
+    reviews = Review.query.filter_by(meal_id=meal_id).all()
+    return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews)

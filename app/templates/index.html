@@ -57,7 +57,7 @@
                     <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
                     
                     <!-- Link to view meal -->
-                    <a href="#" class="btn btn-primary">View Meal</a>
+                    <a href="{{ url_for('main.meal_details', meal_id=listing.meal_id) }}" class="btn btn-primary">View Meal</a>
                 </div>
             </div>
         </div>
