@@ -60,16 +60,16 @@ class Customer(User):
         return f'<Customer {self.username}>'
 
 
-class Vendor(User):
+class Vendor(db.Model):
     __tablename__ = 'Vendors'
-    vendor_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
+    vendor_id = db.Column(db.Integer, primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
     
     __mapper_args__ = {
         'polymorphic_identity': 'vendor'
     }
 
     def __repr__(self):
-        return f'<Vendor {self.username}>'
+        return f'<Vendor {self.vendor_id}>'
 
 
 class Meal_offerings(db.Model):
