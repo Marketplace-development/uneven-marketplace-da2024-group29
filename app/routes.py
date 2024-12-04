@@ -87,13 +87,12 @@ def logout():
 def base():
     return render_template('base.html')
 
-def upload_to_supabase_storage(picture, file, file_path):
-    """Upload the image to Supabase storage and return the URL or file path."""
-    response = supabase.storage.from_('picture').upload(file_path, file)
+def upload_to_supabase_storage(bucket_name, file, filename):
+    response = supabase.storage.from_(bucket_name).upload(file_path, file)
     if response.get("error"):
-        return supabase.storage.from_('picture').get_public_url(file_path)['publicURL']
-    else:
-        raise Exception("Failed to upload file")
+        print("Error uploading file:", response["error"])
+        return None
+    return supabase.storage.from_bucket_name.get_public_url(filename)
 
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
