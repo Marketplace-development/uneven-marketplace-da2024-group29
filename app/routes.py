@@ -92,6 +92,7 @@ def upload_to_supabase_storage(file, file_path):
 
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
+    user_id = session.get('user_id')
     if request.method == 'POST':
         # Retrieve meal details from the form
         name = request.form['name']
@@ -104,9 +105,7 @@ def add_meal():
             flash("Meal name and cuisine type are required!", "error")
             return redirect(url_for('main.add_meal'))
         
-        # Vendor ID is retrieved from session
-        vendor_id = session.get('user_id')
-        if not vendor_id:
+        if not user_id:
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
 
@@ -121,14 +120,22 @@ def add_meal():
             name=name,
             description=description,
             picture=picture_url,  # Store the URL or file path to the uploaded image
-            status=MealStatus.AVAILABLE,  # Default status is available
-            vendor_id=vendor_id,
+            vendor_id=user_id,
             cuisine=CuisineType[cuisine]  # Map the cuisine to its enum
         )
 
         # Commit the meal record to the database
         db.session.add(new_meal)
         db.session.commit()
+
+        # Controleer of user_id al bestaat in Vendors.vendor_id
+        existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
+
+        if not existing_vendor:
+            # Als de gebruiker nog geen vendor is, voeg toe
+            vendor = Vendor(vendor_id=user_id)
+            db.session.add(vendor)
+            db.session.commit()
 
         # Flash a success message and redirect to the index page
         flash("Meal added successfully!", "success")
