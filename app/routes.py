@@ -1,6 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, MealStatus, Transaction, TransactionStatus
 import os  # For working with file paths
+import datetime
 from supabase import create_client, Client  # For connecting to Supabase
 
 SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
@@ -88,11 +89,11 @@ def base():
     return render_template('base.html')
 
 def upload_to_supabase_storage(bucket_name, file, filename):
-    response = supabase.storage.from_(bucket_name).upload(file_path, file)
+    response = supabase.storage().from_(bucket_name).upload(filename, file)
     if response.get("error"):
         print("Error uploading file:", response["error"])
         return None
-    return supabase.storage.from_bucket_name.get_public_url(filename)
+    return supabase.storage().from_(bucket_name).get_public_url(filename)
 
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
@@ -101,7 +102,7 @@ def add_meal():
         # Retrieve meal details from the form
         name = request.form['name']
         description = request.form['description']
-        picture = request.files['picture'] if 'picture' in request.files else None
+        picture = request.files.get('picture')
         cuisine = request.form['cuisine']
 
         # Validation: Ensure both name and cuisine are provided
@@ -113,16 +114,14 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
 
-         # Upload picture to Supabase
         picture_url = None
         if picture:
-            filename = f"{vendor_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
-            response = supabase.storage().from_('pictures').upload(filename, picture.stream)
+            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
+            response = supabase.storage().from_('picture').upload(filename, picture.read())
             if response.get("error"):
                 flash("Error uploading image to Supabase.", "error")
                 return redirect(url_for('main.add_meal'))
-            # Get the public URL
-            picture_url = supabase.storage().from_('pictures').get_public_url(filename)
+            picture_url = supabase.storage().from_('picture').get_public_url(filename)
 
         # Create the new meal record in the database
         new_meal = Meal_offerings(
@@ -130,7 +129,7 @@ def add_meal():
             description=description,
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
-            cuisine=CuisineType[cuisine]  # Map the cuisine to its enum
+            cuisine=CuisineType[cuisine] 
         )
 
         # Commit the meal record to the database
