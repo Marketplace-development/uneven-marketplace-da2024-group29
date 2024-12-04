@@ -3,6 +3,8 @@ from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineT
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
+from datetime import datetime
+
 
 SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
@@ -114,6 +116,7 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
 
+<<<<<<< HEAD
         picture_url = None
         if picture:
             filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
@@ -122,6 +125,25 @@ def add_meal():
                 flash("Error uploading image to Supabase.", "error")
                 return redirect(url_for('main.add_meal'))
             picture_url = supabase.storage().from_('picture').get_public_url(filename)
+=======
+        # Upload picture to Supabase
+        picture_url = None
+        if picture:
+            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
+            
+            # Use the file stream correctly
+            response = supabase.storage.from_('pictures').upload(
+                filename, 
+                picture.stream.read()  # Read the file content
+            )
+            
+            if response.get("error"):
+                flash("Error uploading image to Supabase.", "error")
+                return redirect(url_for('main.add_meal'))
+
+            # Get the public URL
+            picture_url = supabase.storage.from_('pictures').get_public_url(filename)
+>>>>>>> 46d41fbfd3e146770c3b8f1cabfd2e2c01cbfcd1
 
         # Create the new meal record in the database
         new_meal = Meal_offerings(
@@ -151,6 +173,7 @@ def add_meal():
 
     # Render the meal creation page if it's a GET request
     return render_template('4.Meal_Creation.html', cuisines=CuisineType)
+
 
 #Functie om maaltijd te kopen -> snel gekopieerd en geplakt van chatgpt, nog niet deftig bekeken
 @main.route('/buy-meal/<int:meal_id>', methods=['POST'])
