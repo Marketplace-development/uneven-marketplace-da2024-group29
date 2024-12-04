@@ -1,7 +1,8 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Vendor, Customer #, Listing # Als comment aangezien deze klasse ook als comment staat in models
-from .models import Meal_offerings, Review, CuisineType, MealStatus, Transaction, TransactionStatus   #hoort bij ons algoritme
-import os
+from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, MealStatus, Transaction, TransactionStatus
+import os  # For working with file paths
+from supabase import create_client, Client  # For connecting to Supabase
+
 
 
 main = Blueprint('main', __name__)
@@ -81,70 +82,60 @@ def logout():
 def base():
     return render_template('base.html')
 
+def upload_to_supabase_storage(file, file_path):
+    """Upload the image to Supabase storage and return the URL or file path."""
+    response = supabase.storage.from_('meal_picture').upload(file_path, file)
+    if response.status_code == 200:
+        return supabase.storage.from_('meal_picture').get_public_url(file_path)['publicURL']
+    else:
+        raise Exception("Failed to upload file")
+
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
-    user_id = session.get('user_id')
-
     if request.method == 'POST':
-        #haal formuliergegevens op
+        # Retrieve meal details from the form
         name = request.form['name']
         description = request.form['description']
         picture = request.files['picture'] if 'picture' in request.files else None
         cuisine = request.form['cuisine']
 
-        # Validatie
+        # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
-            flash("Meal name and cuisine type are required!")
+            flash("Meal name and cuisine type are required!", "error")
             return redirect(url_for('main.add_meal'))
-              
         
-        if not user_id:
-            flash("You must be logged in to add a meal.")
+        # Vendor ID is retrieved from session
+        vendor_id = session.get('user_id')
+        if not vendor_id:
+            flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
-        
-       
-        # Verwerk de afbeelding (optioneel)
-        #picture_filename = None
-        #if picture:
-        #    picture_filename = f"static/images/{picture.filename}"
-        #    picture.save(picture_filename)
 
-        # Nieuwe maaltijd toevoegen aan de database
+        # Upload picture to Supabase if provided
+        picture_url = None
+        if picture:
+            file_path = f"meal_picture/{picture.filename}"
+            picture_url = upload_to_supabase_storage(picture, file_path)
+
+        # Create the new meal record in the database
         new_meal = Meal_offerings(
             name=name,
             description=description,
-            picture=picture,
-            vendor_id=user_id,
-            cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
+            picture=picture_url,  # Store the URL or file path to the uploaded image
+            status=MealStatus.AVAILABLE,  # Default status is available
+            vendor_id=vendor_id,
+            cuisine=CuisineType[cuisine]  # Map the cuisine to its enum
         )
 
+        # Commit the meal record to the database
         db.session.add(new_meal)
         db.session.commit()
-        # Koppel de maaltijd aan de geselecteerde categorieën
-        #code hieronder niet meer nodig doordat category verwijderd is
-        #for category_id in categories:
-        #    category = Category.query.get(category_id)
-        #    new_meal.categories.append(category)
-        #db.session.commit()
 
-        
-        flash("Meal added successfully!")
+        # Flash a success message and redirect to the index page
+        flash("Meal added successfully!", "success")
         return redirect(url_for('main.index'))
 
-
-    existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
-
-    if not existing_vendor:
-        # Als de gebruiker nog geen vendor is, voeg toe
-        vendor = Vendor(vendor_id=user_id)
-        db.session.add(vendor)
-        db.session.commit()
-
-    #lijn hieronder wordt niet gebruikt op dit moment (zegt chatgpt)
-    #vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
-    #categories = Category.query.all() -> ook niet meer nodig
-    return render_template('4.Meal_Creation.html', categories=CuisineType)
-
+    # Render the meal creation page if it's a GET request
+    return render_template('4.Meal_Creation.html', cuisines=CuisineType)
 
 #Functie om maaltijd te kopen -> snel gekopieerd en geplakt van chatgpt, nog niet deftig bekeken
 @main.route('/buy-meal/<int:meal_id>', methods=['POST'])
