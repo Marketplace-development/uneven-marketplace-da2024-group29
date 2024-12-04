@@ -87,11 +87,11 @@ def logout():
 def base():
     return render_template('base.html')
 
-def upload_to_supabase_storage(file, file_path):
+def upload_to_supabase_storage(picture, file, file_path):
     """Upload the image to Supabase storage and return the URL or file path."""
-    response = supabase.storage.from_('meal_picture').upload(file_path, file)
-    if response.status_code == 200:
-        return supabase.storage.from_('meal_picture').get_public_url(file_path)['publicURL']
+    response = supabase.storage.from_('picture').upload(file_path, file)
+    if response.get("error"):
+        return supabase.storage.from_('picture').get_public_url(file_path)['publicURL']
     else:
         raise Exception("Failed to upload file")
 
@@ -114,11 +114,16 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
 
-        # Upload picture to Supabase if provided
+         # Upload picture to Supabase
         picture_url = None
         if picture:
-            file_path = f"meal_picture/{picture.filename}"
-            picture_url = upload_to_supabase_storage(picture, file_path)
+            filename = f"{vendor_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
+            response = supabase.storage().from_('pictures').upload(filename, picture.stream)
+            if response.get("error"):
+                flash("Error uploading image to Supabase.", "error")
+                return redirect(url_for('main.add_meal'))
+            # Get the public URL
+            picture_url = supabase.storage().from_('pictures').get_public_url(filename)
 
         # Create the new meal record in the database
         new_meal = Meal_offerings(
