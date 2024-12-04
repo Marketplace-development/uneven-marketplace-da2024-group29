@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Details{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100 text-white">
+    <!-- Meal Details Card -->
+    <div class="card shadow-lg" style="max-width: 900px; width: 100%; border-radius: 20px;">
+        <div class="row g-0">
+            <!-- Meal Image -->
+            <div class="col-md-6">
+                {% if meal.picture %}
+                <img src="{{ meal.picture }}" class="img-fluid rounded-start" alt="{{ meal.name }}" style="height: 100%; object-fit: cover;">
+                {% else %}
+                <img src="https://via.placeholder.com/300" class="img-fluid rounded-start" alt="Meal Image" style="height: 100%; object-fit: cover;">
+                {% endif %}
+            </div>
+            
+            <!-- Meal Details -->
+            <div class="col-md-6 d-flex flex-column justify-content-center p-4">
+                <h3 class="mb-3">{{ meal.name }}</h3>
+                <p><strong>Description:</strong> {{ meal.description or 'No description available.' }}</p>
+                <p><strong>Cuisine:</strong> {{ meal.cuisine.value }}</p>
+                <p><strong>Vendor Address:</strong> {{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
+                <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+                <!-- Claim Meal Button -->
+                <form method="POST" action="{{ url_for('main.claim_meal', meal_id=meal.meal_id) }}">
+                    <button type="submit" class="btn btn-success w-100 mt-3">Claim Meal</button>
+                </form>
+                <a href="/" class="btn btn-light w-100 mt-2">Back to Meals</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    {% if reviews %}
+    <div class="mt-5 w-100" style="max-width: 900px;">
+        <h4 class="text-center">Reviews</h4>
+        <ul class="list-group">
+            {% for review in reviews %}
+            <li class="list-group-item bg-dark text-white">
+                <p><strong>Score:</strong> {{ review.score }}</p>
+                <p>{{ review.comment }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p class="mt-5 text-center">No reviews available for this meal.</p>
+    {% endif %}
+</div>
+{% endblock %}

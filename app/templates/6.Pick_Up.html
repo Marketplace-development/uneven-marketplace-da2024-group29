@@ -68,7 +68,13 @@
       <!-- Pickup Address -->
       <div class="pickup-container">
         <p>Pick up your meal at:</p>
-        <p class="pickup-address">Hier komt adres!</p>
+        <p class="pickup-address">{{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
+      </div>
+
+      <!-- Meal Details -->
+      <div class="pickup-container">
+        <p><strong>Meal:</strong> {{ meal.name }}</p>
+        <p><strong>Description:</strong> {{ meal.description }}</p>
       </div>
 
       <!-- Bottom Image -->
