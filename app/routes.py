@@ -27,7 +27,7 @@ def register():
          # Controleer of de gebruiker al bestaat
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash("User already exists. Please choose a different username or log in", "error")
+            flash("User already exists. Please choose a different username or log in.", "error")
             return redirect(url_for('main.register'))
         
         # Als de gebruiker niet bestaat, voeg toe aan de database
@@ -46,6 +46,8 @@ def register():
 
         # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
         session['user_id'] = new_user.user_id
+        vendor_id = new_user.user_id
+        customer_id = new_user.user_id
         flash("User registered successfully!", "success")
 
         # Redirect naar de indexpagina (na succesvolle registratie)
@@ -100,15 +102,7 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
         
-        #Door stappen hierboven kun je dit hieronder volgens mij weglaten:
-        #username = request.form['username']
-        #user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
-        #if user:
-            #session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
-        #vendor_id = session['user_id'] # De ingelogde gebruiker wordt als verkoper toegevoegd
-
-        #categories = request.form.getlist('categories')
-        #categories verwijdert in models.py -> dus niet meer nodig
+       
 
         # Verwerk de afbeelding (optioneel)
         #picture_filename = None
