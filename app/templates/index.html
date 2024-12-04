@@ -3,28 +3,28 @@
 {% block title %}Available Meals{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 text-white">
     <h2 class="text-center mb-4">Available Meals</h2>
 
     <div class="row">
         {% for listing in listings %}
         <div class="col-md-4 mb-4">
             <div class="card">
-                <!-- Als er een foto is, toon deze dan, anders een placeholder -->
+                <!-- Display a picture if available, otherwise a placeholder -->
                 {% if listing.picture %}
                 <img src="{{ url_for('static', filename='images/' + listing.picture) }}" class="card-img-top" alt="{{ listing.name }}">
                 {% else %}
-                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Maaltijd afbeelding">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Meal Image">
                 {% endif %}
 
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.name }}</h5>
-                    <p class="card-text">{{ listing.description or 'Geen beschrijving beschikbaar.' }}</p>
+                    <p class="card-text">{{ listing.description or 'No description available.' }}</p>
                     
-                    <!-- Toon de keuken -->
+                    <!-- Display the cuisine -->
                     <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
 
-                    <!-- Toon de status van de maaltijd -->
+                    <!-- Display meal status -->
                     <p class="card-text">
                         <span class="badge 
                             {% if listing.status == listing.status.BESCHIKBAAR %}
@@ -36,8 +36,8 @@
                         </span>
                     </p>
 
-                    <!-- Link om een maaltijd te bekijken of meer actie te ondernemen -->
-                    <a href="#" class="btn btn-primary">View Meals</a>
+                    <!-- Link to view meal -->
+                    <a href="#" class="btn btn-primary">View Meal</a>
                 </div>
             </div>
         </div>
@@ -47,4 +47,3 @@
     </div>
 </div>
 {% endblock %}
-
