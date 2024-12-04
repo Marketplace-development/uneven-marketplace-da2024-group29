@@ -83,27 +83,26 @@ def base():
 
 @main.route('/add-meal', methods=['GET', 'POST'])
 def add_meal():
+    user_id = session.get('user_id')
+
     if request.method == 'POST':
         #haal formuliergegevens op
         name = request.form['name']
         description = request.form['description']
         picture = request.files['picture'] if 'picture' in request.files else None
         cuisine = request.form['cuisine']
-        #status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar", dus onnodig!
-        
+
         # Validatie
         if not name or not cuisine:
             flash("Meal name and cuisine type are required!")
             return redirect(url_for('main.add_meal'))
               
-        #Vendor ID ophalen
-        vendor_id = session.get('user_id')
-        if not vendor_id:
+        
+        if not user_id:
             flash("You must be logged in to add a meal.")
             return redirect(url_for('main.login'))
         
        
-
         # Verwerk de afbeelding (optioneel)
         #picture_filename = None
         #if picture:
@@ -114,12 +113,13 @@ def add_meal():
         new_meal = Meal_offerings(
             name=name,
             description=description,
-            #picture=picture_filename,
-            status=MealStatus.AVAILABLE,  #Automatisch instellen als beschikbaar
-            vendor_id=vendor_id,
+            picture=picture,
+            vendor_id=user_id,
             cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
         )
 
+        db.session.add(new_meal)
+        db.session.commit()
         # Koppel de maaltijd aan de geselecteerde categorieën
         #code hieronder niet meer nodig doordat category verwijderd is
         #for category_id in categories:
@@ -127,13 +127,19 @@ def add_meal():
         #    new_meal.categories.append(category)
         #db.session.commit()
 
-        db.session.add(new_meal)
-        db.session.commit()
-
         
         flash("Meal added successfully!")
         return redirect(url_for('main.index'))
-        
+
+
+    existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
+
+    if not existing_vendor:
+        # Als de gebruiker nog geen vendor is, voeg toe
+        vendor = Vendor(vendor_id=user_id)
+        db.session.add(vendor)
+        db.session.commit()
+
     #lijn hieronder wordt niet gebruikt op dit moment (zegt chatgpt)
     #vendors = Vendor.query.all()  # Dit kan eventueel weggehaald worden, omdat we vendor_id automatisch vullen.
     #categories = Category.query.all() -> ook niet meer nodig
