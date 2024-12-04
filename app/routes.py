@@ -116,7 +116,6 @@ def add_meal():
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
 
-<<<<<<< HEAD
         picture_url = None
         if picture:
             filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
@@ -125,25 +124,6 @@ def add_meal():
                 flash("Error uploading image to Supabase.", "error")
                 return redirect(url_for('main.add_meal'))
             picture_url = supabase.storage().from_('picture').get_public_url(filename)
-=======
-        # Upload picture to Supabase
-        picture_url = None
-        if picture:
-            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{picture.filename}"
-            
-            # Use the file stream correctly
-            response = supabase.storage.from_('pictures').upload(
-                filename, 
-                picture.stream.read()  # Read the file content
-            )
-            
-            if response.get("error"):
-                flash("Error uploading image to Supabase.", "error")
-                return redirect(url_for('main.add_meal'))
-
-            # Get the public URL
-            picture_url = supabase.storage.from_('pictures').get_public_url(filename)
->>>>>>> 46d41fbfd3e146770c3b8f1cabfd2e2c01cbfcd1
 
         # Create the new meal record in the database
         new_meal = Meal_offerings(
