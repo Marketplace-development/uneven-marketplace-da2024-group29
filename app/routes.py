@@ -85,7 +85,7 @@ def add_meal():
         #haal formuliergegevens op
         name = request.form['name']
         description = request.form['description']
-        picture = request.files['picture'] if 'picture' in request.files else None
+        #picture = request.files['picture'] if 'picture' in request.files else None
         cuisine = request.form['cuisine']
         #status = request.form['status']  # Dit is automatisch ingesteld op "Beschikbaar", dus onnodig!
         
@@ -111,16 +111,16 @@ def add_meal():
         #categories verwijdert in models.py -> dus niet meer nodig
 
         # Verwerk de afbeelding (optioneel)
-        picture_filename = None
-        if picture:
-            picture_filename = f"static/images/{picture.filename}"
-            picture.save(picture_filename)
+        #picture_filename = None
+        #if picture:
+        #    picture_filename = f"static/images/{picture.filename}"
+        #    picture.save(picture_filename)
 
         # Nieuwe maaltijd toevoegen aan de database
         new_meal = Meal_offerings(
             name=name,
             description=description,
-            picture=picture_filename,
+            #picture=picture_filename,
             status=MealStatus.AVAILABLE,  #Automatisch instellen als beschikbaar
             vendor_id=vendor_id,
             cuisine=CuisineType[cuisine] #aanpassing lijn na verwijderen categories
