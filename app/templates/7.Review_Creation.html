@@ -29,6 +29,26 @@
     h2 {
       color: #ffa500; /* Orange subtitle */
     }
+
+    /* Pizza rating styles */
+    .pizza-rating {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .pizza-rating span {
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .pizza-rating span:hover {
+      transform: scale(1.2);
+    }
+    .pizza-rating span.selected {
+      color: #ff6347; /* Tomato red color */
+    }
   </style>
 </head>
 <body>
@@ -43,9 +63,17 @@
 
       <!-- Review Form -->
       <form method="POST">
-        <div class="mb-3">
-          <label for="score" class="form-label">Score / 10:</label>
-          <input type="number" id="score" name="score" class="form-control" placeholder="Enter your score" min="1" max="10" required>
+        <!-- Pizza Slice Rating -->
+        <div class="mb-3 text-center">
+          <label class="form-label d-block">Rate your experience:</label>
+          <div class="pizza-rating" id="pizzaRating">
+            <span data-value="1">🍕</span>
+            <span data-value="2">🍕</span>
+            <span data-value="3">🍕</span>
+            <span data-value="4">🍕</span>
+            <span data-value="5">🍕</span>
+          </div>
+          <input type="hidden" id="rating" name="rating" value="0" required>
         </div>
         <button type="submit" class="btn btn-primary w-100">Submit Review</button>
       </form>
@@ -59,5 +87,25 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JS for Pizza Slice Rating -->
+  <script>
+    const pizzas = document.querySelectorAll('.pizza-rating span');
+    const ratingInput = document.getElementById('rating');
+
+    pizzas.forEach(pizza => {
+      pizza.addEventListener('click', () => {
+        // Remove selected class from all pizza slices
+        pizzas.forEach(p => p.classList.remove('selected'));
+
+        // Add selected class to clicked pizza and all previous pizzas
+        const rating = pizza.getAttribute('data-value');
+        ratingInput.value = rating; // Set hidden input value
+        for (let i = 0; i < rating; i++) {
+          pizzas[i].classList.add('selected');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
