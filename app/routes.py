@@ -3,6 +3,11 @@ from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineT
 import os  # For working with file paths
 from supabase import create_client, Client  # For connecting to Supabase
 
+SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
+
+# Initialize Supabase client
+supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
 main = Blueprint('main', __name__)
