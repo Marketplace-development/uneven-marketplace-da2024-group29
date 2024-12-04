@@ -13,6 +13,19 @@
         body {
             background-color: #d4f7d5;
         }
+        .logout-btn {
+            border: none;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +52,10 @@
                     </li>
                 </ul>
             </div>
+            <!-- Logout Button -->
+            <form action="{{ url_for('main.logout') }}" method="POST" class="d-flex">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
         </div>
     </nav>
 
@@ -55,7 +72,6 @@
             {% endif %}
         {% endwith %}
     </div>
-
 
     <!-- De inhoud van de specifieke pagina -->
     <div class="container">

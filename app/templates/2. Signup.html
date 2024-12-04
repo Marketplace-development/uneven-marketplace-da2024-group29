@@ -11,30 +11,43 @@
   <!-- Extra CSS -->
   <style>
     body {
-      background-color: #d4f7d5; /* Pastelgroene achtergrond */
+      background-color: #d4f7d5; /* Pastel green background */
     }
     .card {
-      border-radius: 20px; /* Ronde hoeken */
+      border-radius: 20px; /* Rounded corners */
     }
     .btn-primary {
-      background-color: #28a745; /* Groene knop */
+      background-color: #28a745; /* Green button */
       border: none;
     }
     .btn-primary:hover {
-      background-color: #218838; /* Donkerder groen bij hover */
+      background-color: #218838; /* Darker green on hover */
     }
     h1 {
       font-weight: bold;
       color: #28a745;
     }
     h2 {
-      color: #ffa500; /* Oranje voor subtitel */
+      color: #ffa500; /* Orange subtitle */
     }
   </style>
 </head>
 <body>
   <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
-    <!-- Formulier Container -->
+    
+    <!-- Flash Message -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="alert alert-danger alert-dismissible fade show w-100" role="alert">
+          {% for category, message in messages %}
+            <strong>{{ message }}</strong>
+          {% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Signup Container -->
     <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
       <!-- Logo -->
       <div class="text-center mb-4">
@@ -43,7 +56,7 @@
         <h2>Waste Less, Love More</h2>
       </div>
       
-      <!-- Formulier -->
+      <!-- Signup Form -->
       <form method="POST">
         <div class="mb-3">
           <label for="username" class="form-label">Username:</label>
@@ -53,8 +66,6 @@
           <label for="email" class="form-label">E-mail:</label>
           <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
         </div>
-        <!-- Address moet opgesplits worden in straat en huisnummer? -->
-         <!-- Staat zo in de supabase -->
         <div class="mb-3">
           <label for="street" class="form-label">Street:</label>
           <input type="text" id="street" name="street" class="form-control" placeholder="Enter your street" required>

@@ -34,6 +34,18 @@
 </head>
 <body>
   <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <!-- Flash Message -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="alert alert-danger alert-dismissible fade show w-100" role="alert">
+          {% for category, message in messages %}
+            <strong>{{ message }}</strong>
+          {% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+    
     <!-- Login Container -->
     <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
       <!-- Logo -->
