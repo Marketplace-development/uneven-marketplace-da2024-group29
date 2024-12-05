@@ -13,13 +13,13 @@
                 <select class="form-select" id="cuisine" name="cuisine">
                     <option value="ALL" {% if request.args.get('cuisine', 'ALL') == 'ALL' %}selected{% endif %}>All</option>
                     <option value="Italian" {% if request.args.get('cuisine') == 'Italian' %}selected{% endif %}>Italian</option>
-                    <option value="Belgian" {% if request.args.get('cuisine') == 'BELGIAN' %}selected{% endif %}>Belgian</option>
-                    <option value="Asian" {% if request.args.get('cuisine') == 'ASIAN' %}selected{% endif %}>Asian</option>
-                    <option value="French" {% if request.args.get('cuisine') == 'FRENCH' %}selected{% endif %}>French</option>
-                    <option value="MEXICAN" {% if request.args.get('cuisine') == 'MEXICAN' %}selected{% endif %}>Mexican</option>
-                    <option value="Spanish" {% if request.args.get('cuisine') == 'SPANISH' %}selected{% endif %}>Spanish</option>
-                    <option value="American" {% if request.args.get('cuisine') == 'AMERICAN' %}selected{% endif %}>American</option>
-                    <option value="Other" {% if request.args.get('cuisine') == 'OTHER' %}selected{% endif %}>Other</option>
+                    <option value="Belgian" {% if request.args.get('cuisine') == 'Belgian' %}selected{% endif %}>Belgian</option>
+                    <option value="Asian" {% if request.args.get('cuisine') == 'Asian' %}selected{% endif %}>Asian</option>
+                    <option value="French" {% if request.args.get('cuisine') == 'French' %}selected{% endif %}>French</option>
+                    <option value="MEXICAN" {% if request.args.get('cuisine') == 'Mexican' %}selected{% endif %}>Mexican</option>
+                    <option value="Spanish" {% if request.args.get('cuisine') == 'Spanish' %}selected{% endif %}>Spanish</option>
+                    <option value="American" {% if request.args.get('cuisine') == 'American' %}selected{% endif %}>American</option>
+                    <option value="Other" {% if request.args.get('cuisine') == 'Other' %}selected{% endif %}>Other</option>
                 </select>
                 <small class="form-text">Select "All" to see all cuisines, or choose a specific cuisine.</small>
             </div>
@@ -38,36 +38,27 @@
         </div>
         <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
     </form>
-       
-    
-    <div class="row">
-        {% for listing in listings %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                
-                <!-- Display a picture if available, otherwise a placeholder -->
-                {% if listing.picture %}
-                <img src="{{ listing.picture }}" class="card-img-top" alt="{{ listing.name }}">
-                {% else %}
-                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Meal Image">
-                {% endif %}
-
-
-                <div class="card-body">
-                    <h5 class="card-title">{{ listing.name }}</h5>
-                    <p class="card-text">{{ listing.description or 'No description available.' }}</p>
-                    
-                    <!-- Display the cuisine -->
-                    <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
-                    
-                    <!-- Link to view meal -->
-                    <a href="{{ url_for('main.meal_details', meal_id=listing.meal_id) }}" class="btn btn-primary">View Meal</a>
-                </div>
+  <!-- Display Meals -->
+  <div class="row">
+    {% for listing in listings %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if listing.picture %}
+            <img src="{{ listing.picture }}" class="card-img-top" alt="{{ listing.name }}">
+            {% else %}
+            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Meal Image">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ listing.name }}</h5>
+                <p class="card-text">{{ listing.description or 'No description available.' }}</p>
+                <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
+                <a href="{{ url_for('main.meal_details', meal_id=listing.meal_id) }}" class="btn btn-primary">View Meal</a>
             </div>
         </div>
-        {% else %}
-        <p class="text-center">There are currently no meals available...</p>
-        {% endfor %}
     </div>
+    {% else %}
+    <p class="text-center">There are currently no meals available...</p>
+    {% endfor %}
+</div>
 </div>
 {% endblock %}

@@ -36,7 +36,7 @@ class User(db.Model):
     city = db.Column(db.String(50), nullable=False)                      # Stad                   
     type = db.Column(db.String(50))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-
+    
     listings = db.relationship("Listing", backref="user", lazy=True)
 
     __mapper_args__ = {
@@ -78,6 +78,7 @@ class Meal_offerings(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String(200), nullable=True)  #nog bekijken hoe je foto er in zet want is nu een string
+    #status = db.Column(db.Enum(MealStatus), default=MealStatus.AVAILABLE) #als status = not available, gwn van de website halen.
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -94,7 +95,7 @@ class Transaction(db.Model):
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
-    #quantity = db.Column(db.Integer, nullable=False)  Dit mag denk ik weg want ook niet in supabase
+    
 
     meal = db.relationship('Meal_offerings', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase
     customer = db.relationship('Customer', backref='transactions')

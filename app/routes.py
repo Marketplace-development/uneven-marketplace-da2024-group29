@@ -71,7 +71,7 @@ def login():
     print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
 
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['username'].strip()
         user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
         if user:
             session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
@@ -262,10 +262,11 @@ def claim_meal(meal_id):
     # Update the meal or transaction status as needed
     transaction = Transaction(
         status=TransactionStatus.COMPLETED,
+        pickup = False,
         meal_id=meal_id,
         customer_id=user_id,
         vendor_id=meal.vendor_id
-    )
+        )
     db.session.add(transaction)
     db.session.commit()
 
