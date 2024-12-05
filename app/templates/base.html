@@ -80,7 +80,7 @@
         <div class="container-fluid">
             <!-- Logo -->
             <a class="navbar-brand" href="/">
-                <img src="static/pictures/logo.png" alt="Logo">
+                <img src="{{ url_for('static', filename='pictures/logo.png') }}?v=1" alt="Logo">
             </a>
             <!-- Centered Buttons -->
             <div class="navbar-center">
