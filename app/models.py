@@ -111,7 +111,6 @@ class Transaction(db.Model):
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     listing_name = db.Column(db.String(100), nullable=False)
-    #price = db.Column(db.Float, nullable=False)      #Mag dit niet weg? We werken toch niet met prijs?
     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
 
     def __repr__(self):

@@ -166,8 +166,8 @@ def add_meal():
 
 
 #Functie om maaltijd te kopen -> snel gekopieerd en geplakt van chatgpt, nog niet deftig bekeken
-@main.route('/buy-meal/<int:meal_id>', methods=['POST'])
-def buy_meal(meal_id):
+#@main.route('/buy-meal/<int:meal_id>', methods=['POST'])
+#def buy_meal(meal_id):
     # Haal de ingelogde gebruiker op
     user_id = session.get('user_id')
     user = User.query.get(user_id)
@@ -262,7 +262,6 @@ def claim_meal(meal_id):
     # Update the meal or transaction status as needed
     transaction = Transaction(
         status=TransactionStatus.COMPLETED,
-        pickup = False,
         meal_id=meal_id,
         customer_id=user_id,
         vendor_id=meal.vendor_id
