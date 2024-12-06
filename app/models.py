@@ -77,7 +77,7 @@ class Meal_offerings(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String, nullable=False, default='AVAILABLE')
+    status = db.Column(db.String, nullable=False, default='AVAILABLE') #standaard is available
     vendor = db.relationship('Vendor', backref='Meal_offerings')
     #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('Meal_offerings', lazy=True))
     #Deze lijn hierboven nog niet nodig? Want we gebruiken assocation en category nog niet

@@ -212,6 +212,9 @@ def index():
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
 
+        # Query alleen maaltijden met status 'AVAILABLE'
+        query = Meal_offerings.query.filter_by(status='AVAILABLE')
+
         if cuisine_filter != 'ALL':
             try:
                 selected_cuisine = CuisineType(cuisine_filter)  # Converteer naar enum
@@ -270,6 +273,9 @@ def claim_meal(meal_id):
     else:
         existing_customer.amount += 1
 
+    # Update de maaltijdstatus naar 'NOT_AVAILABLE'
+    meal.status = "NOT_AVAILABLE"
+
     transaction = Transaction(
         meal_id=meal_id,
         customer_id=user_id,
@@ -296,7 +302,6 @@ def pick_up(meal_id):
     
     # Geef zowel de maaltijd als de vendor door aan de template
     return render_template('6.Pick_Up.html', meal=meal, vendor=vendor)
-
 
 
 @main.route('/meal/<int:meal_id>')
