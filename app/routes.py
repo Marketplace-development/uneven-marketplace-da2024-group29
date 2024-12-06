@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, MealStatus, Transaction, TransactionStatus
+from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction, TransactionStatus
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
