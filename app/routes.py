@@ -164,43 +164,6 @@ def add_meal():
     # Render the meal creation page if it's a GET request
     return render_template('4.Meal_Creation.html', cuisines=CuisineType)
 
-
-#Functie om maaltijd te kopen -> snel gekopieerd en geplakt van chatgpt, nog niet deftig bekeken
-#@main.route('/buy-meal/<int:meal_id>', methods=['POST'])
-#def buy_meal(meal_id):
-    # Haal de ingelogde gebruiker op
-    #user_id = session.get('user_id')
-    #user = User.query.get(user_id)
-    #if not user:
-        #flash("You must be logged in to buy a meal.")
-        #return redirect(url_for('main.login'))
-
-    # Haal de maaltijd op
-    #meal = Meal_offerings.query.get(meal_id)
-    #if not meal:
-        #flash("Meal not found.")
-        #return redirect(url_for('main.index'))
-
-    # Controleer of de gebruiker de maaltijd niet zelf heeft toegevoegd
-    #if meal.vendor_id == user.user_id:
-        #flash("You cannot buy your own meal!")
-        #return redirect(url_for('main.index'))
-
-    # Maak een nieuwe transactie
-    #new_transaction = Transaction(
-        #status=TransactionStatus.CONCEPT,
-        #meal_id=meal_id,
-        #customer_id=user.user_id,
-        #vendor_id=meal.vendor_id
-    #)
-
-    #db.session.add(new_transaction)
-    #db.session.commit()
-    #flash("Transaction started successfully!")
-    #return redirect(url_for('main.index'))
-
-
-
 # Begin van algoritme filteren op keuken/stad/beoordeling
 @main.route('/', methods=['GET', 'POST'])
 def index():
