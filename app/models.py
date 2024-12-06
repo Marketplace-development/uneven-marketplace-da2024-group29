@@ -5,10 +5,10 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-class TransactionStatus(enum.Enum): # we doen niet met betalen want geven gratis weg??
-    COMPLETED = "Completed"
-    CANCELLED = "Cancelled"
-    CONCEPT = "Concept"
+# class TransactionStatus(enum.Enum): # we doen niet met betalen want geven gratis weg??
+    # COMPLETED = "Completed"
+    # CANCELLED = "Cancelled"
+    # CONCEPT = "Concept"
 
 class CuisineType(enum.Enum):
     ITALIAN = "Italian"
@@ -42,10 +42,10 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-class Customer(User):
+class Customer(db.Model):
     __tablename__ = 'Customers'  # Geeft de tabel 'Customers' als naam, moet zelfde zijn als supabase tabel
-    customer_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
-   
+    customer_id = db.Column(db.Integer, primary_key=True)  # verwzijen naar User-tabel en heeft dezelfde waarde als UserID
+    amount = db.Column(db.Integer, nullable = False)
  
 
     __mapper_args__ = {
@@ -86,7 +86,7 @@ class Meal_offerings(db.Model):
 class Transaction(db.Model):
     __tablename__ = 'Transactions'
     transaction_id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.CONCEPT)
+    # status = db.Column(db.Enum(TransactionStatus), default=TransactionStatus.CONCEPT)
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction, TransactionStatus
+from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction #, TransactionStatus
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
@@ -169,35 +169,35 @@ def add_meal():
 #@main.route('/buy-meal/<int:meal_id>', methods=['POST'])
 #def buy_meal(meal_id):
     # Haal de ingelogde gebruiker op
-    user_id = session.get('user_id')
-    user = User.query.get(user_id)
-    if not user:
-        flash("You must be logged in to buy a meal.")
-        return redirect(url_for('main.login'))
+    #user_id = session.get('user_id')
+    #user = User.query.get(user_id)
+    #if not user:
+        #flash("You must be logged in to buy a meal.")
+        #return redirect(url_for('main.login'))
 
     # Haal de maaltijd op
-    meal = Meal_offerings.query.get(meal_id)
-    if not meal:
-        flash("Meal not found.")
-        return redirect(url_for('main.index'))
+    #meal = Meal_offerings.query.get(meal_id)
+    #if not meal:
+        #flash("Meal not found.")
+        #return redirect(url_for('main.index'))
 
     # Controleer of de gebruiker de maaltijd niet zelf heeft toegevoegd
-    if meal.vendor_id == user.user_id:
-        flash("You cannot buy your own meal!")
-        return redirect(url_for('main.index'))
+    #if meal.vendor_id == user.user_id:
+        #flash("You cannot buy your own meal!")
+        #return redirect(url_for('main.index'))
 
     # Maak een nieuwe transactie
-    new_transaction = Transaction(
-        status=TransactionStatus.CONCEPT,
-        meal_id=meal_id,
-        customer_id=user.user_id,
-        vendor_id=meal.vendor_id
-    )
+    #new_transaction = Transaction(
+        #status=TransactionStatus.CONCEPT,
+        #meal_id=meal_id,
+        #customer_id=user.user_id,
+        #vendor_id=meal.vendor_id
+    #)
 
-    db.session.add(new_transaction)
-    db.session.commit()
-    flash("Transaction started successfully!")
-    return redirect(url_for('main.index'))
+    #db.session.add(new_transaction)
+    #db.session.commit()
+    #flash("Transaction started successfully!")
+    #return redirect(url_for('main.index'))
 
 
 
@@ -260,15 +260,26 @@ def claim_meal(meal_id):
         return redirect(url_for('main.index'))
 
     # Update the meal or transaction status as needed
+    # Controleer of user_id al bestaat in Vendors.vendor_id
+    existing_customer = Customer.query.filter_by(customer_id=user_id).first()
+
+    if not existing_customer:
+        # Als de gebruiker nog geen vendor is, voeg toe
+        customer = Customer(customer_id=user_id, amount = 1)
+        db.session.add(customer)
+    else:
+        existing_customer.amount += 1
+
     transaction = Transaction(
-        status=TransactionStatus.COMPLETED,
         meal_id=meal_id,
         customer_id=user_id,
         vendor_id=meal.vendor_id
         )
+    meal.status = "CLAIMED"
     db.session.add(transaction)
     db.session.commit()
 
+    
     flash("Meal successfully claimed!", "success")
     return redirect(url_for('main.pick_up', meal_id=meal_id))
 
