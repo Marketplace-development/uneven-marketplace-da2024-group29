@@ -237,7 +237,7 @@ def claim_meal(meal_id):
         existing_customer.amount += 1
 
     # Update de maaltijdstatus naar 'NOT_AVAILABLE'
-    meal.status = "NOT_AVAILABLE"
+    meal.status = "NOT_AVAILABLE" #is dit nodig aangezien paar lijnen later de status op claimed gezet wordt?
 
     transaction = Transaction(
         meal_id=meal_id,
