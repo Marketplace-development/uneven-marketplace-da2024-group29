@@ -57,7 +57,7 @@
     <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
       <!-- Logo -->
       <div class="text-center mb-4">
-        <img src="pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <img src="{{ url_for('static', filename='pictures/logo.png') }}" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
         <h1>LeftoverLove</h1>
         <h2>Waste Less, Love More</h2>
       </div>
@@ -79,7 +79,7 @@
 
       <!-- Bottom Image -->
       <div class="text-center">
-        <img src="pictures/heart.png" alt="Heart-shaped food display" class="img-fluid" style="max-width: 100%; border-radius: 15px;">
+        <img src="{{ url_for('static', filename='pictures/heart.png') }}" alt="Heart-shaped food display" class="img-fluid" style="max-width: 100%; border-radius: 15px;">
       </div>
     </div>
   </div>

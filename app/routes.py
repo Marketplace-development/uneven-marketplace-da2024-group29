@@ -285,8 +285,18 @@ def claim_meal(meal_id):
 
 @main.route('/pick-up/<int:meal_id>', methods=['GET'])
 def pick_up(meal_id):
+    # Haal de maaltijd op
     meal = Meal_offerings.query.get_or_404(meal_id)
-    return render_template('6.Pick_Up.html', meal=meal)
+    
+    # Haal de vendor op die de maaltijd heeft aangeboden
+    vendor = User.query.get(meal.vendor_id)
+    if not vendor:
+        flash("Vendor not found.", "error")
+        return redirect(url_for('main.index'))
+    
+    # Geef zowel de maaltijd als de vendor door aan de template
+    return render_template('6.Pick_Up.html', meal=meal, vendor=vendor)
+
 
 
 @main.route('/meal/<int:meal_id>')
