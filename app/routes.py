@@ -106,6 +106,7 @@ def add_meal():
         description = request.form['description']
         picture = request.files.get('picture')
         cuisine = request.form['cuisine']
+        expiry_date_str = request.form.get('expiry_date') 
 
         # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
@@ -141,14 +142,22 @@ def add_meal():
             vendor = Vendor(vendor_id=user_id)
             db.session.add(vendor)
             db.session.commit()
-
+        
+        expiry_date = None
+        if expiry_date_str:
+            try:
+                expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash("Invalid date format for expiry date.", "error")
+                return redirect(url_for('main.add_meal'))
         # Create the new meal record in the database
         new_meal = Meal_offerings(
             name=name,
             description=description,
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
-            cuisine=CuisineType[cuisine] 
+            cuisine=CuisineType[cuisine],
+            expiry_date = expiry_date
         )
 
         # Commit the meal record to the database
