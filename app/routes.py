@@ -67,7 +67,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
     if lat2 is None or lon2 is None:
     # Stel bijvoorbeeld een standaardlocatie in of sla het proces over
-        lat2, lon2 = 0.0, 0.0
+        lat2, lon2 = 51.04849945776606, 3.7287827734729975 #coordinaten de crook
 
     # Controleer of geen van de coördinaten None is
     if None not in [lat1, lon1, lat2, lon2]:
