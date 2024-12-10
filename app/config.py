@@ -10,5 +10,9 @@ class Config:
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+GOOGLE_MAPS_API_KEY = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
+
+
+
 
     

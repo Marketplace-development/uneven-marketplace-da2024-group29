@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, Float
 import enum
 from datetime import datetime
 
@@ -32,6 +32,8 @@ class User(db.Model):
     city = db.Column(db.String(50), nullable=False)                      # Stad                   
     type = db.Column(db.String(50))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    latitude = db.Column(Float, nullable=True)                       # Breedtegraad
+    longitude = db.Column(Float, nullable=True)                      # Lengtegraad
     
     listings = db.relationship("Listing", backref="user", lazy=True)
 

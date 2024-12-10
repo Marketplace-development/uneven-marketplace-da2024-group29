@@ -1,10 +1,13 @@
-from flask import Blueprint, request, redirect, url_for, render_template, session, flash
+from flask import Blueprint, request, redirect, url_for, render_template, session, flash, current_app
 from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction #, TransactionStatus
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
 from datetime import datetime
 import re
+import requests
+from math import radians, cos, sin, sqrt, atan2
+from urllib.parse import quote
 
 SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
@@ -14,6 +17,80 @@ supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
 main = Blueprint('main', __name__)
+
+def get_coordinates(address):
+    """
+    Roept de Google Maps API aan om de coördinaten van een adres op te halen.
+    """
+    #api_key = current_app.config.get('GOOGLE_MAPS_API_KEY')
+    api_key = 'AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw'
+    if not api_key:
+        current_app.logger.error("Google Maps API key is missing!")
+        return None, None
+
+    # Encode het adres voor URL-veiligheid
+    encoded_address = quote(address)
+
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
+    print(f"Google Maps API URL: {url}")  # Dit toont de URL voor handmatige debugging
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        current_app.logger.error(f"Google Maps API request failed. Status code: {response.status_code}")
+        print(f"API Response: {response.text}")  # Dit toont het volledige API-response voor debugging
+        return None, None
+
+    data = response.json()
+    if data.get("status") != "OK":
+        error_message = data.get("error_message", "Unknown error")
+        current_app.logger.error(f"Google Maps API returned an error: {error_message}")
+        return None, None
+
+    # Extract coordinates
+    results = data.get("results")
+    if results:
+        location = results[0]['geometry']['location']
+        return location['lat'], location['lng']
+    
+    current_app.logger.error(f"No results found for address: {address}")
+    return None, None
+
+
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Bereken de afstand in kilometers tussen twee geografische punten.
+    """
+    R = 6371  # Aarde straal in kilometers
+
+    if lat2 is None or lon2 is None:
+    # Stel bijvoorbeeld een standaardlocatie in of sla het proces over
+        lat2, lon2 = 0.0, 0.0
+
+    # Controleer of geen van de coördinaten None is
+    if None not in [lat1, lon1, lat2, lon2]:
+        # Als alle coördinaten geldig zijn, converteer ze naar radians
+        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    else:
+        # Log de waarde van de coördinaten voor debugging
+        print(f"Fout: Ongeldige coördinaten - lat1: {lat1}, lon1: {lon1}, lat2: {lat2}, lon2: {lon2}")
+        raise ValueError(f"Een van de coördinaten is ongeldig (None): lat1={lat1}, lon1={lon1}, lat2={lat2}, lon2={lon2}.")
+
+    # Bereken de verschillen in breedte- en lengtegraad
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    # Bereken de afstand met de Haversine-formule
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    # Bereken de uiteindelijke afstand
+    distance = R * c
+    return distance
+
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -39,6 +116,20 @@ def register():
             flash("User already exists. Please choose a different username or log in.")
             return redirect(url_for('main.register'))
         
+         # Volledig adres samenstellen
+        full_address = f"{street} {number}, {zip} {city}"
+
+        # Coördinaten ophalen via de Google Maps API
+        latitude, longitude = get_coordinates(full_address)
+
+        latitude = latitude if latitude is not None else 0.0
+        longitude = longitude if longitude is not None else 0.0
+
+        if latitude == 0.0 and longitude == 0.0:
+            flash("Unable to retrieve coordinates for the provided address. Using default coordinates (0,0).")
+
+
+        
         # Als de gebruiker niet bestaat, voeg toe aan de database
         new_user = User(
             username=username,
@@ -47,6 +138,8 @@ def register():
             number=number,
             zip=zip,
             city=city,
+            latitude=latitude,   
+            longitude=longitude,
             type='user'  # Standaardwaarde
         )  
 
@@ -179,7 +272,11 @@ def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
         city = user.city  # Haal de stad van de ingelogde gebruiker op
+        latitude = user.latitude  # De breedtegraad van de gebruiker
+        longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
+        distance_filter = request.args.get('distance', 50)  # Haal de afstand op (default 50 km)
+
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
@@ -197,6 +294,16 @@ def index():
             except KeyError:
                 # Ongeldig cuisine_filter (fallback naar geen resultaten)
                 meal_offerings = []
+
+    
+        filtered_meals = []
+        for meal in meal_offerings:
+            vendor = User.query.get(meal.vendor_id)
+            if vendor:
+                distance = calculate_distance(latitude, longitude, vendor.latitude, vendor.longitude)
+                if distance <= float(distance_filter):  # Filteren op de ingestelde afstand
+                    filtered_meals.append(meal)
+        
         # Filteren op stad
         # local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
         # other_meals = [meal for meal in meal_offerings if User.city != city]  # Andere maaltijden
@@ -213,7 +320,7 @@ def index():
         # Sorteer maaltijden op basis van beoordeling
         # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=User.username, listings=meal_offerings)
+        return render_template('index.html', username=User.username, listings=filtered_meals)
     else:
         return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
 
