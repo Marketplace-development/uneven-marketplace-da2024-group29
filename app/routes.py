@@ -32,7 +32,6 @@ def get_coordinates(address):
     encoded_address = quote(address)
 
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
-    print(f"Google Maps API URL: {url}")  # Dit toont de URL voor handmatige debugging
 
     response = requests.get(url)
 
@@ -199,12 +198,13 @@ def add_meal():
         description = request.form['description']
         picture = request.files.get('picture')
         cuisine = request.form['cuisine']
-        pickup = request.form['pickup']
+        pickup_date = request.form.get('pickup_date')
+        pickup_time = request.form.get('pickup_time')
         # expiry_date_str = request.form.get('expiry_date') 
 
         # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
-            flash("Meal name and cuisine type are required!", "error")
+            flash("Fill in required fields!", "error")
             return redirect(url_for('main.add_meal'))
         
         if not user_id:
@@ -237,13 +237,13 @@ def add_meal():
             db.session.add(vendor)
             db.session.commit()
         
-        expiry_date = None
-        if expiry_date_str:
-            try:
-                expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                flash("Invalid date format for expiry date.", "error")
-                return redirect(url_for('main.add_meal'))
+        # expiry_date = None
+        # if expiry_date_str:
+            # try:
+                # expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+            # except ValueError:
+                # flash("Invalid date format for expiry date.", "error")
+                # return redirect(url_for('main.add_meal'))
         # Create the new meal record in the database
         new_meal = Meal_offerings(
             name=name,
@@ -251,7 +251,8 @@ def add_meal():
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
             cuisine=CuisineType[cuisine],
-            pickup=pickup
+            pickup_time = pickup_time,
+            pickup_date = pickup_date
             # expiry_date = expiry_date
         )
 
@@ -277,14 +278,14 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 50 km)
-        
+        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 1000000)
+
         try:
             distance_filter = float(distance_param)
         except ValueError:
-            distance_filter = 50.0
+            distance_filter = 1000000.0
         
-        # Haal alle maaltijden (MealOffering) op en filteren op cuisine
+        # Haal alle maaltijden (MealOffering) op
         meal_offerings = Meal_offerings.query.all()
 
         # Filteren op cuisine
@@ -299,7 +300,6 @@ def index():
                 # Ongeldig cuisine_filter (fallback naar geen resultaten)
                 meal_offerings = []
 
-    
         # Filteren op afstand
         filtered_meals = []
         for meal in meal_offerings:
@@ -312,7 +312,7 @@ def index():
                 if lat and lon:
                     # Bereken de afstand tussen de gebruiker en de vendor
                     distance = calculate_distance(latitude, longitude, lat, lon)
-                    if distance <= float(distance_filter):  # Filteren op de ingestelde afstand
+                    if distance <= distance_filter:  # Filteren op de ingestelde afstand
                         # Voeg de berekende afstand toe aan de maaltijdgegevens
                         meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
                         filtered_meals.append(meal)
@@ -333,9 +333,9 @@ def index():
         # Sorteer maaltijden op basis van beoordeling
         # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=User.username, listings=filtered_meals, user=user)
+        return render_template('index.html', username=User.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
     else:
-        return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
+        return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
 
 #mealdetails
 @main.route('/claim-meal/<int:meal_id>', methods=['POST'])
@@ -536,3 +536,9 @@ def rate_vendor(vendor_id):
     db.session.commit()
     flash('Rating submitted successfully!', 'success')
     return redirect(url_for('main.profile'))
+
+
+@main.route('/about-us')
+def about_us():
+    return render_template('about_us.html')
+
