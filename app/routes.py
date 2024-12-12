@@ -32,7 +32,6 @@ def get_coordinates(address):
     encoded_address = quote(address)
 
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
-    print(f"Google Maps API URL: {url}")  # Dit toont de URL voor handmatige debugging
 
     response = requests.get(url)
 
