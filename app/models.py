@@ -93,12 +93,13 @@ class Transaction(db.Model):
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
+    pickup_time = db.Column(db.DateTime, nullable=True)
     
 
     meal = db.relationship('Meal_offerings', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase
     customer = db.relationship('Customer', backref='transactions')
     vendor = db.relationship('Vendor', backref='transactions')  
-
+    
     def validate_transaction(self):
         if self.meal.vendor_id != self.vendor_id:
             raise ValueError("Meal does not belong to the specified vendor.")

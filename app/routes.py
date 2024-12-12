@@ -275,7 +275,7 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '50')  # Haal de afstand op (default 50 km)
+        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 50 km)
         
         try:
             distance_filter = float(distance_param)
@@ -363,13 +363,25 @@ def claim_meal(meal_id):
     else:
         existing_customer.amount += 1
 
-    # Update de maaltijdstatus naar 'NOT_AVAILABLE'
-    meal.status = "NOT_AVAILABLE" #is dit nodig aangezien paar lijnen later de status op claimed gezet wordt?
+    if request.method == 'POST':
+        # Haal de geselecteerde pickup time op als string (bijv. "10:00 AM - 10:30 AM")
+        pickup_time_str = request.form.get('pickup_time')
+        
+        # Veronderstel dat de geselecteerde tijd altijd het eerste tijdsblok is (bijv. "10:00 AM - 10:30 AM")
+        # Converteer de string naar een datetime object, bijvoorbeeld met een specifieke tijd
+        pickup_time_str = pickup_time_str.split(" - ")[0]  # Neem de starttijd van het interval
+        pickup_time = datetime.strptime(pickup_time_str, "%I:%M %p")
+
+        # Voeg de huidige datum toe aan de pickup tijd
+        today = datetime.today()
+        pickup_time = pickup_time.replace(year=today.year, month=today.month, day=today.day)
+
 
     transaction = Transaction(
         meal_id=meal_id,
         customer_id=user_id,
-        vendor_id=meal.vendor_id
+        vendor_id=meal.vendor_id,
+        pickup_time=pickup_time
         )
     meal.status = "CLAIMED"
     db.session.add(transaction)
@@ -390,11 +402,14 @@ def pick_up(meal_id):
         flash("Vendor not found.", "error")
         return redirect(url_for('main.index'))
     
-    # Geef zowel de maaltijd als de vendor door aan de template
-    return render_template('6.Pick_Up.html', meal=meal, vendor=vendor)
+   # Haal de transactie en de pickup_time op
+    transaction = Transaction.query.filter_by(meal_id=meal_id).first()
+    pickup_time = transaction.pickup_time 
 
+    # Geef de pickup_time, maaltijd en vendor door aan de template
+    return render_template('6.Pick_Up.html', meal=meal, vendor=vendor, pickup_time=pickup_time)
 
-@main.route('/meal/<int:meal_id>')
+@main.route('/meal/<int:meal_id>', methods=['GET', 'POST'])
 def meal_details(meal_id):
     meal = Meal_offerings.query.get_or_404(meal_id)
     vendor = User.query.get(meal.vendor_id)
