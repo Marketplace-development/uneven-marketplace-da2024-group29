@@ -200,7 +200,8 @@ def add_meal():
         picture = request.files.get('picture')
         cuisine = request.form['cuisine']
         pickup_date = request.form.get('pickup_date')
-        pickup_time = request.form.get('pickup_time')
+        pickup_start_time = request.form.get('pickup_start_time')
+        pickup_end_time = request.form.get('pickup_end_time')
         # expiry_date_str = request.form.get('expiry_date') 
 
         # Validation: Ensure both name and cuisine are provided
@@ -211,6 +212,20 @@ def add_meal():
         if not user_id:
             flash("You must be logged in to add a meal.", "error")
             return redirect(url_for('main.login'))
+
+        # Parse and validate the date and times
+        try:
+            parsed_date = datetime.strptime(pickup_date, '%Y-%m-%d').date()
+            start_time = datetime.strptime(pickup_start_time, '%H:%M').time()
+            end_time = datetime.strptime(pickup_end_time, '%H:%M').time()
+
+            # Ensure the end time is later than the start time
+            if end_time <= start_time:
+                flash("Pickup end time must be later than the start time.", "error")
+                return redirect(url_for('main.add_meal'))
+        except ValueError:
+            flash("Invalid date or time format.", "error")
+            return redirect(url_for('main.add_meal'))
 
         picture_url = None
         if picture:
@@ -252,8 +267,9 @@ def add_meal():
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
             cuisine=CuisineType[cuisine],
-            pickup_time = pickup_time,
-            pickup_date = pickup_date
+            pickup_date = parsed_date,
+            pickup_start_time = start_time,
+            pickup_end_time = end_time
             # expiry_date = expiry_date
         )
 

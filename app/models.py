@@ -81,7 +81,8 @@ class Meal_offerings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String, nullable=False, default='AVAILABLE') #standaard is available
     pickup_date = db.Column(Date, nullable=True)
-    pickup_time = db.Column(Time, nullable=True)
+    pickup_start_time = db.Column(Time, nullable=True)
+    pickup_end_time = db.Column(Time, nullable=True)
     vendor = db.relationship('Vendor', backref='Meal_offerings')
     
     # expiry_date = db.Column(db.Date, nullable=True)
