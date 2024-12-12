@@ -72,7 +72,7 @@
         {% endwith %}
     </div>
       
-    
+
         <div class="section">
             <h2>Shared Meals</h2>
             <div id="shared-meals" class="row">
@@ -132,6 +132,11 @@
      <div class="container">
         <div class="section">
             <h2>Details</h2>
+            <p class="mb-3" style="display: inline-block;">
+                <strong>My Average Rating:</strong> 
+                <span>{{ average_rating ~ '⭐' if average_rating else 'No ratings yet ⭐' }}</span>
+            </p>
+            
             <form id="profile-details" method="POST" action="{{ url_for('main.profile') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username:</label>
