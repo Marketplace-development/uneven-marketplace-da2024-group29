@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - LeftoverLove</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Extra CSS -->
+  <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838; /* Darker green on hover */
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
+    .content {
+      text-align: center;
+      padding: 20px;
+    }
+    .about-text {
+      font-size: 1.2em;
+      margin: 20px 0;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .image-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .container {
+      max-width: 800px;
+      margin-top: 50px;
+    }
+    .logo-img, .heart-img {
+      max-width: 150px; /* Zorg ervoor dat beide afbeeldingen dezelfde grootte hebben */
+      height: auto;
+    }
+    .bottom-img {
+      max-width: 100%; /* Zorg ervoor dat de afbeelding dezelfde breedte heeft als op de loginpagina */
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    
+    <!-- About Us Section -->
+    <div class="card shadow-lg p-5" style="max-width: 600px; width: 100%;">
+      <div class="text-center mb-4">
+        <!-- Display the logo -->
+        <img src="{{ url_for('static', filename='pictures/logo.png') }}" alt="Logo" class="logo-img">
+      </div>
+
+      <h1 class="text-center">About LeftoverLove</h1>
+      <p class="about-text">
+        We are dedicated to reducing food waste while bringing people together over delicious, freshly prepared meals. Our platform allows individuals to share their homemade meals with others, preventing waste and creating a community of food lovers. Whether you're looking for a great meal, want to contribute your own creations, or support those in need, we are here to make a positive impact. We believe that food should never go to waste, and that everyone deserves access to nutritious meals, regardless of their financial situation.
+      </p>
+      <p class="about-text">
+        With our commitment to sustainability, quality, and inclusivity, we ensure that every meal shared is made with love and care. By joining our platform, you not only contribute to reducing food waste but also help provide meals for those who might struggle to afford them. Join us on our mission to waste less, love more, and help others along the way!
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="text-center">
+        <a href="{{ url_for('main.login') }}" class="btn btn-primary w-100 mb-3">Log In</a>
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary w-100">Sign Up</a>
+      </div>
+
+      <!-- Bottom Image -->
+      <div class="text-center mt-4">
+        <img src="static/pictures/meal.png" alt="Delicious Meals" class="bottom-img">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

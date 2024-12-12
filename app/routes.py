@@ -279,14 +279,14 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 50 km)
-        
+        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 1000000)
+
         try:
             distance_filter = float(distance_param)
         except ValueError:
-            distance_filter = 50.0
+            distance_filter = 1000000.0
         
-        # Haal alle maaltijden (MealOffering) op en filteren op cuisine
+        # Haal alle maaltijden (MealOffering) op
         meal_offerings = Meal_offerings.query.all()
 
         # Filteren op cuisine
@@ -301,7 +301,6 @@ def index():
                 # Ongeldig cuisine_filter (fallback naar geen resultaten)
                 meal_offerings = []
 
-    
         # Filteren op afstand
         filtered_meals = []
         for meal in meal_offerings:
@@ -314,7 +313,7 @@ def index():
                 if lat and lon:
                     # Bereken de afstand tussen de gebruiker en de vendor
                     distance = calculate_distance(latitude, longitude, lat, lon)
-                    if distance <= float(distance_filter):  # Filteren op de ingestelde afstand
+                    if distance <= distance_filter:  # Filteren op de ingestelde afstand
                         # Voeg de berekende afstand toe aan de maaltijdgegevens
                         meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
                         filtered_meals.append(meal)
@@ -335,9 +334,9 @@ def index():
         # Sorteer maaltijden op basis van beoordeling
         # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=User.username, listings=filtered_meals, user=user)
+        return render_template('index.html', username=User.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
     else:
-        return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
+        return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
 
 #mealdetails
 @main.route('/claim-meal/<int:meal_id>', methods=['POST'])
@@ -527,4 +526,9 @@ def rate_vendor(vendor_id):
     db.session.commit()
     flash('Rating submitted successfully!', 'success')
     return redirect(url_for('main.profile'))
+
+
+@main.route('/about-us')
+def about_us():
+    return render_template('about_us.html')
 
