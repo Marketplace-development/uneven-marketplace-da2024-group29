@@ -275,8 +275,11 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_filter = request.args.get('distance', 50)  # Haal de afstand op (default 50 km)
-
+        distance_param = request.args.get('distance', '50')  # Haal de afstand op (default 50 km)
+        try:
+            distance_filter = float(distance_param)
+        except ValueError:
+            distance_filter = 50.0
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
