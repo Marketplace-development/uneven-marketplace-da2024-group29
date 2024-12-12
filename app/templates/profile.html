@@ -99,6 +99,7 @@
                                 {% endif %}
                             </p>
                             <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}</p>
+                            <button onclick="deleteMeal({ meal_id })" class="btn btn-danger">Delete</button>
                         </div>
                     </div>
                 </div>

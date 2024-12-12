@@ -451,6 +451,17 @@ def profile():
         for meal, transaction_created_at in shared_meals
     ]
 
+    def delete_meal_with_auth(meal_id):
+        user_id = request.user_id
+        meal = meal.query.filter_by(id=meal_id, user_id=user_id).first()
+        if not meal:
+            return {"message": "Meal not found or unauthorized"}
+
+        db.session.delete(meal)
+        db.session.commit()
+        flash("Meal deleted successfully")
+
+
     # Fetch claimed meals for the logged-in user
     claimed_meals = db.session.query(Meal_offerings, Vendor, Transaction).join(
         Transaction, Transaction.meal_id == Meal_offerings.meal_id
