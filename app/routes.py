@@ -432,9 +432,24 @@ def profile():
 
         return redirect(url_for('main.profile'))
 
-
     # Fetch shared meals for the logged-in user (status available and claimed)
-    shared_meals = Meal_offerings.query.filter_by(vendor_id=user_id).filter(Meal_offerings.status != "AVAILABLE").all()
+    shared_meals = db.session.query(Meal_offerings, Transaction.created_at).outerjoin(
+        Transaction, Meal_offerings.meal_id == Transaction.meal_id
+    ).filter(Meal_offerings.vendor_id == user_id).all()
+
+    # Prepare shared meals with claimed_date
+    shared_meals_data = [
+        {
+            "id": meal.meal_id,
+            "name": meal.name,
+            "description": meal.description,
+            "picture": meal.picture,
+            "status": meal.status,
+            "claimed_date": transaction_created_at,  # Use the created_at field from Transaction
+            "reviews": Review.query.filter_by(meal_id=meal.meal_id).all()
+        }
+        for meal, transaction_created_at in shared_meals
+    ]
 
     # Fetch claimed meals for the logged-in user
     claimed_meals = db.session.query(Meal_offerings, Vendor, Transaction).join(
@@ -465,7 +480,7 @@ def profile():
     return render_template(
         'profile.html',
         user=user,
-        shared_meals=shared_meals,
+        shared_meals=shared_meals_data,
         claimed_meals=claimed_meals_data,
         average_rating=average_rating
     )

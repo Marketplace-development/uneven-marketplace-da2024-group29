@@ -85,13 +85,13 @@
                             <p class="card-text">{{ meal.description }}</p>
                             <p class="card-text">
                                 <strong>Status:</strong> 
-                                {% if meal.claimed_date %}
-                                    Claimed on {{ meal.claimed_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                                {% if meal.status == 'CLAIMED' %}
+                                    Claimed on {{ meal.claimed_date.strftime('%d-%m-%Y at %H:%M') if meal.claimed_date else 'Unknown date' }}
                                 {% else %}
                                     Available
                                 {% endif %}
                             </p>
-                            <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ '⭐' if meal.reviews else 'No rating yet' }}</p>
+                            <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}</p>
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                             <p class="card-text">{{ meal.description }}</p>
         
                             {% if meal.review %}
-                                <p><strong>Given Rating:</strong> {{ meal.review.score }}⭐</p>
+                                <p><strong>Given Rating:</strong> {{ meal.review.score }} ⭐</p>
                             {% else %}
                                 <!-- Form for submitting a rating -->
                                 <form method="POST" action="/rate-vendor/{{ meal.vendor_id }}" class="mt-3">
@@ -134,7 +134,7 @@
             <h2>Details</h2>
             <p class="mb-3" style="display: inline-block;">
                 <strong>My Average Rating:</strong> 
-                <span>{{ average_rating ~ '⭐' if average_rating else 'No ratings yet ⭐' }}</span>
+                <span>{{ average_rating ~ ' ⭐' if average_rating else 'No ratings yet ⭐' }}</span>
             </p>
             
             <form id="profile-details" method="POST" action="{{ url_for('main.profile') }}">
