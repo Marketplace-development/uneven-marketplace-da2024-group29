@@ -32,7 +32,6 @@ def get_coordinates(address):
     encoded_address = quote(address)
 
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
-    print(f"Google Maps API URL: {url}")  # Dit toont de URL voor handmatige debugging
 
     response = requests.get(url)
 
@@ -528,16 +527,27 @@ def rate_vendor(vendor_id):
         flash('You must be logged in to rate vendors.', 'error')
         return redirect(url_for('main.login'))
 
-    rating = int(request.form['rating'])
+    # Retrieve the rating and meal_id from the form
+    try:
+        rating = int(request.form['rating'])
+        meal_id = int(request.form['meal_id'])  # Ensure meal_id is retrieved from the form
+        if rating < 0 or rating > 5:
+            flash('Rating must be between 0 and 5.', 'error')
+            return redirect(url_for('main.profile'))
+    except (ValueError, KeyError):
+        flash('Invalid input. Please enter a valid rating and meal ID.', 'error')
+        return redirect(url_for('main.profile'))
 
     # Save the rating
-    review = Review(vendor_id=vendor_id, customer_id=user_id, score=rating)
+    review = Review(vendor_id=vendor_id, customer_id=user_id, meal_id=meal_id, score=rating)
     db.session.add(review)
 
     # Update the vendor's average rating
     reviews = Review.query.filter_by(vendor_id=vendor_id).all()
     vendor = Vendor.query.get(vendor_id)
-    vendor.user.average_rating = sum(r.score for r in reviews) / len(reviews)  # Assuming `User` has average_rating
+    if vendor:
+        vendor_average_rating = sum(r.score for r in reviews) / len(reviews)
+        vendor.average_rating = vendor_average_rating  # Update average rating directly in Vendor
 
     db.session.commit()
     flash('Rating submitted successfully!', 'success')
