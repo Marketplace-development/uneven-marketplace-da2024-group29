@@ -333,7 +333,7 @@ def index():
 
         return render_template('index.html', username=User.username, listings=filtered_meals, user=user)
     else:
-        return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
+        return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
 
 #mealdetails
 @main.route('/claim-meal/<int:meal_id>', methods=['POST'])
@@ -486,4 +486,9 @@ def rate_vendor(vendor_id):
     db.session.commit()
     flash('Rating submitted successfully!', 'success')
     return redirect(url_for('main.profile'))
+
+
+@main.route('/about-us')
+def about_us():
+    return render_template('about_us.html')
 
