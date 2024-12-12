@@ -10,9 +10,9 @@
             <!-- Meal Image -->
             <div class="col-md-6">
                 {% if meal.picture %}
-                <img src="{{ meal.picture }}" class="img-fluid rounded-start" alt="{{ meal.name }}" style="height: 100%; object-fit: cover;">
+                    <img src="{{ meal.picture }}" class="img-fluid rounded-start" alt="{{ meal.name }}" style="height: 100%; object-fit: cover;">
                 {% else %}
-                <img src="https://via.placeholder.com/300" class="img-fluid rounded-start" alt="Meal Image" style="height: 100%; object-fit: cover;">
+                    <img src="https://via.placeholder.com/300" class="img-fluid rounded-start" alt="Meal Image" style="height: 100%; object-fit: cover;">
                 {% endif %}
             </div>
             
@@ -25,8 +25,47 @@
                 <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                 <p><strong>Expiry Date:</strong> {{ meal.expiry_date.strftime('%d-%m-%Y') if meal.expiry_date else 'Not specified' }}</p>
 
+                <!-- Pickup Time Section -->
+                <div class="pickup-container">
+                    <p><strong>Choose a pickup time:</strong></p>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="pickupTimeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            Select Pickup Time
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="pickupTimeButton" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Dropdown Options -->
+                            <li><a class="dropdown-item" href="#">08:30 AM - 09:00 AM</a></li>
+                            <li><a class="dropdown-item" href="#">09:00 AM - 09:30 AM</a></li>
+                            <li><a class="dropdown-item" href="#">09:30 AM - 10:00 AM</a></li>
+                            <li><a class="dropdown-item" href="#">10:00 AM - 10:30 AM</a></li>
+                            <li><a class="dropdown-item" href="#">10:30 AM - 11:00 AM</a></li>
+                            <li><a class="dropdown-item" href="#">11:00 AM - 11:30 AM</a></li>
+                            <li><a class="dropdown-item" href="#">11:30 AM - 12:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">12:00 PM - 12:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">12:30 PM - 13:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">13:00 PM - 13:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">13:30 PM - 14:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">14:00 PM - 14:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">14:30 PM - 15:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">15:00 PM - 15:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">15:30 PM - 16:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">16:00 PM - 16:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">16:30 PM - 17:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">17:00 PM - 17:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">17:30 PM - 18:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">18:00 PM - 18:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">18:30 PM - 19:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">19:00 PM - 19:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">19:30 PM - 20:00 PM</a></li>
+                            <li><a class="dropdown-item" href="#">20:00 PM - 20:30 PM</a></li>
+                            <li><a class="dropdown-item" href="#">20:30 PM - 21:00 PM</a></li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Claim Meal Button -->
                 <form method="POST" action="{{ url_for('main.claim_meal', meal_id=meal.meal_id) }}">
+                    <input type="hidden" id="selectedPickupTime" name="pickup_time" value="">
                     <button type="submit" class="btn btn-success w-100 mt-3">Claim Meal</button>
                 </form>
                 <a href="/" class="btn btn-light w-100 mt-2">Back to Meals</a>
@@ -36,19 +75,30 @@
 
     <!-- Reviews Section -->
     {% if reviews %}
-    <div class="mt-5 w-100" style="max-width: 900px;">
-        <h4 class="text-center">Reviews</h4>
-        <ul class="list-group">
-            {% for review in reviews %}
-            <li class="list-group-item bg-dark text-white">
-                <p><strong>Score:</strong> {{ review.score }}</p>
-                <p>{{ review.comment }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+        <div class="mt-5 w-100" style="max-width: 900px;">
+            <h4 class="text-center">Reviews</h4>
+            <ul class="list-group">
+                {% for review in reviews %}
+                    <li class="list-group-item bg-dark text-white">
+                        <p><strong>Score:</strong> {{ review.score }}</p>
+                        <p>{{ review.comment }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     {% else %}
-    <p class="mt-5 text-center">No reviews available for this meal.</p>
+        <p class="mt-5 text-center">No reviews available for this meal.</p>
     {% endif %}
 </div>
+
+<script>
+    document.querySelectorAll('.dropdown-item').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const selectedTime = this.textContent;
+            document.getElementById('selectedPickupTime').value = selectedTime;
+            document.getElementById('pickupTimeButton').textContent = selectedTime;
+        });
+    });
+</script>
 {% endblock %}
