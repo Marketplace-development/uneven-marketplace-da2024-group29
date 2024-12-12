@@ -275,7 +275,7 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '50')  # Haal de afstand op (default 50 km)
+        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 50 km)
         
         try:
             distance_filter = float(distance_param)
