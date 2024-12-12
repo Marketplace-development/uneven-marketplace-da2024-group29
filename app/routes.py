@@ -416,14 +416,51 @@ def meal_details(meal_id):
     reviews = Review.query.filter_by(meal_id=meal_id).all()
     return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews)
 
-@main.route('/profile', methods=['GET'])
+@main.route('/profile', methods=['GET', 'POST'])
 def profile():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('main.login'))
 
     # Fetch the logged-in user's details
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        # Handle form submission to update user profile
+        username = request.form['username'].strip()
+        email = request.form['email'].strip()
+        street = request.form['street'].strip()
+        number = request.form['number'].strip()
+        zip_code = request.form['zip'].strip()
+        city = request.form['city'].strip()
+
+        # Validate required fields
+        if not all([username, email, street, number, zip_code, city]):
+            flash("All fields are required.", "danger")
+            return redirect(url_for('main.profile'))
+
+        # Optional: Add email format validation (basic example)
+        if "@" not in email or "." not in email:
+            flash("Invalid email format.", "danger")
+            return redirect(url_for('main.profile'))
+
+        try:
+            # Update user details
+            user.username = username
+            user.email = email
+            user.street = street
+            user.number = number
+            user.zip = zip_code
+            user.city = city
+
+            # Commit changes to the database
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred while updating your profile. Please try again.", "danger")
+
+        return redirect(url_for('main.profile'))
 
     # Fetch available meals for the logged-in user
     available_meals = Meal_offerings.query.filter_by(vendor_id=user_id, status="AVAILABLE").all()
@@ -454,7 +491,7 @@ def profile():
         for meal, vendor in claimed_meals
     ]
 
-    # Pass data to the template
+    # Render the profile template
     return render_template(
         'profile.html',
         user=user,

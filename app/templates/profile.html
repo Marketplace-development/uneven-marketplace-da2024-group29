@@ -56,44 +56,61 @@
             </div>
         </div>
     </nav>
+    
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+            <div>
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    </div>
+    
 
     <div class="container">
         <div class="section">
             <h2>Details</h2>
-            <form id="profile-details">
+            <form id="profile-details" method="POST" action="{{ url_for('main.profile') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username:</label>
-                    <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}">
+                    <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail:</label>
-                    <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}">
+                    <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="street" class="form-label">Street:</label>
-                    <input type="text" id="street" name="street" class="form-control" value="{{ user.street }}">
+                    <input type="text" id="street" name="street" class="form-control" value="{{ user.street }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="number" class="form-label">House Number:</label>
-                    <input type="text" id="number" name="number" class="form-control" value="{{ user.number }}">
+                    <input type="text" id="number" name="number" class="form-control" value="{{ user.number }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="zip" class="form-label">Zip Code:</label>
-                    <input type="text" id="zip" name="zip" class="form-control" value="{{ user.zip }}">
+                    <input type="text" id="zip" name="zip" class="form-control" value="{{ user.zip }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="city" class="form-label">City:</label>
-                    <input type="text" id="city" name="city" class="form-control" value="{{ user.city }}">
+                    <input type="text" id="city" name="city" class="form-control" value="{{ user.city }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="average-rating" class="form-label">Average Rating:</label>
                     <input type="text" id="average-rating" name="average_rating" class="form-control" value="{{ user.average_rating }}" readonly>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="saveProfileDetails()">Save</button>
+                <button type="submit" class="btn btn-primary">Save</button>
                 <button type="reset" class="btn btn-secondary">Cancel</button>
             </form>
         </div>
-
+    </div>
+    
         <div class="section">
             <h2>Available Meals</h2>
             <div id="available-meals" class="row">
