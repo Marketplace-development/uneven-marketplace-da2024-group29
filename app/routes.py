@@ -175,7 +175,7 @@ def login():
 @main.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)  # Verwijder de gebruiker uit de sessie
-    return redirect(url_for('main.login'))  # Na uitloggen, stuur naar de loginpagina
+    return redirect(url_for('main.about_us'))  # Na uitloggen, stuur naar de loginpagina
 
 
 @main.route('/base')
@@ -275,9 +275,7 @@ def add_meal():
         # Commit the meal record to the database
         db.session.add(new_meal)
         db.session.commit()
-
         
-
         # Flash a success message and redirect to the index page
         flash("Meal added successfully!", "success")
         return redirect(url_for('main.index'))
@@ -333,22 +331,6 @@ def index():
                         meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
                         filtered_meals.append(meal)
         
-        # Filteren op stad
-        # local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
-        # other_meals = [meal for meal in meal_offerings if User.city != city]  # Andere maaltijden
-        # meal_offerings_sorted = local_meals + other_meals  # Lokale maaltijden bovenaan
-
-        # Bereken de gemiddelde beoordeling voor maaltijden
-        # def get_average_rating(meal_id):
-            # reviews = Review.query.filter_by(meal_id=meal_id).all()
-            # if reviews:
-                # total_score = sum(review.score for review in reviews)
-                # return total_score / len(reviews)
-            # return 0
-
-        # Sorteer maaltijden op basis van beoordeling
-        # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
-
         return render_template('index.html', username=User.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
     else:
         return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
@@ -381,20 +363,6 @@ def claim_meal(meal_id):
     else:
         existing_customer.amount += 1
 
-    # if request.method == 'POST':
-        # Haal de geselecteerde pickup time op als string (bijv. "10:00 AM - 10:30 AM")
-        # pickup_time_str = request.form.get('pickup_time')
-        
-        # Veronderstel dat de geselecteerde tijd altijd het eerste tijdsblok is (bijv. "10:00 AM - 10:30 AM")
-        # Converteer de string naar een datetime object, bijvoorbeeld met een specifieke tijd
-        # pickup_time_str = pickup_time_str.split(" - ")[0]  # Neem de starttijd van het interval
-        # pickup_time = datetime.strptime(pickup_time_str, "%I:%M %p")
-
-        # Voeg de huidige datum toe aan de pickup tijd
-        # today = datetime.today()
-        # pickup_time = pickup_time.replace(year=today.year, month=today.month, day=today.day)
-
-
     transaction = Transaction(
         meal_id=meal_id,
         customer_id=user_id,
@@ -404,28 +372,9 @@ def claim_meal(meal_id):
     meal.status = "CLAIMED"
     db.session.add(transaction)
     db.session.commit()
-
     
     flash("Meal successfully claimed!", "success")
     return redirect(url_for('main.pick_up', meal_id=meal_id))
-
-# @main.route('/pick-up/<int:meal_id>', methods=['GET'])
-# def pick_up(meal_id):
-    # Haal de maaltijd op
-    # meal = Meal_offerings.query.get_or_404(meal_id)
-    
-    # Haal de vendor op die de maaltijd heeft aangeboden
-    # vendor = User.query.get(meal.vendor_id)
-    # if not vendor:
-        # flash("Vendor not found.", "error")
-        # return redirect(url_for('main.index'))
-    
-   # Haal de transactie en de pickup_time op
-    # transaction = Transaction.query.filter_by(meal_id=meal_id).first()
-    # pickup_time = transaction.pickup_time 
-
-    # Geef de pickup_time, maaltijd en vendor door aan de template
-    # return render_template('6.Pick_Up.html', meal=meal, vendor=vendor, pickup_time=pickup_time)
 
 @main.route('/meal/<int:meal_id>', methods=['GET', 'POST'])
 def meal_details(meal_id):
@@ -443,6 +392,8 @@ def profile():
 
     # Fetch the logged-in user's details
     user = User.query.get_or_404(user_id)
+    vendor = Vendor.query.filter_by(vendor_id=user_id).first()
+    average_rating = round(vendor.average_rating, 2) if vendor and vendor.average_rating else None
 
     if request.method == 'POST':
         # Handle form submission to update user profile
@@ -481,10 +432,8 @@ def profile():
 
         return redirect(url_for('main.profile'))
 
-    # Fetch available meals for the logged-in user
-    available_meals = Meal_offerings.query.filter_by(vendor_id=user_id, status="AVAILABLE").all()
 
-    # Fetch shared meals for the logged-in user
+    # Fetch shared meals for the logged-in user (status available and claimed)
     shared_meals = Meal_offerings.query.filter_by(vendor_id=user_id).filter(Meal_offerings.status != "AVAILABLE").all()
 
     # Fetch claimed meals for the logged-in user
@@ -516,12 +465,10 @@ def profile():
     return render_template(
         'profile.html',
         user=user,
-        available_meals=available_meals,
         shared_meals=shared_meals,
-        claimed_meals=claimed_meals_data
+        claimed_meals=claimed_meals_data,
+        average_rating=average_rating
     )
-
-
 
 @main.route('/rate-vendor/<int:vendor_id>', methods=['POST'])
 def rate_vendor(vendor_id):

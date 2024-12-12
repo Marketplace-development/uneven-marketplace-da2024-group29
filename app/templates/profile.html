@@ -47,12 +47,12 @@
                         <a class="nav-link" href="/add-meal">Share Meal</a>
                     </li>
                 </ul>
-                <form class="d-flex">
+                <div class="d-flex">
                     <a href="/profile" class="btn btn-outline-success me-2">My Profile</a>
-                    <form action="{{ url_for('main.logout') }}" method="POST">
+                    <form action="{{ url_for('main.logout') }}" method="POST" style="margin: 0;">
                         <button type="submit" class="btn btn-danger">Log Out</button>
                     </form>
-                </form>
+                </div>
             </div>
         </div>
     </nav>
