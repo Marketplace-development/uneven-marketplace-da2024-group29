@@ -50,6 +50,7 @@
                             <h5 class="card-title">{{ listing.name }}</h5>
                             <p class="card-text">{{ listing.description or 'No description available.' }}</p>
                             <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
+                            <p class="card-text"><strong>Distance:</strong> {{ listing.distance }} km</p> <!-- Display Distance -->
                             <div class="mt-auto">
                                 <a href="{{ url_for('main.meal_details', meal_id=listing.meal_id) }}" class="btn btn-primary w-100">View Meal</a>
                             </div>
