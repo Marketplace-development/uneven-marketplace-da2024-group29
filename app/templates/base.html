@@ -86,6 +86,9 @@
             <div class="navbar-center">
                 <a href="/" class="btn btn-custom">Meals</a>
                 <a href="/add-meal" class="btn btn-custom">Share Meal</a>
+                <!-- About Us Button -->
+                <a href="{{ url_for('main.about_us') }}" class="btn btn-custom">About Us</a>
+            </div>
             </div>
             <!-- Log Out Button -->
             <form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
