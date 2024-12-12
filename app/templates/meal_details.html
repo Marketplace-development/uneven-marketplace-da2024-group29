@@ -29,7 +29,7 @@
                     {% endif %}
                 </p>
                 <p><strong>Vendor Address:</strong> {{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
-                <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%d-%m-%Y at %H:%M') }}</p>
             
 
                 <!-- Claim Meal Button -->
