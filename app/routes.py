@@ -331,7 +331,7 @@ def index():
         # Sorteer maaltijden op basis van beoordeling
         # meal_offerings_sorted = sorted(meal_offerings_sorted, key=lambda Meal_offerings: get_average_rating(Meal_offerings.meal_id), reverse=True)
 
-        return render_template('index.html', username=User.username, listings=filtered_meals)
+        return render_template('index.html', username=User.username, listings=filtered_meals, user=user)
     else:
         return redirect(url_for('main.login'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
 

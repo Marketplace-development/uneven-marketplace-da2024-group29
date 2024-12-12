@@ -42,7 +42,7 @@
     <!-- Display Meals -->
     <div class="row justify-content-start">
         {% for listing in listings %}
-            {% if listing.status == "AVAILABLE" %}
+        {% if listing.status == "AVAILABLE" and listing.vendor_id != user.user_id %}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ listing.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ listing.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
