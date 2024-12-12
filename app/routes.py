@@ -275,15 +275,17 @@ def index():
         latitude = user.latitude  # De breedtegraad van de gebruiker
         longitude = user.longitude  # De lengtegraad van de gebruiker
         cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_filter = request.args.get('distance', 50)  # Haal de afstand op (default 50 km)
-
+        distance_param = request.args.get('distance', '50')  # Haal de afstand op (default 50 km)
+        
+        try:
+            distance_filter = float(distance_param)
+        except ValueError:
+            distance_filter = 50.0
         
         # Haal alle maaltijden (MealOffering) op en filteren op cuisine
         meal_offerings = Meal_offerings.query.all()
 
-        # Query alleen maaltijden met status 'AVAILABLE'
-        query = Meal_offerings.query.filter_by(status='AVAILABLE')
-
+        # Filteren op cuisine
         if cuisine_filter != 'ALL':
             try:
                 selected_cuisine = CuisineType(cuisine_filter)  # Converteer naar enum
@@ -296,13 +298,22 @@ def index():
                 meal_offerings = []
 
     
+        # Filteren op afstand
         filtered_meals = []
         for meal in meal_offerings:
             vendor = User.query.get(meal.vendor_id)
             if vendor:
-                distance = calculate_distance(latitude, longitude, vendor.latitude, vendor.longitude)
-                if distance <= float(distance_filter):  # Filteren op de ingestelde afstand
-                    filtered_meals.append(meal)
+                # Combineer de adresvelden van de vendor om het volledige adres te krijgen
+                vendor_address = f"{vendor.street} {vendor.number}, {vendor.zip} {vendor.city}"
+                # Verkrijg de coördinaten van de vendor
+                lat, lon = get_coordinates(vendor_address)
+                if lat and lon:
+                    # Bereken de afstand tussen de gebruiker en de vendor
+                    distance = calculate_distance(latitude, longitude, lat, lon)
+                    if distance <= float(distance_filter):  # Filteren op de ingestelde afstand
+                        # Voeg de berekende afstand toe aan de maaltijdgegevens
+                        meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
+                        filtered_meals.append(meal)
         
         # Filteren op stad
         # local_meals = [meal for meal in meal_offerings if User.city == city]  # Lokale maaltijden
