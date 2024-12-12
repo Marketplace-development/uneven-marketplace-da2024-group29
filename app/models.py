@@ -80,8 +80,10 @@ class Meal_offerings(db.Model):
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String, nullable=False, default='AVAILABLE') #standaard is available
+    pickup = db.Column(db.String, nullable=True)
     vendor = db.relationship('Vendor', backref='Meal_offerings')
-    expiry_date = db.Column(db.Date, nullable=True)
+    
+    # expiry_date = db.Column(db.Date, nullable=True)
     #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('Meal_offerings', lazy=True))
     #Deze lijn hierboven nog niet nodig? Want we gebruiken assocation en category nog niet
 
@@ -93,7 +95,7 @@ class Transaction(db.Model):
     meal_id = db.Column(db.Integer, db.ForeignKey('Meal_offerings.meal_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('Customers.customer_id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
-    pickup_time = db.Column(db.DateTime, nullable=True)
+    # pickup_time = db.Column(db.DateTime, nullable=True)
     
 
     meal = db.relationship('Meal_offerings', backref='transactions') #bij relationship moet je naar python-klasse verwijzen en bij backref ook en NIET naar de tabelnaam in supabase

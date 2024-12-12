@@ -199,7 +199,8 @@ def add_meal():
         description = request.form['description']
         picture = request.files.get('picture')
         cuisine = request.form['cuisine']
-        expiry_date_str = request.form.get('expiry_date') 
+        pickup = request.form['pickup']
+        # expiry_date_str = request.form.get('expiry_date') 
 
         # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
@@ -250,7 +251,8 @@ def add_meal():
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
             cuisine=CuisineType[cuisine],
-            expiry_date = expiry_date
+            pickup=pickup
+            # expiry_date = expiry_date
         )
 
         # Commit the meal record to the database
@@ -363,25 +365,25 @@ def claim_meal(meal_id):
     else:
         existing_customer.amount += 1
 
-    if request.method == 'POST':
+    # if request.method == 'POST':
         # Haal de geselecteerde pickup time op als string (bijv. "10:00 AM - 10:30 AM")
-        pickup_time_str = request.form.get('pickup_time')
+        # pickup_time_str = request.form.get('pickup_time')
         
         # Veronderstel dat de geselecteerde tijd altijd het eerste tijdsblok is (bijv. "10:00 AM - 10:30 AM")
         # Converteer de string naar een datetime object, bijvoorbeeld met een specifieke tijd
-        pickup_time_str = pickup_time_str.split(" - ")[0]  # Neem de starttijd van het interval
-        pickup_time = datetime.strptime(pickup_time_str, "%I:%M %p")
+        # pickup_time_str = pickup_time_str.split(" - ")[0]  # Neem de starttijd van het interval
+        # pickup_time = datetime.strptime(pickup_time_str, "%I:%M %p")
 
         # Voeg de huidige datum toe aan de pickup tijd
-        today = datetime.today()
-        pickup_time = pickup_time.replace(year=today.year, month=today.month, day=today.day)
+        # today = datetime.today()
+        # pickup_time = pickup_time.replace(year=today.year, month=today.month, day=today.day)
 
 
     transaction = Transaction(
         meal_id=meal_id,
         customer_id=user_id,
-        vendor_id=meal.vendor_id,
-        pickup_time=pickup_time
+        vendor_id=meal.vendor_id
+        # pickup_time=pickup_time
         )
     meal.status = "CLAIMED"
     db.session.add(transaction)
@@ -391,23 +393,23 @@ def claim_meal(meal_id):
     flash("Meal successfully claimed!", "success")
     return redirect(url_for('main.pick_up', meal_id=meal_id))
 
-@main.route('/pick-up/<int:meal_id>', methods=['GET'])
-def pick_up(meal_id):
+# @main.route('/pick-up/<int:meal_id>', methods=['GET'])
+# def pick_up(meal_id):
     # Haal de maaltijd op
-    meal = Meal_offerings.query.get_or_404(meal_id)
+    # meal = Meal_offerings.query.get_or_404(meal_id)
     
     # Haal de vendor op die de maaltijd heeft aangeboden
-    vendor = User.query.get(meal.vendor_id)
-    if not vendor:
-        flash("Vendor not found.", "error")
-        return redirect(url_for('main.index'))
+    # vendor = User.query.get(meal.vendor_id)
+    # if not vendor:
+        # flash("Vendor not found.", "error")
+        # return redirect(url_for('main.index'))
     
    # Haal de transactie en de pickup_time op
-    transaction = Transaction.query.filter_by(meal_id=meal_id).first()
-    pickup_time = transaction.pickup_time 
+    # transaction = Transaction.query.filter_by(meal_id=meal_id).first()
+    # pickup_time = transaction.pickup_time 
 
     # Geef de pickup_time, maaltijd en vendor door aan de template
-    return render_template('6.Pick_Up.html', meal=meal, vendor=vendor, pickup_time=pickup_time)
+    # return render_template('6.Pick_Up.html', meal=meal, vendor=vendor, pickup_time=pickup_time)
 
 @main.route('/meal/<int:meal_id>', methods=['GET', 'POST'])
 def meal_details(meal_id):
