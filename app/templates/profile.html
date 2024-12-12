@@ -145,9 +145,14 @@
     </div>
     
     
-     <div class="container">
-        <div class="section">
-            <h2>Details</h2>
+    <div class="section">
+        <h2 class="d-flex align-items-center justify-content-between">
+            <span>Details</span>
+            <button class="btn btn-link text-decoration-none" style="font-size: 1.5rem;" data-bs-toggle="collapse" data-bs-target="#details-collapse" aria-expanded="false" aria-controls="details-collapse">
+                <i id="details-arrow-icon" class="bi bi-chevron-down"></i>
+            </button>
+        </h2>
+        <div id="details-collapse" class="collapse">
             <p class="mb-3" style="display: inline-block;">
                 <strong>My Average Rating:</strong> 
                 <span>{{ average_rating ~ ' ⭐' if average_rating else 'No ratings yet ⭐' }}</span>
@@ -183,6 +188,8 @@
             </form>
         </div>
     </div>
+       
+        
         
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
