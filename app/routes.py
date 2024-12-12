@@ -431,8 +431,9 @@ def claim_meal(meal_id):
 def meal_details(meal_id):
     meal = Meal_offerings.query.get_or_404(meal_id)
     vendor = User.query.get(meal.vendor_id)
-    reviews = Review.query.filter_by(meal_id=meal_id).all()
-    return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews)
+    reviews = Review.query.filter_by(meal_id=meal_id).first()
+    average_rating = Vendor.query.get(meal.vendor_id).average_rating
+    return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews,  average_rating=average_rating)
 
 @main.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -487,7 +488,7 @@ def profile():
     shared_meals = Meal_offerings.query.filter_by(vendor_id=user_id).filter(Meal_offerings.status != "AVAILABLE").all()
 
     # Fetch claimed meals for the logged-in user
-    claimed_meals = db.session.query(Meal_offerings, Vendor).join(
+    claimed_meals = db.session.query(Meal_offerings, Vendor, Transaction).join(
         Transaction, Transaction.meal_id == Meal_offerings.meal_id
     ).join(
         Vendor, Vendor.vendor_id == Meal_offerings.vendor_id
@@ -505,8 +506,10 @@ def profile():
             "picture": meal.picture,
             "vendor_name": User.query.get(vendor.vendor_id).username,  # Fetch vendor's username
             "vendor_id": vendor.vendor_id,
+            "claimed_date": transaction.created_at if transaction else None,
+            "review": Review.query.filter_by(meal_id=meal.meal_id).first()
         }
-        for meal, vendor in claimed_meals
+        for meal, vendor, transaction in claimed_meals
     ]
 
     # Render the profile template
@@ -528,29 +531,30 @@ def rate_vendor(vendor_id):
         return redirect(url_for('main.login'))
 
     # Retrieve the rating and meal_id from the form
-    try:
-        rating = int(request.form['rating'])
-        meal_id = int(request.form['meal_id'])  # Ensure meal_id is retrieved from the form
-        if rating < 0 or rating > 5:
-            flash('Rating must be between 0 and 5.', 'error')
-            return redirect(url_for('main.profile'))
-    except (ValueError, KeyError):
-        flash('Invalid input. Please enter a valid rating and meal ID.', 'error')
+    rating = int(request.form['rating'])
+    meal_id = int(request.form['meal_id'])  
+    if rating < 0 or rating > 5:
+        flash('Rating must be between 0 and 5.', 'error')
         return redirect(url_for('main.profile'))
-
+    
+    existing_review = Review.query.filter_by(meal_id=meal_id).first()
+    if existing_review:
+        flash(f'Given rating: {existing_review.score}', 'info')
+        return redirect(url_for('main.profile'))
+    
     # Save the rating
     review = Review(vendor_id=vendor_id, customer_id=user_id, meal_id=meal_id, score=rating)
     db.session.add(review)
 
     # Update the vendor's average rating
-    reviews = Review.query.filter_by(vendor_id=vendor_id).all()
-    vendor = Vendor.query.get(vendor_id)
-    if vendor:
-        vendor_average_rating = sum(r.score for r in reviews) / len(reviews)
-        vendor.average_rating = vendor_average_rating  # Update average rating directly in Vendor
+    vendor_reviews = Review.query.filter_by(vendor_id=vendor_id).all()
+    if vendor_reviews:
+        average_rating = sum(r.score for r in vendor_reviews) / len(vendor_reviews)
+        vendor = Vendor.query.get(vendor_id)
+        vendor.average_rating = average_rating
 
     db.session.commit()
-    flash('Rating submitted successfully!', 'success')
+    flash(f'Rating submitted successfully! Given rating: {rating}', 'success')
     return redirect(url_for('main.profile'))
 
 

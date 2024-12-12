@@ -21,10 +21,16 @@
                 <h3 class="mb-3">{{ meal.name }}</h3>
                 <p><strong>Description:</strong> {{ meal.description or 'No description available.' }}</p>
                 <p><strong>Cuisine:</strong> {{ meal.cuisine.value }}</p>
+                <p><strong>Vendor:</strong> {{ vendor.username }}
+                    {% if average_rating %}
+                        ({{ "%.2f"|format(average_rating) }} ⭐)
+                    {% else %}
+                        (No ratings yet)
+                    {% endif %}
+                </p>
                 <p><strong>Vendor Address:</strong> {{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
                 <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                <p><strong>Expiry Date:</strong> {{ meal.expiry_date.strftime('%d-%m-%Y') if meal.expiry_date else 'Not specified' }}</p>
-
+            
 
                 <!-- Claim Meal Button -->
                 <form method="POST" action="{{ url_for('main.claim_meal', meal_id=meal.meal_id) }}">
