@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, Float
+from sqlalchemy import func, Float, Date, Time
 import enum
 from datetime import datetime
 
@@ -80,7 +80,8 @@ class Meal_offerings(db.Model):
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String, nullable=False, default='AVAILABLE') #standaard is available
-    pickup = db.Column(db.String, nullable=True)
+    pickup_date = db.Column(Date, nullable=True)
+    pickup_time = db.Column(Time, nullable=True)
     vendor = db.relationship('Vendor', backref='Meal_offerings')
     
     # expiry_date = db.Column(db.Date, nullable=True)

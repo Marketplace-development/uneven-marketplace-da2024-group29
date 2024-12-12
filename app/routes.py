@@ -199,12 +199,13 @@ def add_meal():
         description = request.form['description']
         picture = request.files.get('picture')
         cuisine = request.form['cuisine']
-        pickup = request.form['pickup']
+        pickup_date = request.form.get('pickup_date')
+        pickup_time = request.form.get('pickup_time')
         # expiry_date_str = request.form.get('expiry_date') 
 
         # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
-            flash("Meal name and cuisine type are required!", "error")
+            flash("Fill in required fields!", "error")
             return redirect(url_for('main.add_meal'))
         
         if not user_id:
@@ -237,13 +238,13 @@ def add_meal():
             db.session.add(vendor)
             db.session.commit()
         
-        expiry_date = None
-        if expiry_date_str:
-            try:
-                expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                flash("Invalid date format for expiry date.", "error")
-                return redirect(url_for('main.add_meal'))
+        # expiry_date = None
+        # if expiry_date_str:
+            # try:
+                # expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+            # except ValueError:
+                # flash("Invalid date format for expiry date.", "error")
+                # return redirect(url_for('main.add_meal'))
         # Create the new meal record in the database
         new_meal = Meal_offerings(
             name=name,
@@ -251,7 +252,8 @@ def add_meal():
             picture=picture_url,  # Store the URL or file path to the uploaded image
             vendor_id=user_id,
             cuisine=CuisineType[cuisine],
-            pickup=pickup
+            pickup_time = pickup_time,
+            pickup_date = pickup_date
             # expiry_date = expiry_date
         )
 
