@@ -88,8 +88,9 @@
                 <a href="/add-meal" class="btn btn-custom">Share Meal</a>
             </div>
             <!-- Log Out Button -->
-            <form action="{{ url_for('main.logout') }}" method="POST" class="ms-auto">
-                <button type="submit" class="btn-custom logout-btn">Log Out</button>
+            <form class="ms-auto">
+                <a href="/profile" class="btn btn-custom btn-outline-success">My Profile</a>
+                <button type="submit" class="btn btn-danger">Log Out</button>
             </form>
         </div>
     </nav>

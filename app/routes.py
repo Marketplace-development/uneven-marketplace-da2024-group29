@@ -389,3 +389,75 @@ def meal_details(meal_id):
     vendor = User.query.get(meal.vendor_id)
     reviews = Review.query.filter_by(meal_id=meal_id).all()
     return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews)
+
+@main.route('/profile', methods=['GET'])
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('main.login'))
+
+    # Fetch the logged-in user's details
+    user = User.query.get(user_id)
+
+    # Fetch available meals for the logged-in user
+    available_meals = Meal_offerings.query.filter_by(vendor_id=user_id, status="AVAILABLE").all()
+
+    # Fetch shared meals for the logged-in user
+    shared_meals = Meal_offerings.query.filter_by(vendor_id=user_id).filter(Meal_offerings.status != "AVAILABLE").all()
+
+    # Fetch claimed meals for the logged-in user
+    claimed_meals = db.session.query(Meal_offerings, Vendor).join(
+        Transaction, Transaction.meal_id == Meal_offerings.meal_id
+    ).join(
+        Vendor, Vendor.vendor_id == Meal_offerings.vendor_id
+    ).filter(
+        Transaction.customer_id == user_id,
+        Meal_offerings.status == "CLAIMED"
+    ).all()
+
+    # Prepare data for claimed meals
+    claimed_meals_data = [
+        {
+            "id": meal.meal_id,
+            "name": meal.name,
+            "description": meal.description,
+            "picture": meal.picture,
+            "vendor_name": User.query.get(vendor.vendor_id).username,  # Fetch vendor's username
+            "vendor_id": vendor.vendor_id,
+        }
+        for meal, vendor in claimed_meals
+    ]
+
+    # Pass data to the template
+    return render_template(
+        'profile.html',
+        user=user,
+        available_meals=available_meals,
+        shared_meals=shared_meals,
+        claimed_meals=claimed_meals_data
+    )
+
+
+
+@main.route('/rate-vendor/<int:vendor_id>', methods=['POST'])
+def rate_vendor(vendor_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('You must be logged in to rate vendors.', 'error')
+        return redirect(url_for('main.login'))
+
+    rating = int(request.form['rating'])
+
+    # Save the rating
+    review = Review(vendor_id=vendor_id, customer_id=user_id, score=rating)
+    db.session.add(review)
+
+    # Update the vendor's average rating
+    reviews = Review.query.filter_by(vendor_id=vendor_id).all()
+    vendor = Vendor.query.get(vendor_id)
+    vendor.user.average_rating = sum(r.score for r in reviews) / len(reviews)  # Assuming `User` has average_rating
+
+    db.session.commit()
+    flash('Rating submitted successfully!', 'success')
+    return redirect(url_for('main.profile'))
+
