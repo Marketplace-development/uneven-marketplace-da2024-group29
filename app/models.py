@@ -61,7 +61,7 @@ class Customer(db.Model):
 class Vendor(db.Model):
     __tablename__ = 'Vendors'
     vendor_id = db.Column(db.Integer, primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
-    
+    average_rating = db.Column(db.Float, default=0.0)
     __mapper_args__ = {
         'polymorphic_identity': 'vendor'
     }

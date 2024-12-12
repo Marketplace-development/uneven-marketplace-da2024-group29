@@ -160,20 +160,12 @@
                             <p class="card-text"><strong>Vendor:</strong> {{ meal.vendor_name }}</p>
                             <p class="card-text">{{ meal.description }}</p>
         
-                            <!-- Pizza Rating -->
-                            <div class="pizza-rating" data-meal-id="{{ meal.id }}">
-                                <label>Rate Vendor:</label>
-                                <div class="d-flex">
-                                    <span class="pizza" data-value="1">🍕</span>
-                                    <span class="pizza" data-value="2">🍕</span>
-                                    <span class="pizza" data-value="3">🍕</span>
-                                    <span class="pizza" data-value="4">🍕</span>
-                                    <span class="pizza" data-value="5">🍕</span>
-                                </div>
-                            </div>
-                            <form method="POST" action="/rate-vendor/{{ meal.vendor_id }}" class="mt-2">
-                                <input type="hidden" name="rating" id="rating-input-{{ meal.id }}" value="0">
-                                <button type="submit" class="btn btn-primary w-100">Give Rating</button>
+                            <!-- Form for submitting a rating -->
+                            <form method="POST" action="/rate-vendor/{{ meal.vendor_id }}" class="mt-3">
+                                <input type="hidden" name="meal_id" value="{{ meal.id }}">
+                                <label for="rating-{{ meal.id }}">How many stars (max. 5)?</label>
+                                <input type="number" id="rating-{{ meal.id }}" name="rating" class="form-control" min="0" max="5" required>
+                                <button type="submit" class="btn btn-primary mt-2">Submit Rating</button>
                             </form>
                         </div>
                     </div>
@@ -181,7 +173,8 @@
                 {% endfor %}
             </div>
         </div>
-
+        
+  
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const pizzas = document.querySelectorAll('.pizza');
