@@ -59,36 +59,35 @@ def get_coordinates(address):
 
 
 
-def calculate_distance(lat1, lon1, lat2, lon2):
+def get_distances(origin, destinations, api_key):
     """
-    Bereken de afstand in kilometers tussen twee geografische punten.
+    Roept de Google Distance Matrix API aan om afstanden tussen een oorsprong en bestemmingen te berekenen.
+    :param origin: String, coördinaten van de oorsprong in de vorm "lat,lng".
+    :param destinations: Lijst van strings, elk in de vorm "lat,lng".
+    :param api_key: Je Google API-sleutel.
+    :return: Lijst van afstanden (in meters) of None als er een fout is.
     """
-    R = 6371  # Aarde straal in kilometers
+    destinations_str = '|'.join(destinations)  # Combineer alle bestemmingen in een string
+    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origin)}&destinations={quote(destinations_str)}&key={api_key}"
+    
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"API request failed: {response.status_code}")
+        return None
 
-    if lat2 is None or lon2 is None:
-    # Stel bijvoorbeeld een standaardlocatie in of sla het proces over
-        lat2, lon2 = 51.04849945776606, 3.7287827734729975 #coordinaten de crook
+    data = response.json()
+    if data.get("status") != "OK":
+        print(f"API error: {data.get('error_message', 'Unknown error')}")
+        return None
 
-    # Controleer of geen van de coördinaten None is
-    if None not in [lat1, lon1, lat2, lon2]:
-        # Als alle coördinaten geldig zijn, converteer ze naar radians
-        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-    else:
-        # Log de waarde van de coördinaten voor debugging
-        print(f"Fout: Ongeldige coördinaten - lat1: {lat1}, lon1: {lon1}, lat2: {lat2}, lon2: {lon2}")
-        raise ValueError(f"Een van de coördinaten is ongeldig (None): lat1={lat1}, lon1={lon1}, lat2={lat2}, lon2={lon2}.")
-
-    # Bereken de verschillen in breedte- en lengtegraad
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-
-    # Bereken de afstand met de Haversine-formule
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-    # Bereken de uiteindelijke afstand
-    distance = R * c
-    return distance
+    distances = []
+    for row in data.get('rows', []):
+        for element in row.get('elements', []):
+            if element.get('status') == 'OK':
+                distances.append(element['distance']['value'])  # Afstand in meters
+            else:
+                distances.append(None)
+    return distances
 
 
 
@@ -290,62 +289,53 @@ def add_meal():
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
-        city = user.city  # Haal de stad van de ingelogde gebruiker op
-        latitude = user.latitude  # De breedtegraad van de gebruiker
-        longitude = user.longitude  # De lengtegraad van de gebruiker
-        cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 1000000)
-
+        origin = f"{user.latitude},{user.longitude}"  # Gebruiker's coördinaten als oorsprong
+        cuisine_filter = request.args.get('cuisine', 'ALL')
+        distance_param = request.args.get('distance', '1000000')
+        
         try:
             distance_filter = float(distance_param)
         except ValueError:
             distance_filter = 1000000.0
-        
-        # Haal alle maaltijden (MealOffering) op
+
         meal_offerings = Meal_offerings.query.filter_by(status='AVAILABLE').all()
 
-        # Sorteer maaltijden op datum en eindtijd
-        meal_offerings.sort(
-            key=lambda meal: (
-                meal.pickup_date or date.max,
-                meal.pickup_end_time or time.max
-            )
-        )
-
-
-        # Filteren op cuisine
+        # Filter op cuisine
         if cuisine_filter != 'ALL':
             try:
-                selected_cuisine = CuisineType(cuisine_filter)  # Converteer naar enum
+                selected_cuisine = CuisineType(cuisine_filter)
                 meal_offerings = [
                     meal for meal in meal_offerings if meal.cuisine == selected_cuisine
                 ]
             except KeyError:
-                # Ongeldig cuisine_filter (fallback naar geen resultaten)
                 meal_offerings = []
 
-        # Filteren op afstand
-        filtered_meals = []
+        # Bereid bestemmingen voor (alle vendor-adressen)
+        destinations = []
+        vendor_mapping = {}
         for meal in meal_offerings:
             vendor = User.query.get(meal.vendor_id)
             if vendor:
-                # Combineer de adresvelden van de vendor om het volledige adres te krijgen
-                vendor_address = f"{vendor.street} {vendor.number}, {vendor.zip} {vendor.city}"
-                # Verkrijg de coördinaten van de vendor
-                lat, lon = get_coordinates(vendor_address)
-                if lat and lon:
-                    # Bereken de afstand tussen de gebruiker en de vendor
-                    distance = calculate_distance(latitude, longitude, lat, lon)
-                    if distance <= distance_filter:  # Filteren op de ingestelde afstand
-                        meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
-                        filtered_meals.append(meal)
+                vendor_coords = f"{vendor.latitude},{vendor.longitude}"
+                destinations.append(vendor_coords)
+                vendor_mapping[vendor_coords] = meal
+
+        # Gebruik Distance Matrix API om afstanden te berekenen
+        api_key = 'AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw'
+        distances = get_distances(origin, destinations, api_key)
+
+        # Filter op afstand
+        filtered_meals = []
+        if distances:
+            for distance, coords in zip(distances, destinations):
+                if distance and distance / 1000 <= distance_filter:  # Converteer naar kilometers
+                    meal = vendor_mapping[coords]
+                    meal.distance = round(distance / 1000, 2)  # Converteer naar kilometers en afronden
+                    filtered_meals.append(meal)
 
         return render_template('index.html', username=user.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
     else:
-        return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
-
-
-
+        return redirect(url_for('main.about_us'))
 
 
 
