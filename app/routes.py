@@ -300,6 +300,13 @@ def index():
 
         meal_offerings = Meal_offerings.query.filter_by(status='AVAILABLE').all()
 
+        meal_offerings.sort(
+            key=lambda meal: (
+                meal.pickup_date or date.max,
+                meal.pickup_end_time or time.max
+            )
+        )
+
         # Filter op cuisine
         if cuisine_filter != 'ALL':
             try:
