@@ -90,11 +90,17 @@
                 <a href="{{ url_for('main.about_us') }}" class="btn btn-custom">About Us</a>
             </div>
             </div>
-            <!-- Log Out Button -->
-            <form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
-                <a href="{{ url_for('main.profile') }}" class="btn btn-custom btn-outline-success">My Profile</a>
-                <button type="submit" class="btn btn-danger">Log Out</button>
-            </form>            
+
+            <!-- Log Out Button And My Profile Button -->
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('main.profile') }}" class="btn btn-outline-success me-2">My Profile</a>
+                <form action="{{ url_for('main.logout') }}" method="POST" class="m-0">
+                    <button type="submit" class="btn btn-danger">Log Out</button>
+                </form>
+            </div>
+
+
+   
         </div>
     </nav>
 
