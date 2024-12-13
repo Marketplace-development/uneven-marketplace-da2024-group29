@@ -121,6 +121,12 @@ def register():
         # Coördinaten ophalen via de Google Maps API
         latitude, longitude = get_coordinates(full_address)
 
+        if latitude is None or longitude is None:
+            # Flashmelding als het adres niet gevonden kan worden
+            flash("Address not found. Please check the address and try again.")
+            # Zorg ervoor dat de rest van de velden behouden blijven, behalve het adres
+            return render_template('2. Signup.html', username=username, email=email, street=street, number=number, zip=zip, city=city)
+
         latitude = latitude if latitude is not None else 0.0
         longitude = longitude if longitude is not None else 0.0
 
