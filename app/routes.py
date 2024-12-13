@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash, current_app
-from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction #, TransactionStatus
+from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction, MealStatus #, TransactionStatus
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
@@ -88,6 +88,23 @@ def get_distances(origin, destinations, api_key):
             else:
                 distances.append(None)
     return distances
+
+
+
+def mark_expired_meals():
+    """
+    Controleer alle maaltijden en markeer degenen die zijn verlopen als EXPIRED.
+    """
+    # Haal alle maaltijden op met status AVAILABLE
+    available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
+    print(f"DEBUG - Available Meals: {len(available_meals)}")
+
+    for meal in available_meals:
+        print(f"DEBUG - Checking Meal ID: {meal.meal_id}, Name: {meal.name}")
+        meal.mark_as_expired()
+
+    # Sla de wijzigingen op in de database
+    db.session.commit()
 
 
 
@@ -290,11 +307,20 @@ def add_meal():
     return render_template('4.Meal_Creation.html', cuisines=CuisineType)
 
 
+
 # Begin van algoritme filteren op keuken/stad/beoordeling (sorteert standaard op kortste ophaaldatum)
 @main.route('/', methods=['GET', 'POST'])
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
+
+        # Markeer vervallen maaltijden
+        mark_expired_meals()
+        
+        # Haal beschikbare maaltijden op
+        meal_offerings = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
+        print(f"DEBUG - Available Meals after marking expired: {len(meal_offerings)}")
+
         origin = f"{user.latitude},{user.longitude}"  # Gebruiker's coördinaten als oorsprong
         cuisine_filter = request.args.get('cuisine', 'ALL')
         distance_param = request.args.get('distance', '1000000')

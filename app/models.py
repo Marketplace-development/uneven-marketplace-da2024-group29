@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, Float, Date, Time
 import enum
+from enum import Enum
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -19,6 +20,13 @@ class CuisineType(enum.Enum):
     SPANISH = "Spanish"
     AMERICAN = "American"
     OTHER = "Other"
+
+
+
+class MealStatus(Enum):
+    AVAILABLE = "AVAILABLE"
+    CLAIMED = "CLAIMED"
+    EXPIRED = "EXPIRED"
 
 
 class User(db.Model):
@@ -79,11 +87,28 @@ class Meal_offerings(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('Vendors.vendor_id'), nullable=False)
     cuisine = db.Column(db.Enum(CuisineType), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String, nullable=False, default='AVAILABLE') #standaard is available
+    status = db.Column(db.Enum(MealStatus), nullable=False, default=MealStatus.AVAILABLE)
     pickup_date = db.Column(Date, nullable=True)
     pickup_start_time = db.Column(Time, nullable=True)
     pickup_end_time = db.Column(Time, nullable=True)
     vendor = db.relationship('Vendor', backref='Meal_offerings')
+
+    def mark_as_expired(self):
+        """
+        Markeer de maaltijd als EXPIRED als de huidige datum en tijd het ophalen hebben overschreden.
+        """
+        now = datetime.utcnow().date()
+        current_time = datetime.utcnow().time()
+
+        print(f"DEBUG - Current Date: {now}, Current Time: {current_time}")
+        print(f"DEBUG - Pickup Date: {self.pickup_date}, Pickup End Time: {self.pickup_end_time}")
+
+        # Controleer of zowel pickup_date als pickup_end_time geldig zijn
+        if self.pickup_date:
+            if self.pickup_date < now:
+                self.status = MealStatus.EXPIRED
+            elif self.pickup_date == now and self.pickup_end_time and self.pickup_end_time < current_time:
+                self.status = MealStatus.EXPIRED
     
     # expiry_date = db.Column(db.Date, nullable=True)
     #categories = db.relationship('Category', secondary='meal_category_association', backref=db.backref('Meal_offerings', lazy=True))
