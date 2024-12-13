@@ -30,6 +30,13 @@
                 </p>
                 <p><strong>Vendor Address:</strong> {{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
                 <p><strong>Posted On:</strong> {{ meal.created_at.strftime('%d-%m-%Y at %H:%M') }}</p>
+
+                <!-- Pick-up details -->
+                {% if meal.pickup_date and meal.pickup_start_time and meal.pickup_end_time %}
+                    <p><strong>Pick-up:</strong> Available for pick-up on {{ meal.pickup_date }} between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}.</p>
+                {% else %}
+                    <p><strong>Pick-up:</strong> Details not available</p>
+                {% endif %}
             
 
                 <!-- Claim Meal Button -->

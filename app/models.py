@@ -39,7 +39,7 @@ class User(db.Model):
 
     __mapper_args__ = {
         'polymorphic_on': type,
-        'polymorphic_identity': 'user' }
+        'polymorphic_identity': 'user' } # de polymorphic_on laat gebruikers verschillende rollen hebben
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -51,7 +51,7 @@ class Customer(db.Model):
  
 
     __mapper_args__ = {
-        'polymorphic_identity': 'customer'
+        'polymorphic_identity': 'customer'  # de klasse is specifiek voor klanten
     }
 
     def __repr__(self):
@@ -63,7 +63,7 @@ class Vendor(db.Model):
     vendor_id = db.Column(db.Integer, primary_key=True)  # verwzijen naar User-tabel  @ heeft dezelfde waarde als UserID
     average_rating = db.Column(db.Float, default=0.0)
     __mapper_args__ = {
-        'polymorphic_identity': 'vendor'
+        'polymorphic_identity': 'vendor'  # de klasse is specifiek voor verkopers
     }
 
     def __repr__(self):
