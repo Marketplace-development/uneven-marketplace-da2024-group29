@@ -57,7 +57,7 @@
                      <p class="card-text">
                         <strong>Pickup:</strong> 
                         {% if listing.pickup_date and listing.pickup_start_time and listing.pickup_end_time %}
-                            on {{ listing.pickup_date }} between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
+                            on {{ listing.pickup_date.strftime('%d-%m-%Y') }} between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
                         {% else %}
                             Pickup details not available
                         {% endif %}
