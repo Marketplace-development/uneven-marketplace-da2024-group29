@@ -189,6 +189,35 @@
         </div>
     </div>
 
+
+    <!-- Expired Meals Section -->
+    <div class="section">
+        <h2 class="d-flex align-items-center justify-content-between">
+            <span>Expired Meals</span>
+            <button class="btn btn-link text-decoration-none" style="font-size: 1.5rem;" data-bs-toggle="collapse" data-bs-target="#expired-meals-collapse" aria-expanded="true" aria-controls="expired-meals-collapse">
+                <i id="expired-arrow-icon" class="bi bi-chevron-down"></i>
+            </button>
+        </h2>
+        <div id="expired-meals-collapse" class="collapse show">
+            <div class="row">
+                {% for meal in expired_meals %}
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="card" style="height: 100%; border-radius: 15px;">
+                        <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <p class="card-text">{{ meal.description }}</p>
+                            <p class="card-text"><strong>Pickup:</strong> {{ meal.pickup_date }} between {{ meal.pickup_time }}</p>
+                            <p class="card-text"><strong>Status:</strong> Expired</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
     <!-- Details Section -->
     <div class="section">
         <h2 class="d-flex align-items-center justify-content-between">

@@ -564,12 +564,32 @@ def profile():
         for meal, vendor, transaction in claimed_meals
     ]
 
+    # Fetch expired meals (for vendor only)
+    expired_meals = Meal_offerings.query.filter_by(
+        vendor_id=user_id,
+        status="EXPIRED"  # Status for expired meals
+        ).all()
+
+    expired_meals_data = [
+        {
+            "id": meal.meal_id,
+            "name": meal.name,
+            "description": meal.description,
+            "picture": meal.picture,
+            "pickup_date": meal.pickup_date.strftime('%d-%m-%Y') if meal.pickup_date else "N/A",
+            "pickup_time": f"{meal.pickup_start_time.strftime('%H:%M')} - {meal.pickup_end_time.strftime('%H:%M')}" if meal.pickup_start_time and meal.pickup_end_time else "N/A",
+        }
+        for meal in expired_meals
+    ]
+
+
     # Render the profile template
     return render_template(
         'profile.html',
         user=user,
         shared_meals=shared_meals_data,
         claimed_meals=claimed_meals_data,
+        expired_meals=expired_meals_data,
         average_rating=average_rating
     )
 
