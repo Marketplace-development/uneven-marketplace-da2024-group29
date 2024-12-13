@@ -162,7 +162,7 @@
             <form id="profile-details" method="POST" action="{{ url_for('main.profile') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username:</label>
-                    <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required>
+                    <input type="text" id="username" name="username" class="form-control" value="{{ user.username if user else '' }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail:</label>

@@ -461,6 +461,7 @@ def meal_details(meal_id):
 def profile():
     user_id = session.get('user_id')
     if not user_id:
+        flash("You must be logged in to access the profile.", "error")
         return redirect(url_for('main.login'))
 
     # Fetch the logged-in user's details
@@ -552,7 +553,7 @@ def profile():
             "name": meal.name,
             "description": meal.description,
             "picture": meal.picture,
-            "vendor_name": User.query.get(vendor.vendor_id).username,  # Fetch vendor's username
+            "vendor_name": (User.query.get(vendor.vendor_id).username if User.query.get(vendor.vendor_id) else "Unknown Vendor"),
             "vendor_id": vendor.vendor_id,
             "claimed_date": transaction.created_at if transaction else None,
             "review": Review.query.filter_by(meal_id=meal.meal_id).first()
@@ -607,4 +608,3 @@ def rate_vendor(vendor_id):
 @main.route('/about-us')
 def about_us():
     return render_template('about_us.html')
-
