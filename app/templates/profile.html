@@ -127,7 +127,7 @@
                 <i id="arrow-icon" class="bi bi-chevron-down"></i>
             </button>
         </h2>
-        <div id="shared-meals-collapse" class="collapse show">
+        <div id="shared-meals-collapse" class="collapse">
             <div class="row">
                 {% for meal in shared_meals %}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
@@ -161,7 +161,7 @@
                 <i id="claimed-arrow-icon" class="bi bi-chevron-down"></i>
             </button>
         </h2>
-        <div id="claimed-meals-collapse" class="collapse show">
+        <div id="claimed-meals-collapse" class="collapse">
             <div class="row">
                 {% for meal in claimed_meals %}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
@@ -199,7 +199,7 @@
                 <i id="expired-arrow-icon" class="bi bi-chevron-down"></i>
             </button>
         </h2>
-        <div id="expired-meals-collapse" class="collapse show">
+        <div id="expired-meals-collapse" class="collapse">
             <div class="row">
                 {% for meal in expired_meals %}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
@@ -227,7 +227,7 @@
                 <i id="details-arrow-icon" class="bi bi-chevron-down"></i>
             </button>
         </h2>
-        <div id="details-collapse" class="collapse show">
+        <div id="details-collapse" class="collapse">
             <form id="profile-details" method="POST" action="{{ url_for('main.profile') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username:</label>

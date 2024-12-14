@@ -102,7 +102,7 @@ def mark_expired_meals():
     for meal in available_meals:
         print(f"DEBUG - Checking Meal ID: {meal.meal_id}, Name: {meal.name}")
         meal.mark_as_expired()
-
+    
     # Sla de wijzigingen op in de database
     db.session.commit()
 
