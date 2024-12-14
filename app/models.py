@@ -27,6 +27,7 @@ class MealStatus(Enum):
     AVAILABLE = "AVAILABLE"
     CLAIMED = "CLAIMED"
     EXPIRED = "EXPIRED"
+    DELETED = "DELETED"
 
 
 class User(db.Model):
