@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}<strong>Available Meals</strong>{% endblock %}
+{% block title %}Available Meals{% endblock %}
 
 {% block content %}
 <div class="container mt-5 text-white">
-    <h2 class="text-center mb-4">Available Meals</h2>
+    <h2 class="text-center mb-4" style="font-size: 3.5rem; font-weight: bold; -webkit-text-stroke: 2.25px black; color: white;">
+        Available Meals
+    </h2>
     <form method="GET" action="{{ url_for('main.index') }}" class="mb-4">
         <div class="row">
             <!-- Cuisine Filter -->
