@@ -531,7 +531,7 @@ def profile():
             flash("Profile updated successfully!", "success")
         except Exception as e:
             db.session.rollback()
-            flash("An error occurred while updating your profile. Please try again.", "danger")
+            flash("An error occurred while updating your profile. Please try again.")
 
         return redirect(url_for('main.profile'))
 
@@ -553,17 +553,6 @@ def profile():
         }
         for meal, transaction_created_at in shared_meals
     ]
-
-    def delete_meal_with_auth(meal_id):
-        user_id = request.user_id
-        meal = meal.query.filter_by(id=meal_id, user_id=user_id).first()
-        if not meal:
-            return {"message": "Meal not found or unauthorized"}
-
-        db.session.delete(meal)
-        db.session.commit()
-        flash("Meal deleted successfully")
-
 
     # Fetch claimed meals for the logged-in user
     claimed_meals = db.session.query(Meal_offerings, Vendor, Transaction).join(
@@ -619,6 +608,29 @@ def profile():
         average_rating=average_rating
     )
 
+@main.route('/delete_meal/<int:meal_id>', methods=['POST'])
+def delete_meal(meal_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("You must be logged in to perform this action.", "error")
+        return redirect(url_for('main.login'))
+
+    # Fetch the meal to ensure it belongs to the logged-in user
+    meal = Meal_offerings.query.filter_by(meal_id=meal_id, vendor_id=user_id).first()
+    if not meal:
+        flash("Meal not found or you are not authorized to delete it.", "danger")
+        return redirect(url_for('main.profile'))
+
+    try:
+        meal.status = "DELETED"
+        db.session.commit()
+        flash("Meal marked as deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("An error occurred while deleting the meal. Please try again.", "danger")
+    
+    return redirect(url_for('main.profile'))
+
 @main.route('/rate-vendor/<int:vendor_id>', methods=['POST'])
 def rate_vendor(vendor_id):
     user_id = session.get('user_id')
@@ -657,3 +669,14 @@ def rate_vendor(vendor_id):
 @main.route('/about-us')
 def about_us():
     return render_template('about_us.html')
+
+
+#def delete_meal_with_auth(meal_id):
+    #user_id = request.user_id
+    #meal = meal.query.filter_by(id=meal_id, user_id=user_id).first()
+    #if not meal:
+     #   return {"message": "Meal not found or unauthorized"}
+
+    #db.session.delete(meal)
+    #db.session.commit()
+    #flash("Meal deleted successfully")

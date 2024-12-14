@@ -129,7 +129,7 @@
         </h2>
         <div id="shared-meals-collapse" class="collapse">
             <div class="row">
-                {% for meal in shared_meals %}
+                {% for meal in shared_meals%}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
@@ -144,7 +144,9 @@
                                 {% endif %}
                             </p>
                             <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}</p>
-                            <button onclick="deleteMeal({ meal_id })" class="btn btn-danger">Delete</button>
+                            <form action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                         </div>
                     </div>
                 </div>
