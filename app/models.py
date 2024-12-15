@@ -93,6 +93,7 @@ class Meal_offerings(db.Model):
     pickup_start_time = db.Column(Time, nullable=True)
     pickup_end_time = db.Column(Time, nullable=True)
     vendor = db.relationship('Vendor', backref='Meal_offerings')
+    deleted_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
     def mark_as_expired(self):
         """

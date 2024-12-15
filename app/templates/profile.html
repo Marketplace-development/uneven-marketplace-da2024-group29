@@ -144,8 +144,8 @@
                                 {% endif %}
                             </p>
                             <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}</p>
-                            <form action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger">Delete</button>
+                            <form action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" method="post">
+                                <button type="submit">Delete</button>
                             </form>
                         </div>
                     </div>
@@ -258,6 +258,32 @@
                 <button type="submit" class="btn btn-primary">Save</button>
                 <button type="reset" class="btn btn-secondary">Cancel</button>
             </form>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="d-flex align-items-center justify-content-between">
+            <span>Deleted Meals</span>
+            <button class="btn btn-link text-decoration-none" style="font-size: 1.5rem;" data-bs-toggle="collapse" data-bs-target="#deleted-meals-collapse" aria-expanded="true" aria-controls="deleted-meals-collapse">
+                <i id="deleted-arrow-icon" class="bi bi-chevron-down"></i>
+            </button>
+        </h2>
+        <div id="deleted-meals-collapse" class="collapse">
+            <div class="row">
+                {% for meal in deleted_meals %}
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="card" style="height: 100%; border-radius: 15px;">
+                        <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <p class="card-text">{{ meal.description }}</p>
+                            <p class="card-text"><strong>Deleted on:</strong> {{ meal.deleted_date }}</p>
+                            <p class="card-text"><strong>Status:</strong> Deleted</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     
