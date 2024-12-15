@@ -638,13 +638,14 @@ def delete_meal(meal_id):
         return redirect(url_for('main.profile'))
 
     try:
-        meal.status.value = "DELETED"
+        meal.status = MealStatus.DELETED
         meal.deleted_at = datetime.utcnow()
-        db.session.commit()
-        flash("Meal marked as deleted successfully!", "success")
+        db.session.commit()  # Removed the extra dot here
+        flash("Meal deleted successfully!", "success")
     except Exception as e:
         db.session.rollback()
-        flash("An error occurred while deleting the meal. Please try again.", "danger")
+        flash(f"An error occurred while deleting the meal. Please try again.", "danger")
+
     
     return redirect(url_for('main.profile'))
 
