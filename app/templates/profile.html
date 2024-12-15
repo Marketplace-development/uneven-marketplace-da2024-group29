@@ -176,7 +176,7 @@
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">{{ meal.name }}</h5>
                             <p class="card-text">{{ meal.description }}</p>
                             <p class="card-text"><strong>Status:</strong> 
                                 {% if meal.claimed_date %}
@@ -215,7 +215,7 @@
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">{{ meal.name }}</h5>
                             <p class="card-text"><strong>Vendor:</strong> {{ meal.vendor_name }}</p>
                             <p class="card-text">{{ meal.description }}</p>
 
@@ -253,7 +253,7 @@
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">{{ meal.name }}</h5>
                             <p class="card-text">{{ meal.description }}</p>
                             <p class="card-text"><strong>Pickup:</strong> {{ meal.pickup_date }} between {{ meal.pickup_time }}</p>
                             <p class="card-text"><strong>Status:</strong> Expired</p>
@@ -281,7 +281,7 @@
                     <div class="card" style="height: 100%; border-radius: 15px;">
                         <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">{{ meal.name }}</h5>
                             <p class="card-text">{{ meal.description }}</p>
                             <p class="card-text"><strong>Deleted on:</strong> {{ meal.deleted_date }}</p>
                             <p class="card-text"><strong>Status:</strong> Deleted</p>
