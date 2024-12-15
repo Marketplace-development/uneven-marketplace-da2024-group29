@@ -3,7 +3,7 @@ from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineT
 import os  # For working with file paths
 import datetime
 from supabase import create_client, Client  # For connecting to Supabase
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import requests
 from math import radians, cos, sin, sqrt, atan2
@@ -314,6 +314,10 @@ def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
 
+        today = datetime.utcnow().date()
+        tomorrow = today + timedelta(days=1)
+
+        
         # Markeer vervallen maaltijden
         mark_expired_meals()
         
@@ -372,7 +376,15 @@ def index():
                     meal.distance = round(distance / 1000, 2)  # Converteer naar kilometers en afronden
                     filtered_meals.append(meal)
 
-        return render_template('index.html', username=user.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
+        return render_template(
+            'index.html',
+            username=user.username,
+            listings=filtered_meals,
+            user=user,
+            cuisine=cuisine_filter,
+            distance=distance_filter,
+            today=today,
+            tomorrow=tomorrow)
     else:
         return redirect(url_for('main.about_us'))
 
