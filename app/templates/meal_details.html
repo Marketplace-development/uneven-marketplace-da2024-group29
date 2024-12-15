@@ -18,7 +18,7 @@
             
             <!-- Meal Details -->
             <div class="col-md-6 d-flex flex-column justify-content-center p-4">
-                <h3 class="mb-3">{{ meal.name }}</h3>
+                <h3 class="mb-3"><strong>{{ meal.name }}</strong></h3>
                 <p><strong>Description:</strong> {{ meal.description or 'No description available.' }}</p>
                 <p><strong>Cuisine:</strong> {{ meal.cuisine.value }}</p>
                 <p><strong>Vendor:</strong> {{ vendor.username }}
@@ -33,12 +33,19 @@
 
                 <!-- Pick-up details -->
                 {% if meal.pickup_date and meal.pickup_start_time and meal.pickup_end_time %}
-                    <p><strong>Pick-up:</strong> Available for pick-up on {{ meal.pickup_date.strftime('%d-%m-%Y') }} between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}.</p>
+                    <p><strong>Pick-up:</strong> 
+                        {% if meal.pickup_date == today %}
+                            Available for pick-up Today between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}.
+                        {% elif meal.pickup_date == tomorrow %}
+                            Available for pick-up Tomorrow between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}.
+                        {% else %}
+                            Available for pick-up on {{ meal.pickup_date.strftime('%d-%m-%Y') }} between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}.
+                        {% endif %}
+                    </p>
                 {% else %}
                     <p><strong>Pick-up:</strong> Details not available</p>
                 {% endif %}
             
-
                 <!-- Claim Meal Button -->
                 <form method="POST" action="{{ url_for('main.claim_meal', meal_id=meal.meal_id) }}">
                     <input type="hidden" id="selectedPickupTime" name="pickup_time" value="">
