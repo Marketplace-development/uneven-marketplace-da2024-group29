@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Map{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="background-image: url('/static/images/wooden_background.jpg'); background-size: cover; min-height: 100vh; padding: 0;">
+
+    <!-- Titel van de pagina -->
+    <div class="text-center mt-5">
+        <h1 style="color: white; font-size: 3rem; font-weight: bold; -webkit-text-stroke: 1px black;">
+            Meal Map
+        </h1>
+    </div>
+
+    <!-- Toegevoegde Google Maps-kaart -->
+    <div id="map" style="height: 500px; width: 100%; margin-top: 30px; border: 2px solid black; border-radius: 10px;"></div>
+</div>
+
+<script>
+function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 7,
+        center: { lat: 50.8503, lng: 4.3517 }, // België als standaardlocatie
+    });
+
+    fetch("{{ url_for('main.available_meals') }}")
+        .then(response => response.json())
+        .then(data => {
+            data.meals.forEach(meal => {
+                const marker = new google.maps.Marker({
+                    position: { lat: meal.latitude, lng: meal.longitude },
+                    map: map,
+                    title: meal.name
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="font-family: Arial, sans-serif; color: #333; padding: 5px; text-align: center;">
+                            <h5 style="margin-top: 0; font-size: 16px; color: #d9534f;">${meal.name}</h5>
+                            <p style="margin: 5px 0; font-size: 14px;">${meal.description}</p>
+                            <p style="margin: 5px 0; font-size: 12px;"><strong>Pickup Date:</strong> ${meal.pickup_date}</p>
+                            <p style="margin: 5px 0; font-size: 12px;"><strong>Vendor:</strong> ${meal.vendor_name}</p>
+                            <a href="/meal/${meal.meal_id}" style="display: inline-block; margin-top: 10px; text-decoration: none; color: white; background-color: #28a745; padding: 5px 10px; border-radius: 5px;">View Meal</a>
+                        </div>`
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        })
+        .catch(error => console.error("Error loading meals:", error));
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+{% endblock %}

@@ -307,6 +307,7 @@ def add_meal():
 
 
 
+
 # Begin van algoritme filteren op keuken/stad/beoordeling (sorteert standaard op kortste ophaaldatum)
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -386,10 +387,6 @@ def index():
             tomorrow=tomorrow)
     else:
         return redirect(url_for('main.about_us'))
-
-
-
-
 
 
 #mealdetails
@@ -660,3 +657,32 @@ def rate_vendor(vendor_id):
 @main.route('/about-us')
 def about_us():
     return render_template('about_us.html')
+
+
+@main.route('/api/available-meals')
+def available_meals():
+    """
+    Retourneer de beschikbare maaltijden met hun locaties in JSON-formaat.
+    """
+    available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
+
+    meals_data = []
+    for meal in available_meals:
+        vendor = User.query.get(meal.vendor_id)
+        if vendor and vendor.latitude and vendor.longitude:
+            meals_data.append({
+                'meal_id': meal.meal_id,  # Voeg meal_id toe
+                'name': meal.name,
+                'latitude': vendor.latitude,
+                'longitude': vendor.longitude,
+                'description': meal.description or "No description available",
+                'pickup_date': meal.pickup_date.strftime('%d-%m-%Y') if meal.pickup_date else "N/A",
+                'vendor_name': vendor.username
+            })
+
+    return {'meals': meals_data}
+
+
+@main.route('/meal-map')
+def meal_map():
+    return render_template('meal_map.html')
