@@ -391,62 +391,6 @@ def index():
 
 
 
-#hieronder staat de originele code zonder filteren op
-#@main.route('/', methods=['GET', 'POST'])
-#def index():
-    if 'user_id' in session:
-        user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
-        city = user.city  # Haal de stad van de ingelogde gebruiker op
-        latitude = user.latitude  # De breedtegraad van de gebruiker
-        longitude = user.longitude  # De lengtegraad van de gebruiker
-        cuisine_filter = request.args.get('cuisine', 'ALL')  # Haal het cuisine filter op
-        distance_param = request.args.get('distance', '1000000')  # Haal de afstand op (default 1000000)
-
-        try:
-            distance_filter = float(distance_param)
-        except ValueError:
-            distance_filter = 1000000.0
-        
-        # Haal alle maaltijden (MealOffering) op
-        meal_offerings = Meal_offerings.query.all()
-
-        # Filteren op cuisine
-        if cuisine_filter != 'ALL':
-            try:
-                selected_cuisine = CuisineType(cuisine_filter)  # Converteer naar enum
-                selected_cuisine_upper = selected_cuisine
-                meal_offerings = [
-                    meal for meal in meal_offerings if meal.cuisine == selected_cuisine_upper
-                ]
-            except KeyError:
-                # Ongeldig cuisine_filter (fallback naar geen resultaten)
-                meal_offerings = []
-
-        # Filteren op afstand
-        filtered_meals = []
-        for meal in meal_offerings:
-            vendor = User.query.get(meal.vendor_id)
-            if vendor:
-                # Combineer de adresvelden van de vendor om het volledige adres te krijgen
-                vendor_address = f"{vendor.street} {vendor.number}, {vendor.zip} {vendor.city}"
-                # Verkrijg de coördinaten van de vendor
-                lat, lon = get_coordinates(vendor_address)
-                if lat and lon:
-                    # Bereken de afstand tussen de gebruiker en de vendor
-                    distance = calculate_distance(latitude, longitude, lat, lon)
-                    if distance <= distance_filter:  # Filteren op de ingestelde afstand
-                        # Voeg de berekende afstand toe aan de maaltijdgegevens
-                        meal.distance = round(distance, 2)  # Rond de afstand af voor betere leesbaarheid
-                        filtered_meals.append(meal)
-        
-        return render_template('index.html', username=User.username, listings=filtered_meals, user=user, cuisine=cuisine_filter, distance=distance_filter)
-    else:
-        return redirect(url_for('main.about_us'))  # Als de gebruiker niet is ingelogd, stuur naar loginpagina
-
-
-
-
-
 
 #mealdetails
 @main.route('/claim-meal/<int:meal_id>', methods=['POST'])
@@ -489,13 +433,31 @@ def claim_meal(meal_id):
     flash("Meal successfully claimed!", "success")
     return redirect(url_for('main.profile', meal_id=meal_id)) # hier krijg ik een error en zegt het dat er main.profile moet staan
 
+
+
 @main.route('/meal/<int:meal_id>', methods=['GET', 'POST'])
 def meal_details(meal_id):
     meal = Meal_offerings.query.get_or_404(meal_id)
     vendor = User.query.get(meal.vendor_id)
     reviews = Review.query.filter_by(meal_id=meal_id).first()
     average_rating = Vendor.query.get(meal.vendor_id).average_rating
-    return render_template('meal_details.html', meal=meal, vendor=vendor, reviews=reviews,  average_rating=average_rating)
+
+    # Calculate today and tomorrow
+    today = datetime.utcnow().date()
+    tomorrow = today + timedelta(days=1)
+
+    return render_template(
+        'meal_details.html',
+        meal=meal,
+        vendor=vendor,
+        reviews=reviews,
+        average_rating=average_rating,
+        today=today,
+        tomorrow=tomorrow
+    )
+
+
+
 
 @main.route('/profile', methods=['GET', 'POST'])
 def profile():
