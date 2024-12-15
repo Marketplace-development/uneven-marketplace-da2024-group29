@@ -538,7 +538,7 @@ def profile():
     # Fetch shared meals for the logged-in user (status available and claimed)
     shared_meals = db.session.query(Meal_offerings, Transaction.created_at).outerjoin(
         Transaction, Meal_offerings.meal_id == Transaction.meal_id
-    ).filter(Meal_offerings.vendor_id == user_id).all()
+    ).filter(Meal_offerings.vendor_id == user_id, Meal_offerings.status == "AVAILABLE").all()
 
     # Prepare shared meals with claimed_date
     shared_meals_data = [
@@ -597,16 +597,32 @@ def profile():
         for meal in expired_meals
     ]
 
+    deleted_meals = Meal_offerings.query.filter_by(
+        vendor_id=user_id,
+        status="DELETED"  # Status for deleted meals
+    ).all()
 
-    # Render the profile template
+    deleted_meals_data = [
+        {
+            "id": meal.meal_id,
+            "name": meal.name,
+            "description": meal.description,
+            "picture": meal.picture,
+            "deleted_date": meal.deleted_at.strftime('%d-%m-%Y') if meal.deleted_at else "N/A",
+        }
+        for meal in deleted_meals
+    ]
+    
     return render_template(
         'profile.html',
         user=user,
+        average_rating=average_rating,
         shared_meals=shared_meals_data,
         claimed_meals=claimed_meals_data,
         expired_meals=expired_meals_data,
-        average_rating=average_rating
+        deleted_meals=deleted_meals_data
     )
+
 
 @main.route('/delete_meal/<int:meal_id>', methods=['POST'])
 def delete_meal(meal_id):
@@ -622,7 +638,8 @@ def delete_meal(meal_id):
         return redirect(url_for('main.profile'))
 
     try:
-        meal.status = "DELETED"
+        meal.status.value = "DELETED"
+        meal.deleted_at = datetime.utcnow()
         db.session.commit()
         flash("Meal marked as deleted successfully!", "success")
     except Exception as e:
@@ -669,14 +686,3 @@ def rate_vendor(vendor_id):
 @main.route('/about-us')
 def about_us():
     return render_template('about_us.html')
-
-
-#def delete_meal_with_auth(meal_id):
-    #user_id = request.user_id
-    #meal = meal.query.filter_by(id=meal_id, user_id=user_id).first()
-    #if not meal:
-     #   return {"message": "Meal not found or unauthorized"}
-
-    #db.session.delete(meal)
-    #db.session.commit()
-    #flash("Meal deleted successfully")
