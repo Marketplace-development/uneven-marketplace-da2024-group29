@@ -56,25 +56,20 @@
                     <p class="card-text"><strong>Distance:</strong> {{ listing.distance }} km</p> <!-- Display Distance -->
                     
                     <!-- Compacte rubriek voor Pickup Details -->
-                     <p class="card-text">
-                        <strong>Pickup:</strong> 
+                    <p class="card-text">
+                        <strong>Pickup:</strong>
                         {% if listing.pickup_date and listing.pickup_start_time and listing.pickup_end_time %}
-                        0n 
-                        {% if listing.pickup_date == today %}
-                            Today
-                        {% elif listing.pickup_date == tomorrow %}
-                            Tomorrow
-                        {% else %}
-                            {{ listing.pickup_date.strftime('%d-%m-%Y') }}
-                        {% endif %}
-                        between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
-                        
+                            {% if listing.pickup_date == today %}
+                                Today between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
+                            {% elif listing.pickup_date == tomorrow %}
+                                Tomorrow between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
+                            {% else %}
+                                on {{ listing.pickup_date.strftime('%d-%m-%Y') }} between {{ listing.pickup_start_time.strftime('%H:%M') }} and {{ listing.pickup_end_time.strftime('%H:%M') }}
+                            {% endif %}
                         {% else %}
                             Pickup details not available
                         {% endif %}
                     </p>
-
-                    
                     <div class="mt-auto">
                         <a href="{{ url_for('main.meal_details', meal_id=listing.meal_id) }}" class="btn btn-primary w-100">View Meal</a>
                     </div>
