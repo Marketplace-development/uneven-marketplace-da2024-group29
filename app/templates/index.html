@@ -50,7 +50,7 @@
             <div class="card" style="height: 100%; border-radius: 15px;">
                 <img src="{{ listing.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ listing.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ listing.name }}</h5>
+                    <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.75rem;">{{ listing.name }}</h5>
                     <p class="card-text">{{ listing.description or 'No description available.' }}</p>
                     <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
                     <p class="card-text"><strong>Distance:</strong> {{ listing.distance }} km</p> <!-- Display Distance -->
