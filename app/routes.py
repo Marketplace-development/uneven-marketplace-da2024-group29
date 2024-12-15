@@ -216,10 +216,10 @@ def add_meal():
     user_id = session.get('user_id')
     if request.method == 'POST':
         # Retrieve meal details from the form
-        name = request.form['name']
-        description = request.form['description']
+        name = request.form.get('name')
+        description = request.form.get('description')
         picture = request.files.get('picture')
-        cuisine = request.form['cuisine']
+        cuisine = request.form.get('cuisine')
         pickup_date = request.form.get('pickup_date')
         pickup_start_time = request.form.get('pickup_start_time')
         pickup_end_time = request.form.get('pickup_end_time')
@@ -248,7 +248,7 @@ def add_meal():
             flash("Invalid date or time format.", "error")
             return redirect(url_for('main.add_meal'))
 
-        picture_url = None
+        picture_url = 'static/pictures/logo.png'
         if picture:
             def sanitize_filename(filename):
                 cleaned_filename = re.sub(r'[^\w\-_\.]', '_', filename)
@@ -274,13 +274,6 @@ def add_meal():
             db.session.add(vendor)
             db.session.commit()
         
-        # expiry_date = None
-        # if expiry_date_str:
-            # try:
-                # expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
-            # except ValueError:
-                # flash("Invalid date format for expiry date.", "error")
-                # return redirect(url_for('main.add_meal'))
         # Create the new meal record in the database
         new_meal = Meal_offerings(
             name=name,
