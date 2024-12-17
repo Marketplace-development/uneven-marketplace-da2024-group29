@@ -190,7 +190,7 @@ def add_meal():
         pickup_start_time = request.form.get("pickup_start_time")
         pickup_end_time = request.form.get("pickup_end_time")
 
-        if not name or not cuisine:
+        if not all([name, description, cuisine, pickup_date, pickup_start_time, pickup_end_time]):
             flash("Fill in required fields!", "error")
             return redirect(url_for("main.add_meal"))
         
@@ -384,61 +384,53 @@ def claim_meal(meal_id):
     return redirect(url_for("main.index", meal_id=meal_id))
 
 
-@main.route('/profile', methods=['GET', 'POST'])
+@main.route("/profile", methods=["GET", "POST"])
 def profile():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
     if not user_id:
         flash("You must be logged in to access the profile.", "error")
-        return redirect(url_for('main.login'))
+        return redirect(url_for("main.login"))
 
-    # Fetch the logged-in user's details
     user = User.query.get_or_404(user_id)
     vendor = Vendor.query.filter_by(vendor_id=user_id).first()
     average_rating = round(vendor.average_rating, 2) if vendor and vendor.average_rating else None
 
-    if request.method == 'POST':
-        # Handle form submission to update user profile
-        username = request.form['username'].strip()
-        email = request.form['email'].strip()
-        street = request.form['street'].strip()
-        number = request.form['number'].strip()
-        zip_code = request.form['zip'].strip()
-        city = request.form['city'].strip()
+    if request.method == "POST":
+        username = request.form.get("username").strip() 
+        email = request.form.get("email").strip()
+        street = request.form.get("street").strip()
+        number = request.form.get("number").strip()
+        zip = request.form.get("zip").strip()
+        city = request.form.get("city").strip()
 
-        # Validate required fields
-        if not all([username, email, street, number, zip_code, city]):
+        if not all([username, email, street, number, zip, city]):
             flash("All fields are required.", "danger")
-            return redirect(url_for('main.profile'))
+            return redirect(url_for("main.profile"))
 
-        # Optional: Add email format validation (basic example)
         if "@" not in email or "." not in email:
             flash("Invalid email format.", "danger")
             return redirect(url_for('main.profile'))
 
         try:
-            # Update user details
             user.username = username
             user.email = email
             user.street = street
             user.number = number
-            user.zip = zip_code
+            user.zip = zip
             user.city = city
 
-            # Commit changes to the database
             db.session.commit()
             flash("Profile updated successfully!", "success")
         except Exception as e:
             db.session.rollback()
             flash("An error occurred while updating your profile. Please try again.")
 
-        return redirect(url_for('main.profile'))
+        return redirect(url_for("main.profile"))
 
-    # Fetch shared meals for the logged-in user (status available and claimed)
     shared_meals = db.session.query(Meal_offerings, Transaction.created_at).outerjoin(
         Transaction, Meal_offerings.meal_id == Transaction.meal_id
     ).filter(Meal_offerings.vendor_id == user_id, Meal_offerings.status == "AVAILABLE").all()
 
-    # Prepare shared meals with claimed_date
     shared_meals_data = [
         {
             "id": meal.meal_id,
@@ -446,13 +438,12 @@ def profile():
             "description": meal.description,
             "picture": meal.picture,
             "status": meal.status,
-            "claimed_date": transaction_created_at,  # Use the created_at field from Transaction
+            "claimed_date": transaction_created_at,
             "reviews": Review.query.filter_by(meal_id=meal.meal_id).all()
         }
         for meal, transaction_created_at in shared_meals
     ]
 
-    # Fetch claimed meals for the logged-in user
     claimed_meals = db.session.query(Meal_offerings, Vendor, Transaction).join(
         Transaction, Transaction.meal_id == Meal_offerings.meal_id
     ).join(
@@ -462,7 +453,6 @@ def profile():
         Meal_offerings.status == "CLAIMED"
     ).all()
 
-    # Prepare data for claimed meals
     claimed_meals_data = [
         {
             "id": meal.meal_id,
@@ -477,10 +467,9 @@ def profile():
         for meal, vendor, transaction in claimed_meals
     ]
 
-    # Fetch expired meals (for vendor only)
     expired_meals = Meal_offerings.query.filter_by(
         vendor_id=user_id,
-        status="EXPIRED"  # Status for expired meals
+        status="EXPIRED"
         ).all()
 
     expired_meals_data = [
@@ -489,15 +478,15 @@ def profile():
             "name": meal.name,
             "description": meal.description,
             "picture": meal.picture,
-            "pickup_date": meal.pickup_date.strftime('%d-%m-%Y') if meal.pickup_date else "N/A",
-            "pickup_time": f"{meal.pickup_start_time.strftime('%H:%M')} - {meal.pickup_end_time.strftime('%H:%M')}" if meal.pickup_start_time and meal.pickup_end_time else "N/A",
+            "pickup_date": meal.pickup_date.strftime("%d-%m-%Y") if meal.pickup_date else "N/A",
+            "pickup_time": f"{meal.pickup_start_time.strftime("%H:%M")} - {meal.pickup_end_time.strftime("%H:%M")}" if meal.pickup_start_time and meal.pickup_end_time else "N/A",
         }
         for meal in expired_meals
     ]
 
     deleted_meals = Meal_offerings.query.filter_by(
         vendor_id=user_id,
-        status="DELETED"  # Status for deleted meals
+        status="DELETED"
     ).all()
 
     deleted_meals_data = [
@@ -506,13 +495,13 @@ def profile():
             "name": meal.name,
             "description": meal.description,
             "picture": meal.picture,
-            "deleted_date": meal.deleted_at.strftime('%d-%m-%Y') if meal.deleted_at else "N/A",
+            "deleted_date": meal.deleted_at.strftime("%d-%m-%Y") if meal.deleted_at else "N/A",
         }
         for meal in deleted_meals
     ]
     
     return render_template(
-        'profile.html',
+        "profile.html",
         user=user,
         average_rating=average_rating,
         shared_meals=shared_meals_data,
