@@ -243,7 +243,6 @@ def add_meal():
             pickup_date = parsed_date,
             pickup_start_time = start_time,
             pickup_end_time = end_time
-
         )
 
         db.session.add(new_meal)
@@ -255,35 +254,30 @@ def add_meal():
     return render_template("4.Share_Meal.html", cuisines=CuisineType)
 
 
-
-
-# Begin van algoritme filteren op keuken/stad/beoordeling (sorteert standaard op kortste ophaaldatum)
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/', methods=["GET", "POST"])
 def index():
-    if 'user_id' in session:
-        user = User.query.get(session['user_id'])  # Haal de ingelogde gebruiker op
+    if "user_id" in session:
+        user = User.query.get(session["user_id"])
 
         today = datetime.utcnow().date()
         tomorrow = today + timedelta(days=1)
 
-        
-        # Markeer vervallen maaltijden
+
         mark_expired_meals()
-        
-        # Haal beschikbare maaltijden op
+
         meal_offerings = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
         print(f"DEBUG - Available Meals after marking expired: {len(meal_offerings)}")
 
-        origin = f"{user.latitude},{user.longitude}"  # Gebruiker's coördinaten als oorsprong
-        cuisine_filter = request.args.get('cuisine', 'ALL')
-        distance_param = request.args.get('distance', '1000000')
+        origin = f"{user.latitude},{user.longitude}"
+        cuisine_filter = request.args.get("cuisine", "ALL")
+        distance_param = request.args.get("distance", "1000000")
         
         try:
             distance_filter = float(distance_param)
         except ValueError:
             distance_filter = 1000000.0
 
-        meal_offerings = Meal_offerings.query.filter_by(status='AVAILABLE').all()
+        meal_offerings = Meal_offerings.query.filter_by(status="AVAILABLE").all()
 
         meal_offerings.sort(
             key=lambda meal: (
@@ -292,8 +286,7 @@ def index():
             )
         )
 
-        # Filter op cuisine
-        if cuisine_filter != 'ALL':
+        if cuisine_filter != "ALL":
             try:
                 selected_cuisine = CuisineType(cuisine_filter)
                 meal_offerings = [
@@ -302,7 +295,6 @@ def index():
             except KeyError:
                 meal_offerings = []
 
-        # Bereid bestemmingen voor (alle vendor-adressen)
         destinations = []
         vendor_mapping = {}
         for meal in meal_offerings:
@@ -312,88 +304,43 @@ def index():
                 destinations.append(vendor_coords)
                 vendor_mapping[vendor_coords] = meal
 
-        # Gebruik Distance Matrix API om afstanden te berekenen
-        api_key = 'AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw'
+        api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
         distances = get_distances(origin, destinations, api_key)
 
-        # Filter op afstand
         filtered_meals = []
         if distances:
             for distance, coords in zip(distances, destinations):
-                if distance and distance / 1000 <= distance_filter:  # Converteer naar kilometers
+                if distance and distance / 1000 <= distance_filter:
                     meal = vendor_mapping[coords]
-                    meal.distance = round(distance / 1000, 2)  # Converteer naar kilometers en afronden
+                    meal.distance = round(distance / 1000, 2)
                     filtered_meals.append(meal)
 
         return render_template(
-            'index.html',
+            "index.html",
             username=user.username,
             listings=filtered_meals,
             user=user,
             cuisine=cuisine_filter,
             distance=distance_filter,
             today=today,
-            tomorrow=tomorrow)
+            tomorrow=tomorrow
+            )
     else:
-        return redirect(url_for('main.about_us'))
+        return redirect(url_for("main.about_us"))
 
 
-#mealdetails
-@main.route('/claim-meal/<int:meal_id>', methods=['POST'])
-def claim_meal(meal_id):
-    # Fetch the logged-in user
-    user_id = session.get('user_id')
-    if not user_id:
-        flash("You must be logged in to claim a meal.", "error")
-        return redirect(url_for('main.login'))
-
-    # Fetch the meal
-    meal = Meal_offerings.query.get_or_404(meal_id)
-    
-    # Ensure the user is not claiming their own meal
-    if meal.vendor_id == user_id:
-        flash("You cannot claim your own meal!", "error")
-        return redirect(url_for('main.index'))
-
-    # Update the meal or transaction status as needed
-    # Controleer of user_id al bestaat in Vendors.vendor_id
-    existing_customer = Customer.query.filter_by(customer_id=user_id).first()
-
-    if not existing_customer:
-        # Als de gebruiker nog geen vendor is, voeg toe
-        customer = Customer(customer_id=user_id, amount = 1)
-        db.session.add(customer)
-    else:
-        existing_customer.amount += 1
-
-    transaction = Transaction(
-        meal_id=meal_id,
-        customer_id=user_id,
-        vendor_id=meal.vendor_id
-        # pickup_time=pickup_time
-        )
-    meal.status = "CLAIMED"
-    db.session.add(transaction)
-    db.session.commit()
-    
-    flash("Meal successfully claimed!", "success")
-    return redirect(url_for('main.profile', meal_id=meal_id)) # hier krijg ik een error en zegt het dat er main.profile moet staan
-
-
-
-@main.route('/meal/<int:meal_id>', methods=['GET', 'POST'])
+@main.route("/meal/<int:meal_id>", methods=["GET", "POST"])
 def meal_details(meal_id):
     meal = Meal_offerings.query.get_or_404(meal_id)
     vendor = User.query.get(meal.vendor_id)
     reviews = Review.query.filter_by(meal_id=meal_id).first()
     average_rating = Vendor.query.get(meal.vendor_id).average_rating
 
-    # Calculate today and tomorrow
     today = datetime.utcnow().date()
     tomorrow = today + timedelta(days=1)
 
     return render_template(
-        'meal_details.html',
+        "meal_details.html",
         meal=meal,
         vendor=vendor,
         reviews=reviews,
@@ -403,6 +350,38 @@ def meal_details(meal_id):
     )
 
 
+@main.route("/claim-meal/<int:meal_id>", methods=["POST"])
+def claim_meal(meal_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to claim a meal.", "error")
+        return redirect(url_for("main.login"))
+
+    meal = Meal_offerings.query.get_or_404(meal_id)
+
+    if meal.vendor_id == user_id:
+        flash("You cannot claim your own meal!", "error")
+        return redirect(url_for("main.index"))
+
+    existing_customer = Customer.query.filter_by(customer_id=user_id).first()
+
+    if not existing_customer:
+        customer = Customer(customer_id=user_id, amount = 1)
+        db.session.add(customer)
+    else:
+        existing_customer.amount += 1
+
+    transaction = Transaction(
+        meal_id=meal_id,
+        customer_id=user_id,
+        vendor_id=meal.vendor_id
+        )
+    meal.status = "CLAIMED"
+    db.session.add(transaction)
+    db.session.commit()
+    
+    flash("Meal successfully claimed!", "success")
+    return redirect(url_for("main.index", meal_id=meal_id))
 
 
 @main.route('/profile', methods=['GET', 'POST'])
