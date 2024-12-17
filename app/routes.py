@@ -61,7 +61,7 @@ def get_distances(origin, destinations, api_key):
 
     data = response.json()
     if data.get("status") != "OK":
-        print(f"API error: {data.get('error_message', 'Unknown error')}")
+        print(f"API error: {data.get("error_message", "Unknown error")}")
         return None
 
     distances = []
@@ -89,7 +89,7 @@ def mark_expired_meals():
 
 @main.route("/register", methods=["GET", "POST"])
 def register():
-    print(f"Session user_id: {session.get('user_id')}")
+    print(f"Session user_id: {session.get("user_id")}")
 
     if request.method == "POST":
         username = request.form.get("username").strip() 
@@ -144,12 +144,12 @@ def register():
 
         return redirect(url_for("main.index"))
         
-    return render_template("1.Register.html")
+    return render_template("Register.html")
 
 
 @main.route("/login", methods=["GET", "POST"])
 def login():
-    print(f"Session user_id: {session.get('user_id')}") 
+    print(f"Session user_id: {session.get("user_id")}") 
 
     if request.method == "POST":
         username = request.form["username"].strip()
@@ -158,7 +158,7 @@ def login():
             session["user_id"] = user.user_id 
             return redirect(url_for("main.index"))  
         flash("User not found, please try again.")
-    return render_template("2.Login.html") 
+    return render_template("Login.html") 
 
 
 @main.route("/logout", methods=["POST"])
@@ -251,7 +251,7 @@ def add_meal():
         flash("Meal added successfully!", "success")
         return redirect(url_for("main.index"))
 
-    return render_template("4.Share_Meal.html", cuisines=CuisineType)
+    return render_template("Share_Meal.html", cuisines=CuisineType)
 
 
 @main.route('/', methods=["GET", "POST"])
@@ -407,9 +407,9 @@ def profile():
             flash("All fields are required.", "danger")
             return redirect(url_for("main.profile"))
 
-        if "@" not in email or "." not in email:
+        if '@' not in email or '.' not in email:
             flash("Invalid email format.", "danger")
-            return redirect(url_for('main.profile'))
+            return redirect(url_for("main.profile"))
 
         try:
             user.username = username
@@ -511,55 +511,51 @@ def profile():
     )
 
 
-@main.route('/delete_meal/<int:meal_id>', methods=['POST'])
+@main.route("/delete_meal/<int:meal_id>", methods=["POST"])
 def delete_meal(meal_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
     if not user_id:
         flash("You must be logged in to perform this action.", "error")
-        return redirect(url_for('main.login'))
+        return redirect(url_for("main.login"))
 
-    # Fetch the meal to ensure it belongs to the logged-in user
     meal = Meal_offerings.query.filter_by(meal_id=meal_id, vendor_id=user_id).first()
     if not meal:
         flash("Meal not found or you are not authorized to delete it.", "danger")
-        return redirect(url_for('main.profile'))
+        return redirect(url_for("main.profile"))
 
     try:
         meal.status = MealStatus.DELETED
         meal.deleted_at = datetime.utcnow()
-        db.session.commit()  # Removed the extra dot here
+        db.session.commit()
         flash("Meal deleted successfully!", "success")
     except Exception as e:
         db.session.rollback()
         flash(f"An error occurred while deleting the meal. Please try again.", "danger")
 
     
-    return redirect(url_for('main.profile'))
+    return redirect(url_for("main.profile"))
 
-@main.route('/rate-vendor/<int:vendor_id>', methods=['POST'])
+@main.route("/rate-vendor/<int:vendor_id>", methods=["POST"])
 def rate_vendor(vendor_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
     if not user_id:
-        flash('You must be logged in to rate vendors.', 'error')
-        return redirect(url_for('main.login'))
+        flash("You must be logged in to rate vendors.", "error")
+        return redirect(url_for("main.login"))
 
-    # Retrieve the rating and meal_id from the form
-    rating = int(request.form['rating'])
-    meal_id = int(request.form['meal_id'])  
+    rating = int(request.form["rating"])
+    meal_id = int(request.form["meal_id"])  
     if rating < 0 or rating > 5:
-        flash('Rating must be between 0 and 5.', 'error')
-        return redirect(url_for('main.profile'))
+        flash("Rating must be between 0 and 5.", "error")
+        return redirect(url_for("main.profile"))
     
     existing_review = Review.query.filter_by(meal_id=meal_id).first()
     if existing_review:
-        flash(f'Given rating: {existing_review.score}', 'info')
-        return redirect(url_for('main.profile'))
-    
-    # Save the rating
+        flash(f"Given rating: {existing_review.score}", "info")
+        return redirect(url_for("main.profile"))
+
     review = Review(vendor_id=vendor_id, customer_id=user_id, meal_id=meal_id, score=rating)
     db.session.add(review)
 
-    # Update the vendor's average rating
     vendor_reviews = Review.query.filter_by(vendor_id=vendor_id).all()
     if vendor_reviews:
         average_rating = sum(r.score for r in vendor_reviews) / len(vendor_reviews)
@@ -567,20 +563,17 @@ def rate_vendor(vendor_id):
         vendor.average_rating = average_rating
 
     db.session.commit()
-    flash(f'Rating submitted successfully! Given rating: {rating}', 'success')
-    return redirect(url_for('main.profile'))
+    flash(f"Rating submitted successfully! Given rating: {rating}", "success")
+    return redirect(url_for("main.profile"))
 
 
-@main.route('/about-us')
+@main.route("/about-us")
 def about_us():
-    return render_template('about_us.html')
+    return render_template("about_us.html")
 
 
-@main.route('/api/available-meals')
+@main.route("/api/available-meals")
 def available_meals():
-    """
-    Retourneer de beschikbare maaltijden met hun locaties in JSON-formaat.
-    """
     available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
 
     meals_data = []
@@ -588,18 +581,18 @@ def available_meals():
         vendor = User.query.get(meal.vendor_id)
         if vendor and vendor.latitude and vendor.longitude:
             meals_data.append({
-                'meal_id': meal.meal_id,  # Voeg meal_id toe
-                'name': meal.name,
-                'latitude': vendor.latitude,
-                'longitude': vendor.longitude,
-                'description': meal.description or "No description available",
-                'pickup_date': meal.pickup_date.strftime('%d-%m-%Y') if meal.pickup_date else "N/A",
-                'vendor_name': vendor.username
+                "meal_id": meal.meal_id,
+                "name": meal.name,
+                "latitude": vendor.latitude,
+                "longitude": vendor.longitude,
+                "description": meal.description or "No description available",
+                "pickup_date": meal.pickup_date.strftime("%d-%m-%Y") if meal.pickup_date else "N/A",
+                "vendor_name": vendor.username
             })
 
-    return {'meals': meals_data}
+    return {"meals": meals_data}
 
 
-@main.route('/meal-map')
+@main.route("/meal-map")
 def meal_map():
-    return render_template('meal_map.html')
+    return render_template("meal_map.html")
