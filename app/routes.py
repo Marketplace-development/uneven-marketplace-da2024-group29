@@ -92,12 +92,12 @@ def register():
     print(f"Session user_id: {session.get('user_id')}")
 
     if request.method == "POST":
-        username = request.form["username"].strip() 
-        email = request.form["email"].strip()
-        street = request.form["street"].strip()
-        number = request.form["number"].strip()
-        zip = request.form["zip"].strip()
-        city = request.form["city"].strip()
+        username = request.form.get("username").strip() 
+        email = request.form.get("email").strip()
+        street = request.form.get("street").strip()
+        number = request.form.get("number").strip()
+        zip = request.form.get("zip").strip()
+        city = request.form.get("city").strip()
 
         if not username or not email or not street or not number or not zip or not city:
             flash("All fields are required!")
@@ -142,9 +142,9 @@ def register():
         customer_id = new_user.user_id
         flash("User registered successfully!")
 
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
         
-    return render_template('1.Register.html')
+    return render_template("1.Register.html")
 
 
 @main.route("/login", methods=["GET", "POST"])
@@ -167,9 +167,9 @@ def logout():
     return redirect(url_for("main.about_us"))
 
 
-@main.route('/base')
+@main.route("/base")
 def base():
-    return render_template('base.html')
+    return render_template("base.html")
 
 def upload_to_supabase_storage(bucket_name, file, filename):
     response = supabase.storage.from_(bucket_name).upload(filename, file)
@@ -178,44 +178,39 @@ def upload_to_supabase_storage(bucket_name, file, filename):
         return None
     return supabase.storage.from_(bucket_name).get_public_url(filename)
 
-@main.route('/add-meal', methods=['GET', 'POST'])
+@main.route("/add-meal", methods=["GET", "POST"])
 def add_meal():
-    user_id = session.get('user_id')
-    if request.method == 'POST':
-        # Retrieve meal details from the form
-        name = request.form.get('name')
-        description = request.form.get('description')
-        picture = request.files.get('picture')
-        cuisine = request.form.get('cuisine')
-        pickup_date = request.form.get('pickup_date')
-        pickup_start_time = request.form.get('pickup_start_time')
-        pickup_end_time = request.form.get('pickup_end_time')
-        # expiry_date_str = request.form.get('expiry_date') 
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        name = request.form.get("name")
+        description = request.form.get("description")
+        picture = request.files.get("picture")
+        cuisine = request.form.get("cuisine")
+        pickup_date = request.form.get("pickup_date")
+        pickup_start_time = request.form.get("pickup_start_time")
+        pickup_end_time = request.form.get("pickup_end_time")
 
-        # Validation: Ensure both name and cuisine are provided
         if not name or not cuisine:
             flash("Fill in required fields!", "error")
-            return redirect(url_for('main.add_meal'))
+            return redirect(url_for("main.add_meal"))
         
         if not user_id:
             flash("You must be logged in to add a meal.", "error")
-            return redirect(url_for('main.login'))
+            return redirect(url_for("main.login"))
 
-        # Parse and validate the date and times
         try:
-            parsed_date = datetime.strptime(pickup_date, '%Y-%m-%d').date()
-            start_time = datetime.strptime(pickup_start_time, '%H:%M').time()
-            end_time = datetime.strptime(pickup_end_time, '%H:%M').time()
+            parsed_date = datetime.strptime(pickup_date, "%Y-%m-%d").date()
+            start_time = datetime.strptime(pickup_start_time, "%H:%M").time()
+            end_time = datetime.strptime(pickup_end_time, "%H:%M").time()
 
-            # Ensure the end time is later than the start time
             if end_time <= start_time:
                 flash("Pickup end time must be later than the start time.", "error")
-                return redirect(url_for('main.add_meal'))
+                return redirect(url_for("main.add_meal"))
         except ValueError:
             flash("Invalid date or time format.", "error")
-            return redirect(url_for('main.add_meal'))
+            return redirect(url_for("main.add_meal"))
 
-        picture_url = 'static/pictures/logo.png'
+        picture_url = "static/pictures/logo.png"
         if picture:
             def sanitize_filename(filename):
                 cleaned_filename = re.sub(r'[^\w\-_\.]', '_', filename)
@@ -226,44 +221,38 @@ def add_meal():
 
             filename = f"{user_id}_{datetime.utcnow().isoformat()}_{sanitized_filename}"
             
-            response = supabase.storage.from_('picture').upload(filename, picture.read())
+            response = supabase.storage.from_("picture").upload(filename, picture.read())
             if not response:
                 flash("Error uploading image to Supabase.", "error")
-                return redirect(url_for('main.add_meal'))
-            picture_url = supabase.storage.from_('picture').get_public_url(filename)
-        
-        # Controleer of user_id al bestaat in Vendors.vendor_id
+                return redirect(url_for("main.add_meal"))
+            picture_url = supabase.storage.from_("picture").get_public_url(filename)
+
         existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
 
         if not existing_vendor:
-            # Als de gebruiker nog geen vendor is, voeg toe
             vendor = Vendor(vendor_id=user_id)
             db.session.add(vendor)
             db.session.commit()
-        
-        # Create the new meal record in the database
+
         new_meal = Meal_offerings(
             name=name,
             description=description,
-            picture=picture_url,  # Store the URL or file path to the uploaded image
+            picture=picture_url, 
             vendor_id=user_id,
             cuisine=CuisineType[cuisine],
             pickup_date = parsed_date,
             pickup_start_time = start_time,
             pickup_end_time = end_time
-            # expiry_date = expiry_date
+
         )
 
-        # Commit the meal record to the database
         db.session.add(new_meal)
         db.session.commit()
-        
-        # Flash a success message and redirect to the index page
-        flash("Meal added successfully!", "success")
-        return redirect(url_for('main.index'))
 
-    # Render the meal creation page if it's a GET request
-    return render_template('4.Share_Meal.html', cuisines=CuisineType)
+        flash("Meal added successfully!", "success")
+        return redirect(url_for("main.index"))
+
+    return render_template("4.Share_Meal.html", cuisines=CuisineType)
 
 
 
