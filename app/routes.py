@@ -263,7 +263,7 @@ def add_meal():
         return redirect(url_for('main.index'))
 
     # Render the meal creation page if it's a GET request
-    return render_template('4.Meal_Creation.html', cuisines=CuisineType)
+    return render_template('4.Share_Meal.html', cuisines=CuisineType)
 
 
 
