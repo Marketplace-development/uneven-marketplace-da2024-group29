@@ -1,8 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash, current_app
 from .models import db, User, Vendor, Customer, Meal_offerings, Review, CuisineType, Transaction, MealStatus
-import os  # For working with file paths
-import datetime
-from supabase import create_client, Client  # For connecting to Supabase
+import os 
+from supabase import create_client, Client
 from datetime import datetime, timedelta, date, time
 import re
 import requests
@@ -12,23 +11,20 @@ from urllib.parse import quote
 SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
 
+
 # Initialize Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
-main = Blueprint('main', __name__)
+main = Blueprint("main", __name__)
+
 
 def get_coordinates(address):
-    """
-    Roept de Google Maps API aan om de coördinaten van een adres op te halen.
-    """
-    #api_key = current_app.config.get('GOOGLE_MAPS_API_KEY')
-    api_key = 'AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw'
+    api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
     if not api_key:
         current_app.logger.error("Google Maps API key is missing!")
         return None, None
 
-    # Encode het adres voor URL-veiligheid
     encoded_address = quote(address)
 
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
@@ -37,7 +33,7 @@ def get_coordinates(address):
 
     if response.status_code != 200:
         current_app.logger.error(f"Google Maps API request failed. Status code: {response.status_code}")
-        print(f"API Response: {response.text}")  # Dit toont het volledige API-response voor debugging
+        print(f"API Response: {response.text}")
         return None, None
 
     data = response.json()
@@ -49,23 +45,14 @@ def get_coordinates(address):
     # Extract coordinates
     results = data.get("results")
     if results:
-        location = results[0]['geometry']['location']
-        return location['lat'], location['lng']
+        location = results[0]["geometry"]["location"]
+        return location["lat"], location["lng"]
     
     current_app.logger.error(f"No results found for address: {address}")
     return None, None
 
 
-
-
 def get_distances(origin, destinations, api_key):
-    """
-    Roept de Google Distance Matrix API aan om afstanden tussen een oorsprong en bestemmingen te berekenen.
-    :param origin: String, coördinaten van de oorsprong in de vorm "lat,lng".
-    :param destinations: Lijst van strings, elk in de vorm "lat,lng".
-    :param api_key: Je Google API-sleutel.
-    :return: Lijst van afstanden (in meters) of None als er een fout is.
-    """
     destinations_str = '|'.join(destinations)  # Combineer alle bestemmingen in een string
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origin)}&destinations={quote(destinations_str)}&key={api_key}"
     
