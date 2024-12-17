@@ -12,7 +12,6 @@ SUPABASE_URL = "https://rniucvwgcukfmgiscgzj.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuaXVjdndnY3VrZm1naXNjZ3pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA4OTcyNDQsImV4cCI6MjA0NjQ3MzI0NH0.8ukVk16UcFWMS6r6cfDGefE2hTkQGia8v53luWNRBRc"
 
 
-# Initialize Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
@@ -42,7 +41,6 @@ def get_coordinates(address):
         current_app.logger.error(f"Google Maps API returned an error: {error_message}")
         return None, None
 
-    # Extract coordinates
     results = data.get("results")
     if results:
         location = results[0]["geometry"]["location"]
@@ -53,7 +51,7 @@ def get_coordinates(address):
 
 
 def get_distances(origin, destinations, api_key):
-    destinations_str = '|'.join(destinations)  # Combineer alle bestemmingen in een string
+    destinations_str = '|'.join(destinations)
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origin)}&destinations={quote(destinations_str)}&key={api_key}"
     
     response = requests.get(url)
@@ -67,10 +65,10 @@ def get_distances(origin, destinations, api_key):
         return None
 
     distances = []
-    for row in data.get('rows', []):
-        for element in row.get('elements', []):
-            if element.get('status') == 'OK':
-                distances.append(element['distance']['value'])  # Afstand in meters
+    for row in data.get("rows", []):
+        for element in row.get("elements", []):
+            if element.get("status") == "OK":
+                distances.append(element["distance"]["value"])
             else:
                 distances.append(None)
     return distances
@@ -78,10 +76,6 @@ def get_distances(origin, destinations, api_key):
 
 
 def mark_expired_meals():
-    """
-    Controleer alle maaltijden en markeer degenen die zijn verlopen als EXPIRED.
-    """
-    # Haal alle maaltijden op met status AVAILABLE
     available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
     print(f"DEBUG - Available Meals: {len(available_meals)}")
 
@@ -89,46 +83,38 @@ def mark_expired_meals():
         print(f"DEBUG - Checking Meal ID: {meal.meal_id}, Name: {meal.name}")
         meal.mark_as_expired()
     
-    # Sla de wijzigingen op in de database
     db.session.commit()
 
 
 
-@main.route('/register', methods=['GET', 'POST'])
+@main.route("/register", methods=["GET", "POST"])
 def register():
-    print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
+    print(f"Session user_id: {session.get('user_id')}")
 
-    if request.method == 'POST':
-        #Haal gegevens uit het formulier
-        username = request.form['username'].strip() 
-        email = request.form['email'].strip()
-        street = request.form['street'].strip()
-        number = request.form['number'].strip()
-        zip = request.form['zip'].strip()
-        city = request.form['city'].strip()
+    if request.method == "POST":
+        username = request.form["username"].strip() 
+        email = request.form["email"].strip()
+        street = request.form["street"].strip()
+        number = request.form["number"].strip()
+        zip = request.form["zip"].strip()
+        city = request.form["city"].strip()
 
-        # Validatie van verplichte velden
         if not username or not email or not street or not number or not zip or not city:
             flash("All fields are required!")
-            return redirect(url_for('main.register'))
+            return redirect(url_for("main.register"))
 
-         # Controleer of de gebruiker al bestaat
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("User already exists. Please choose a different username or log in.")
-            return redirect(url_for('main.register'))
+            return redirect(url_for("main.register"))
         
-         # Volledig adres samenstellen
         full_address = f"{street} {number}, {zip} {city}"
 
-        # Coördinaten ophalen via de Google Maps API
         latitude, longitude = get_coordinates(full_address)
 
         if latitude is None or longitude is None:
-            # Flashmelding als het adres niet gevonden kan worden
             flash("Address not found. Please check the address and try again.")
-            # Zorg ervoor dat de rest van de velden behouden blijven, behalve het adres
-            return render_template('2. Signup.html', username=username, email=email, street=street, number=number, zip=zip, city=city)
+            return redirect(url_for("main.register"))
 
         latitude = latitude if latitude is not None else 0.0
         longitude = longitude if longitude is not None else 0.0
@@ -136,9 +122,6 @@ def register():
         if latitude == 0.0 and longitude == 0.0:
             flash("Unable to retrieve coordinates for the provided address. Using default coordinates (0,0).")
 
-
-        
-        # Als de gebruiker niet bestaat, voeg toe aan de database
         new_user = User(
             username=username,
             email=email,
@@ -148,43 +131,40 @@ def register():
             city=city,
             latitude=latitude,   
             longitude=longitude,
-            type='user'  # Standaardwaarde
+            type="user"
         )  
 
         db.session.add(new_user)
-        db.session.commit()  # Sla de gebruiker op in de database
+        db.session.commit()
 
-        # Zet de gebruiker in de sessie (om automatisch ingelogd te zijn)
-        session['user_id'] = new_user.user_id
+        session["user_id"] = new_user.user_id
         vendor_id = new_user.user_id
         customer_id = new_user.user_id
         flash("User registered successfully!")
 
-        # Redirect naar de indexpagina (na succesvolle registratie)
         return redirect(url_for('main.index'))
         
-    return render_template('2. Signup.html')  # Render de registratiepagina (GET-request)
+    return render_template('1.Register.html')
 
 
-# Login route: gebruikers kunnen zich hier aanmelden met hun gebruikersnaam
-@main.route('/login', methods=['GET', 'POST'])
+@main.route("/login", methods=["GET", "POST"])
 def login():
-    print(f"Session user_id: {session.get('user_id')}")  # Toont de opgeslagen session user_id
+    print(f"Session user_id: {session.get('user_id')}") 
 
-    if request.method == 'POST':
-        username = request.form['username'].strip()
-        user = User.query.filter_by(username=username).first()  # Zoek de gebruiker in de database
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        user = User.query.filter_by(username=username).first() 
         if user:
-            session['user_id'] = user.user_id  # Zet de gebruiker in de sessie
-            return redirect(url_for('main.index'))  # Redirect naar de indexpagina
-        flash("User not found, please try again.")  # Toon een foutmelding als de gebruiker niet bestaat
-    return render_template('1.Login.html')  # Toon de loginpagina
+            session["user_id"] = user.user_id 
+            return redirect(url_for("main.index"))  
+        flash("User not found, please try again.")
+    return render_template("2.Login.html") 
 
-# Logout route: gebruiker kan uitloggen
-@main.route('/logout', methods=['POST'])
+
+@main.route("/logout", methods=["POST"])
 def logout():
-    session.pop('user_id', None)  # Verwijder de gebruiker uit de sessie
-    return redirect(url_for('main.about_us'))  # Na uitloggen, stuur naar de loginpagina
+    session.pop("user_id", None) 
+    return redirect(url_for("main.about_us"))
 
 
 @main.route('/base')
