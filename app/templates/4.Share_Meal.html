@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeftoverLove - Create Meal</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+      padding: 20px;
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838;
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <!-- Create Meal Container -->
+    <div class="card shadow-lg" style="max-width: 500px; width: 100%;">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          <div class="alert alert-danger alert-dismissible fade show w-100" role="alert">
+            {% for category, message in messages %}
+              <strong>{{ message }}</strong>
+            {% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Logo and Title -->
+      <div class="text-center mb-4">
+        <a href="/">
+          <img src="static/pictures/logo.png" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        </a>
+        <h1>LeftoverLove</h1>
+        <h2>Waste Less, Love More</h2>
+      </div>
+      
+      <!-- Create Meal Form -->
+      <form method="POST" action="/add-meal" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="name" class="form-label">Meal Name:</label>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Enter meal name" required>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description:</label>
+          <textarea id="description" name="description" class="form-control" placeholder="Enter meal description" style="height: 100px; resize: none;" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="picture" class="form-label">Picture (Optional):</label>
+          <input type="file" id="picture" name="picture" class="form-control" accept="image/*">
+          <small class="form-text text-muted">Upload an image (JPEG, PNG, or GIF).</small>
+        </div>
+        <div class="mb-3">
+          <label for="cuisine" class="form-label">Cuisine:</label>
+          <select id="cuisine" name="cuisine" class="form-select" required>
+            <option value="ITALIAN">Italian</option>
+            <option value="BELGIAN">Belgian</option>
+            <option value="ASIAN">Asian</option>
+            <option value="FRENCH">French</option>
+            <option value="MEXICAN">Mexican</option>
+            <option value="SPANISH">Spanish</option>
+            <option value="AMERICAN">American</option>
+            <option value="OTHER">Other</option>Ò
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pickup_date" class="form-label">Pickup Date:</label>
+          <input type="date" id="pickup_date" name="pickup_date" class="form-control" required>
+          <small class="form-text text-muted">Select the date for meal pickup.</small>
+        </div>
+        <div class="mb-3">
+          <label for="pickup_start_time" class="form-label">Pickup Start Time:</label>
+          <input type="time" id="pickup_start_time" name="pickup_start_time" class="form-control" required>
+          <small class="form-text text-muted">Select the start time for the pickup slot.</small>
+        </div>
+        <div class="mb-3">
+          <label for="pickup_end_time" class="form-label">Pickup End Time:</label>
+          <input type="time" id="pickup_end_time" name="pickup_end_time" class="form-control" required>
+          <small class="form-text text-muted">Select the end time for the pickup slot.</small>
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary w-100">Add Meal</button>
+        </div>
+      </form>
+        
+        
+      </form>
+      
+      <!-- Bottom Image -->
+      <div class="text-center mt-4">
+        <img src="static/pictures/meal.png" alt="Delicious Meal" class="img-fluid rounded" style="max-width: 100%; height: auto;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
