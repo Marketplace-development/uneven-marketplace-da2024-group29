@@ -113,3 +113,19 @@ textarea.input-field {
   height: 100px;
   resize: none;
 }
+
+.save-meal-badge {
+  position: absolute;
+  top: 10px; /* Afstand van bovenkant */
+  left: 50%; /* Centreren */
+  transform: translateX(-50%);
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}

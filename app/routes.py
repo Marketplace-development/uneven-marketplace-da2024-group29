@@ -325,7 +325,8 @@ def index():
             cuisine=cuisine_filter,
             distance=distance_filter,
             today=today,
-            tomorrow=tomorrow
+            tomorrow=tomorrow,
+            datetime=datetime
             )
     else:
         return redirect(url_for("main.about_us"))

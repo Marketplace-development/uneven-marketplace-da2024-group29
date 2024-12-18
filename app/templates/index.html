@@ -42,18 +42,42 @@
     </form>
 
 
-    <!-- Display Meals -->
+
+
+<!-- Display Meals -->
 <div class="row justify-content-start">
     {% for listing in listings %}
     {% if listing.status.value == "AVAILABLE" and listing.vendor_id != user.user_id %}
         <div class="col-12 col-md-6 col-lg-3 mb-4">
-            <div class="card" style="height: 100%; border-radius: 15px;">
-                <img src="{{ listing.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ listing.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
+            <div class="card" style="height: 100%; border-radius: 15px; position: relative;">
+                
+
+                {% if listing.pickup_date and listing.pickup_end_time %}
+                    {% set pickup_datetime = datetime.combine(listing.pickup_date, listing.pickup_end_time) %}
+                    {% set remaining_time = (pickup_datetime - datetime.utcnow()).total_seconds() / 3600 %}
+                    {% if remaining_time > 0 and remaining_time <= 5 %}
+                        <div class="save-meal-badge"
+                             style="position: absolute; top: 0px; right: 0px; background-color: red; color: white; 
+                                    padding: 2px 5px; border-radius: 15px 15px 0 15px; z-index: 10; font-size: 1.2rem; font-weight: bold; text-align: center;">
+                            Save this meal
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <!-- Meal Image -->
+                <img src="{{ listing.picture or 'https://via.placeholder.com/300' }}" 
+                     class="card-img-top" 
+                     alt="{{ listing.name }}" 
+                     style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
+
+                <!-- Card Body -->
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.75rem;">{{ listing.name }}</h5>
+                    <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.75rem;">
+                        {{ listing.name }}
+                    </h5>
                     <p class="card-text">{{ listing.description or 'No description available.' }}</p>
                     <p class="card-text"><strong>Cuisine:</strong> {{ listing.cuisine.value }}</p>
-                    <p class="card-text"><strong>Distance:</strong> {{ listing.distance }} km</p> <!-- Display Distance -->
+                    <p class="card-text"><strong>Distance:</strong> {{ listing.distance }} km</p>
                     
                     <!-- Compacte rubriek voor Pickup Details -->
                     <p class="card-text">
@@ -78,8 +102,13 @@
         </div>
     {% endif %}
     {% else %}
-    <p class="text-center" style="font-size: 2.8rem; font-weight: bold; -webkit-text-stroke: 2.25px black; color: white;">There are currently no meals available...</p>
+    <p class="text-center" style="font-size: 2.8rem; font-weight: bold; -webkit-text-stroke: 2.25px black; color: white;">
+        There are currently no meals available...
+    </p>
     {% endfor %}
+</div>
+
+
 
 <!-- Toegevoegde Google Maps-kaart -->
 <div id="map" style="height: 500px; width: 100%; margin-top: 30px; border: 2px solid black; border-radius: 10px;"></div>
