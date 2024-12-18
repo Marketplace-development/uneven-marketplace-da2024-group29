@@ -9,6 +9,7 @@
     </h2>
     <form method="GET" action="{{ url_for('main.index') }}" class="mb-4">
         <div class="row">
+
             <!-- Cuisine Filter -->
             <div class="col-12 col-sm-6 col-md-4">
                 <label for="cuisine" class="form-label">Filter by Cuisine:</label>
@@ -23,19 +24,31 @@
                     <option value="American" {% if request.args.get('cuisine') == 'American' %}selected{% endif %}>American</option>
                     <option value="Other" {% if request.args.get('cuisine') == 'Other' %}selected{% endif %}>Other</option>
                 </select>
-                <small class="form-text" style="color: white;">Select "All" to see all cuisines, or choose a specific cuisine.</small>
             </div>
 
             <!-- Distance Filter -->
             <div class="col-12 col-sm-6 col-md-4">
                 <label for="distance" class="form-label">Max Distance (km):</label>
-                <input type="number" id="distance" name="distance" class="form-control" placeholder="e.g., 10" value="{{ request.args.get('distance', '') }}">
+                <input type="range" id="distance" name="distance" class="form-range"
+                       min="0" max="150" step="1" value="{{ request.args.get('distance', '150') }}"
+                       oninput="document.getElementById('distanceValue').innerText = this.value + ' km'">
+                <div class="text-white text-center mt-2">
+                    <span id="distanceValue">{{ request.args.get('distance', '150') }} km</span>
+                </div>
             </div>
+
 
             <!-- Rating Filter -->
             <div class="col-12 col-sm-6 col-md-4">
                 <label for="rating" class="form-label">Minimum Vendor Rating:</label>
-                <input type="number" id="rating" name="rating" class="form-control" step="0.1" placeholder="e.g., 4.5" value="{{ request.args.get('rating', '') }}" min="0" max="5">
+                <select class="form-select" id="rating" name="rating">
+                    <option value="" {% if not request.args.get('rating') %}selected{% endif %}>Select Rating</option>
+                    <option value="1" {% if request.args.get('rating') == '1' %}selected{% endif %}>⭐</option>
+                    <option value="2" {% if request.args.get('rating') == '2' %}selected{% endif %}>⭐⭐</option>
+                    <option value="3" {% if request.args.get('rating') == '3' %}selected{% endif %}>⭐⭐⭐</option>
+                    <option value="4" {% if request.args.get('rating') == '4' %}selected{% endif %}>⭐⭐⭐⭐</option>
+                    <option value="5" {% if request.args.get('rating') == '5' %}selected{% endif %}>⭐⭐⭐⭐⭐</option>
+                </select>
             </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
