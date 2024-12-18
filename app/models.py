@@ -1,13 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, Float, Date, Time
-import enum
 from enum import Enum
 from datetime import datetime
 
 db = SQLAlchemy()
 
 
-class CuisineType(enum.Enum):
+class CuisineType(Enum):
     ITALIAN = "Italian"
     BELGIAN = "Belgian"
     ASIAN = "Asian"
