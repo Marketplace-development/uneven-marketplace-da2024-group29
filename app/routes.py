@@ -61,7 +61,7 @@ def get_distances(origin, destinations, api_key):
 
     data = response.json()
     if data.get("status") != "OK":
-        print(f"API error: {data.get("error_message", "Unknown error")}")
+        print(f"API error: {data.get('error_message', 'Unknown error')}")
         return None
 
     distances = []
@@ -89,7 +89,7 @@ def mark_expired_meals():
 
 @main.route("/register", methods=["GET", "POST"])
 def register():
-    print(f"Session user_id: {session.get("user_id")}")
+    print(f"Session user_id: {session.get('user_id')}")
 
     if request.method == "POST":
         username = request.form.get("username").strip() 
@@ -149,7 +149,7 @@ def register():
 
 @main.route("/login", methods=["GET", "POST"])
 def login():
-    print(f"Session user_id: {session.get("user_id")}") 
+    print(f"Session user_id: {session.get('user_id')}") 
 
     if request.method == "POST":
         username = request.form["username"].strip()
@@ -479,7 +479,7 @@ def profile():
             "description": meal.description,
             "picture": meal.picture,
             "pickup_date": meal.pickup_date.strftime("%d-%m-%Y") if meal.pickup_date else "N/A",
-            "pickup_time": f"{meal.pickup_start_time.strftime("%H:%M")} - {meal.pickup_end_time.strftime("%H:%M")}" if meal.pickup_start_time and meal.pickup_end_time else "N/A",
+            "pickup_time": f"{meal.pickup_start_time.strftime('%H:%M')} - {meal.pickup_end_time.strftime('%H:%M')}" if meal.pickup_start_time and meal.pickup_end_time else "N/A",
         }
         for meal in expired_meals
     ]
