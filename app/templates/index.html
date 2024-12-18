@@ -12,7 +12,7 @@
 
             <!-- Cuisine Filter -->
             <div class="col-12 col-sm-6 col-md-4">
-                <label for="cuisine" class="form-label">Filter by Cuisine:</label>
+                <label for="cuisine" class="form-label" style="font-weight: bold; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;">Filter by Cuisine:</label>
                 <select class="form-select" id="cuisine" name="cuisine">
                     <option value="ALL" {% if request.args.get('cuisine', 'ALL') == 'ALL' %}selected{% endif %}>All</option>
                     <option value="Italian" {% if request.args.get('cuisine') == 'Italian' %}selected{% endif %}>Italian</option>
@@ -28,19 +28,22 @@
 
             <!-- Distance Filter -->
             <div class="col-12 col-sm-6 col-md-4">
-                <label for="distance" class="form-label">Max Distance (km):</label>
-                <input type="range" id="distance" name="distance" class="form-range"
-                       min="0" max="150" step="1" value="{{ request.args.get('distance', '150') }}"
-                       oninput="document.getElementById('distanceValue').innerText = this.value + ' km'">
-                <div class="text-white text-center mt-2">
-                    <span id="distanceValue">{{ request.args.get('distance', '150') }} km</span>
+                <label for="distance" class="form-label" style="font-weight: bold; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;">Max Distance (km):</label>
+                <div style="position: relative;">
+                    <input type="range" id="distance" name="distance" class="form-range"
+                        min="0" max="150" step="1" value="{{ request.args.get('distance', '150') }}"
+                        oninput="document.getElementById('distanceValue').innerText = this.value + ' km'">
+                <div class="text-white text-center" style="font-weight: bold; position: absolute; top: 20px; left: 50%; transform: translateX(-50%);">
+                    <span id="distanceValue" style="text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;">{{ request.args.get('distance', '150') }} km</span>
                 </div>
             </div>
+        </div>
+
 
 
             <!-- Rating Filter -->
             <div class="col-12 col-sm-6 col-md-4">
-                <label for="rating" class="form-label">Minimum Vendor Rating:</label>
+                <label for="rating" class="form-label" style="font-weight: bold; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;">Minimum Vendor Rating:</label>
                 <select class="form-select" id="rating" name="rating">
                     <option value="" {% if not request.args.get('rating') %}selected{% endif %}>Select Rating</option>
                     <option value="1" {% if request.args.get('rating') == '1' %}selected{% endif %}>⭐</option>

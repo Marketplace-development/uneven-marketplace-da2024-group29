@@ -116,8 +116,8 @@ textarea.input-field {
 
 .save-meal-badge {
   position: absolute;
-  top: 10px; /* Afstand van bovenkant */
-  left: 50%; /* Centreren */
+  top: 10px; 
+  left: 50%; 
   transform: translateX(-50%);
   background-color: red;
   color: white;
@@ -128,4 +128,8 @@ textarea.input-field {
   z-index: 10;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   text-align: center;
+}
+
+label, .text-white, #distanceValue {
+  font-weight: bold;
 }
