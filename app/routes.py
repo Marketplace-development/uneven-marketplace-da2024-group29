@@ -265,8 +265,10 @@ def index():
 
         mark_expired_meals()
 
-        meal_offerings = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
-        print(f"DEBUG - Available Meals after marking expired: {len(meal_offerings)}")
+        meal_offerings = Meal_offerings.query.filter(
+            Meal_offerings.status == MealStatus.AVAILABLE,
+            Meal_offerings.vendor_id != user.user_id
+            ).all()
 
         origin = f"{user.latitude},{user.longitude}"
         cuisine_filter = request.args.get("cuisine", "ALL")
