@@ -54,12 +54,14 @@
             </div>
         </div>
             </div>
-        <div class="d-flex align-items-center mt-3">
-            <button type="submit" class="btn btn-primary">Apply Filters</button>
+
+
+        <div class="col-12 d-flex align-items-center mt-3" style="margin-bottom: 20px;">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px; font-size: 1rem; font-weight: bold; margin-right: 10px;">Apply Filters</button>
             {% if request.args.get('cuisine') and request.args.get('cuisine') != 'ALL' or
                   request.args.get('distance') and request.args.get('distance') != '150' or
                   request.args.get('rating') %}
-                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary ms-2" style="background-color: black; color: white; border: none; padding: 8px 18px;">Reset Filters</a>
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary ms-2" style="background-color: black; color: white; border: none; padding: 11px 18px;">Reset Filters</a>
             {% endif %}
         </div>
     </form>        

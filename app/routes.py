@@ -178,6 +178,7 @@ def upload_to_supabase_storage(bucket_name, file, filename):
         return None
     return supabase.storage.from_(bucket_name).get_public_url(filename)
 
+
 @main.route("/add-meal", methods=["GET", "POST"])
 def add_meal():
     user_id = session.get("user_id")

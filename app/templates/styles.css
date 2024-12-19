@@ -133,3 +133,14 @@ textarea.input-field {
 label, .text-white, #distanceValue {
   font-weight: bold;
 }
+
+.btn-primary {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.d-flex.justify-content-start {
+  align-items: center;
+}
