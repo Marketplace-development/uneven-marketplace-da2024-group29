@@ -98,10 +98,21 @@
         <p><strong>Description:</strong> {{ meal.description }}</p>
       </div>
 
+
       <!-- Pickup Time Display -->
       <div class="pickup-container">
-        <p><strong>Pickup Time:</strong> {{ pickup_time.strftime('%I:%M %p') }}</p>
+        <p><strong>Pickup Time:</strong></p>
+        <p>
+          {% if meal.pickup_date == today %}
+            <strong>Today</strong> between {{ pickup_time.strftime('%I:%M %p') }}
+          {% elif meal.pickup_date == tomorrow %}
+            <strong>Tomorrow</strong> between {{ pickup_time.strftime('%I:%M %p') }}
+          {% else %}
+            <strong>on {{ meal.pickup_date.strftime('%d-%m-%Y') }}</strong> between {{ pickup_time.strftime('%I:%M %p') }}
+          {% endif %}
+        </p>
       </div>
+
 
       <!-- Back to Meals Button -->
       <div class="text-center back-to-meals-btn">
