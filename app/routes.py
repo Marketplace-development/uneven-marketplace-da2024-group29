@@ -303,8 +303,12 @@ def index():
             vendor = User.query.get(meal.vendor_id)
             if vendor:
                 vendor_coords = f"{vendor.latitude},{vendor.longitude}"
-                destinations.append(vendor_coords)
-                vendor_mapping[vendor_coords] = meal
+                if vendor_coords not in vendor_mapping:
+                    vendor_mapping[vendor_coords] = []
+                vendor_mapping[vendor_coords].append(meal)
+                if vendor_coords not in destinations:
+                    destinations.append(vendor_coords)
+                
 
         api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
         distances = get_distances(origin, destinations, api_key)
@@ -313,9 +317,10 @@ def index():
         if distances:
             for distance, coords in zip(distances, destinations):
                 if distance and distance / 1000 <= distance_filter:
-                    meal = vendor_mapping[coords]
-                    meal.distance = round(distance / 1000, 2)
-                    filtered_meals.append(meal)
+                    meals = vendor_mapping[coords]
+                    for meal in meals:
+                        meal.distance = round(distance / 1000, 2)
+                        filtered_meals.append(meal)
 
         return render_template(
             "index.html",
