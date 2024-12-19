@@ -268,7 +268,7 @@ def index():
         meal_offerings = Meal_offerings.query.filter(
             Meal_offerings.status == MealStatus.AVAILABLE,
             Meal_offerings.vendor_id != user.user_id
-            ).all()
+        ).all()
 
         origin = f"{user.latitude},{user.longitude}"
         cuisine_filter = request.args.get("cuisine", "ALL")
@@ -279,7 +279,7 @@ def index():
         except ValueError:
             distance_filter = 1000000.0
 
-        meal_offerings = Meal_offerings.query.filter_by(status="AVAILABLE").all()
+        #meal_offerings = Meal_offerings.query.filter_by(status="AVAILABLE").all()
 
         meal_offerings.sort(
             key=lambda meal: (
