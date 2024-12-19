@@ -280,13 +280,6 @@ def index():
         except ValueError:
             distance_filter = 1000000.0
 
-        meal_offerings.sort(
-            key=lambda meal: (
-                meal.pickup_date or date.max,
-                meal.pickup_end_time or time.max
-            )
-        )
-
         if cuisine_filter != "ALL":
             try:
                 selected_cuisine = CuisineType(cuisine_filter)
@@ -295,16 +288,22 @@ def index():
                 ]
             except KeyError:
                 meal_offerings = []
-        
+
         if min_vendor_rating is not None:
             try:
-                min_vendor_rating = float(min_vendor_rating)
                 meal_offerings = [
                     meal for meal in meal_offerings
                     if Vendor.query.get(meal.vendor_id) and Vendor.query.get(meal.vendor_id).average_rating >= min_vendor_rating
-                 ]
+                ]
             except (ValueError, AttributeError):
-                meal_offerings = [] 
+                meal_offerings = []
+
+        meal_offerings.sort(
+            key=lambda meal: (
+                meal.pickup_date or date.max,
+                meal.pickup_end_time or time.max
+            )
+        )
 
         destinations = []
         vendor_mapping = {}
@@ -317,7 +316,6 @@ def index():
                 vendor_mapping[vendor_coords].append(meal)
                 if vendor_coords not in destinations:
                     destinations.append(vendor_coords)
-                
 
         api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
         distances = get_distances(origin, destinations, api_key)
@@ -331,6 +329,13 @@ def index():
                         meal.distance = round(distance / 1000, 2)
                         filtered_meals.append(meal)
 
+        filtered_meals.sort(
+            key=lambda meal: (
+                meal.pickup_date or date.max,
+                meal.pickup_end_time or time.max
+            )
+        )
+
         return render_template(
             "index.html",
             username=user.username,
@@ -341,9 +346,10 @@ def index():
             today=today,
             tomorrow=tomorrow,
             datetime=datetime
-            )
+        )
     else:
         return redirect(url_for("main.about_us"))
+
 
 
 @main.route("/meal/<int:meal_id>", methods=["GET", "POST"])
