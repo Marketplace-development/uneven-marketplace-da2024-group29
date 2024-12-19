@@ -551,6 +551,7 @@ def delete_meal(meal_id):
     
     return redirect(url_for("main.profile"))
 
+
 @main.route("/rate-vendor/<int:vendor_id>", methods=["POST"])
 def rate_vendor(vendor_id):
     user_id = session.get("user_id")
@@ -612,3 +613,36 @@ def available_meals():
 @main.route("/meal-map")
 def meal_map():
     return render_template("meal_map.html")
+
+
+
+@main.route("/pick-up/<int:meal_id>", methods=["GET"])
+def pick_up(meal_id):
+    # Haal de maaltijd op uit de database
+    meal = Meal_offerings.query.get_or_404(meal_id)
+
+    # Haal de vendor op die de maaltijd aanbiedt
+    vendor = User.query.get_or_404(meal.vendor_id)
+
+    # Controleer of de huidige gebruiker geautoriseerd is
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to view this page.", "error")
+        return redirect(url_for("main.login"))
+
+    # Controleer of de maaltijd al geclaimd is door de gebruiker
+    transaction = Transaction.query.filter_by(meal_id=meal_id, customer_id=user_id).first()
+    if not transaction:
+        flash("You are not authorized to view this page.", "error")
+        return redirect(url_for("main.index"))
+
+    # Bereid de afhaaltijd voor
+    pickup_time = meal.pickup_start_time
+
+    # Render de Pick_up.html-template met de juiste gegevens
+    return render_template(
+        "Pick_up.html",
+        meal=meal,
+        vendor=vendor,
+        pickup_time=pickup_time
+    )

@@ -226,9 +226,14 @@
                                 <input type="hidden" name="meal_id" value="{{ meal.id }}">
                                 <label for="rating-{{ meal.id }}">Rate this meal ⭐ (max. 5):</label>
                                 <input type="number" id="rating-{{ meal.id }}" name="rating" class="form-control" min="0" max="5" required>
-                                <button type="submit" class="btn btn-primary mt-2">Submit Rating</button>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                                    <a href="{{ url_for('main.pick_up', meal_id=meal.id) }}" class="btn" style="background-color: #0d6efd; color: white; border-color: #0d6efd; margin-top: 0px; 
+                                            height: 40px; display: inline-flex; align-items: center; justify-content: center;">Details</a>
+                                </div>
                             </form>
                             {% endif %}
+
                         </div>
                     </div>
                 </div>
