@@ -11,18 +11,13 @@
   <style>
     body {
       background-color: #d4f7d5; /* Pastel green background */
-      font-family: Arial, sans-serif;
     }
     .card {
       border-radius: 20px; /* Rounded corners */
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     }
     .btn-primary {
       background-color: #28a745; /* Green button */
       border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      font-weight: bold;
     }
     .btn-primary:hover {
       background-color: #218838; /* Darker green on hover */
@@ -30,54 +25,44 @@
     h1 {
       font-weight: bold;
       color: #28a745;
-      font-size: 2.5rem;
     }
     h2 {
       color: #ffa500; /* Orange subtitle */
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
     }
     .message {
-      font-size: 1.8rem;
+      font-size: 1.5em;
       color: white;
-      padding: 20px;
+      padding: 15px;
       background-color: #28a745; /* Green background for success */
       border-radius: 15px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
     .pickup-container {
       background-color: #eafded; /* Light green background */
       border-radius: 15px;
-      padding: 20px;
-      text-align: left;
-      font-size: 1.1rem;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.2em;
       margin-bottom: 15px;
-    }
-    .pickup-container p {
-      margin: 0;
     }
     .pickup-address {
       font-weight: bold;
-      color: #28a745;
-      margin-top: 5px;
+      margin-top: 10px;
     }
     .back-to-meals-btn {
-      margin-top: 20px;
-    }
-    .logo {
-      max-width: 120px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      margin-bottom: 15px; 
     }
   </style>
 </head>
 <body>
   <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
-    <div class="card p-4" style="max-width: 500px; width: 100%;">
+    <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
       <!-- Logo -->
-      <div class="text-center">
-        <a href="/" title="Go back to meals">
-          <img src="{{ url_for('static', filename='pictures/logo.png') }}" alt="Logo" class="img-fluid logo">
+      <div class="text-center mb-4">
+        <a href="{{ url_for('main.index') }}">
+          <img src="{{ url_for('static', filename='pictures/logo.png') }}" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
         </a>
         <h1>LeftoverLove</h1>
         <h2>Waste Less, Love More</h2>
@@ -88,7 +73,7 @@
 
       <!-- Pickup Address -->
       <div class="pickup-container">
-        <p><strong>Pick up your meal at:</strong></p>
+        <p>Pick up your meal at:</p>
         <p class="pickup-address">{{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
       </div>
 
@@ -98,29 +83,28 @@
         <p><strong>Description:</strong> {{ meal.description }}</p>
       </div>
 
-
       <!-- Pickup Time Display -->
       <div class="pickup-container">
-        <p><strong>Pickup Time:</strong></p>
-        <p>
-          {% if meal.pickup_date == today %}
-            <strong>Today</strong> between {{ pickup_time.strftime('%I:%M %p') }}
-          {% elif meal.pickup_date == tomorrow %}
-            <strong>Tomorrow</strong> between {{ pickup_time.strftime('%I:%M %p') }}
-          {% else %}
-            <strong>on {{ meal.pickup_date.strftime('%d-%m-%Y') }}</strong> between {{ pickup_time.strftime('%I:%M %p') }}
-          {% endif %}
-        </p>
-      </div>
+      <p><strong>Pickup Time:</strong></p>
+      <p>
+        {% if meal.pickup_date == today %}
+          <strong>Today</strong> between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}
+        {% elif meal.pickup_date == tomorrow %}
+          <strong>Tomorrow</strong> between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}
+        {% else %}
+          <strong>on {{ meal.pickup_date.strftime('%d-%m-%Y') }}</strong> between {{ meal.pickup_start_time.strftime('%H:%M') }} and {{ meal.pickup_end_time.strftime('%H:%M') }}
+        {% endif %}
+      </p>
+    </div>
 
 
       <!-- Back to Meals Button -->
       <div class="text-center back-to-meals-btn">
-        <a href="/" class="btn btn-primary w-100">Back to Meals</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary" style="width: 100%;">Back to meals!</a>
       </div>
 
       <!-- Bottom Image -->
-      <div class="text-center mt-4">
+      <div class="text-center">
         <img src="{{ url_for('static', filename='pictures/heart.png') }}" alt="Heart-shaped food display" class="img-fluid" style="max-width: 100%; border-radius: 15px;">
       </div>
     </div>

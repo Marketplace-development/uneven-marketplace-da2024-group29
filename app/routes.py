@@ -629,6 +629,10 @@ def pick_up(meal_id):
 
     vendor = User.query.get_or_404(meal.vendor_id)
 
+    today = datetime.utcnow().date()
+    tomorrow = today + timedelta(days=1)
+
+
     user_id = session.get("user_id")
     if not user_id:
         flash("You must be logged in to view this page.", "error")
@@ -645,5 +649,7 @@ def pick_up(meal_id):
         "Pick_up.html",
         meal=meal,
         vendor=vendor,
+        today=today,
+        tomorrow=tomorrow,
         pickup_time=pickup_time
     )
