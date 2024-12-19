@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeftoverLove - Meal Saved</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #d4f7d5; /* Pastel green background */
+    }
+    .card {
+      border-radius: 20px; /* Rounded corners */
+    }
+    .btn-primary {
+      background-color: #28a745; /* Green button */
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #218838; /* Darker green on hover */
+    }
+    h1 {
+      font-weight: bold;
+      color: #28a745;
+    }
+    h2 {
+      color: #ffa500; /* Orange subtitle */
+    }
+    .message {
+      font-size: 1.5em;
+      color: white;
+      padding: 15px;
+      background-color: #28a745; /* Green background for success */
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .pickup-container {
+      background-color: #eafded; /* Light green background */
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    .pickup-address {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .back-to-meals-btn {
+      margin-bottom: 15px;
+      margin-bottom: 15px; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-5" style="max-width: 500px; width: 100%;">
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='pictures/logo.png') }}" alt="Logo" class="img-fluid mb-3" style="max-width: 100px;">
+        <h1>LeftoverLove</h1>
+        <h2>Waste Less, Love More</h2>
+      </div>
+
+      <!-- Success Message -->
+      <div class="message">Well done!<br>Another meal saved!</div>
+
+      <!-- Pickup Address -->
+      <div class="pickup-container">
+        <p>Pick up your meal at:</p>
+        <p class="pickup-address">{{ vendor.street }} {{ vendor.number }}, {{ vendor.city }}</p>
+      </div>
+
+      <!-- Meal Details -->
+      <div class="pickup-container">
+        <p><strong>Meal:</strong> {{ meal.name }}</p>
+        <p><strong>Description:</strong> {{ meal.description }}</p>
+      </div>
+
+      <!-- Pickup Time Display -->
+      <div class="pickup-container">
+        <p><strong>Pickup Time:</strong> {{ pickup_time.strftime('%I:%M %p') }}</p>
+    </div>
+    
+
+
+      <!-- Back to Meals Button -->
+      <div class="text-center back-to-meals-btn">
+        <a href="/" class="btn btn-primary" style="width: 100%;">Back to meals!</a>
+      </div>
+
+      <!-- Bottom Image -->
+      <div class="text-center">
+        <img src="{{ url_for('static', filename='pictures/heart.png') }}" alt="Heart-shaped food display" class="img-fluid" style="max-width: 100%; border-radius: 15px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
