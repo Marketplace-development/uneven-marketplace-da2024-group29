@@ -163,7 +163,7 @@
     </div>
     
 
-   <!-- Shared Meals Section --> 
+    <!-- Shared Meals Section -->
     <div class="section">
         <h2 class="d-flex align-items-center justify-content-between" 
             data-bs-toggle="collapse" data-bs-target="#shared-meals-collapse" aria-expanded="true" aria-controls="shared-meals-collapse" style="cursor: pointer;">
@@ -175,18 +175,25 @@
                 {% for meal in shared_meals %}
                 <div class="col-12 col-md-6 col-lg-3 mb-4">
                     <div class="card" style="height: 100%; border-radius: 15px;">
-                        <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                        <img src="{{ meal.picture or 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ meal.name }}" 
+                         style="height: 200px; object-fit: cover; border-radius: 15px 15px 0 0;">
                         <div class="card-body">
-                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">{{ meal.name }}</h5>
-                            <p class="card-text">{{ meal.description }}</p>
-                            <p class="card-text"><strong>Status:</strong> 
+                            <h5 class="card-title" style="text-align: center; font-weight: bold; margin-bottom: 15px;">
+                            {{ meal.name }}
+                            </h5>
+                            <p class="card-text fixed-description">{{ meal.description }}</p>
+                            <p class="card-text">
+                                <strong>Status:</strong> 
                                 {% if meal.claimed_date %}
-                                Claimed on {{ meal.claimed_date.strftime('%d-%m-%Y at %H:%M') }}
+                                    Claimed on {{ meal.claimed_date.strftime('%d-%m-%Y at %H:%M') }}
                                 {% else %}
-                                Available
+                                    Available
                                 {% endif %}
                             </p>
-                            <p class="card-text"><strong>Rating:</strong> {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}</p>
+                            <p class="card-text">
+                                <strong>Rating:</strong> 
+                                {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}
+                            </p>
                             {% if meal.status == "AVAILABLE" %}
                             <form action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" method="post">
                                 <button type="submit" class="btn btn-danger w-100" style="background-color: red; color: white; border: none; padding: 10px 20px; cursor: pointer;">
@@ -202,6 +209,15 @@
         </div>
     </div>
 
+    <!-- CSS for Fixed Description -->
+    <style>
+        .fixed-description {
+            height: 60px; /* Vaste hoogte voor de beschrijving */
+            overflow: hidden; /* Verberg overloopende tekst */
+            text-overflow: ellipsis; /* Toon '...' als de tekst wordt afgekapt */
+            white-space: normal; /* Tekst kan over meerdere regels gaan */
+        }
+    </style>
 
 
     <!-- Claimed Meals Section -->
