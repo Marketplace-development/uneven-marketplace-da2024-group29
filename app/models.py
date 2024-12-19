@@ -17,7 +17,9 @@ class User(db.Model):
     type = db.Column(db.String(50))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     latitude = db.Column(Float, nullable=True)                     
-    longitude = db.Column(Float, nullable=True)                     
+    longitude = db.Column(Float, nullable=True) 
+
+    listings = db.relationship("Listing", backref="user", lazy=True)                    
 
     __mapper_args__ = {
         "polymorphic_on": type,
@@ -130,3 +132,13 @@ class Review(db.Model):
     meal = db.relationship("Meal_offerings", backref="reviews")
     customer = db.relationship("Customer", backref="reviews")
     vendor = db.relationship("Vendor", backref="reviews")
+
+class Listing(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    listing_name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Listing {self.listing_name}, ${self.price}>'
+    
+
