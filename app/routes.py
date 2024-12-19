@@ -262,7 +262,6 @@ def index():
         today = datetime.utcnow().date()
         tomorrow = today + timedelta(days=1)
 
-
         mark_expired_meals()
 
         meal_offerings = Meal_offerings.query.filter(
@@ -273,13 +272,12 @@ def index():
         origin = f"{user.latitude},{user.longitude}"
         cuisine_filter = request.args.get("cuisine", "ALL")
         distance_param = request.args.get("distance", "1000000")
-        
+        min_vendor_rating = request.args.get("rating", type=float)
+
         try:
             distance_filter = float(distance_param)
         except ValueError:
             distance_filter = 1000000.0
-
-        #meal_offerings = Meal_offerings.query.filter_by(status="AVAILABLE").all()
 
         meal_offerings.sort(
             key=lambda meal: (
@@ -296,6 +294,16 @@ def index():
                 ]
             except KeyError:
                 meal_offerings = []
+        
+        if min_vendor_rating is not None:
+            try:
+                min_vendor_rating = float(min_vendor_rating)
+                meal_offerings = [
+                    meal for meal in meal_offerings
+                    if Vendor.query.get(meal.vendor_id) and Vendor.query.get(meal.vendor_id).average_rating >= min_vendor_rating
+                 ]
+            except (ValueError, AttributeError):
+                meal_offerings = [] 
 
         destinations = []
         vendor_mapping = {}

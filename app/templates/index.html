@@ -40,8 +40,6 @@
             </div>
         </div>
 
-
-
             <!-- Rating Filter -->
             <div class="col-12 col-sm-6 col-md-4">
                 <label for="rating" class="form-label" style="font-weight: bold; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;">Minimum Vendor Rating:</label>
@@ -55,6 +53,7 @@
                 </select>
             </div>
         </div>
+            </div>
         <div class="d-flex align-items-center mt-3">
             <button type="submit" class="btn btn-primary">Apply Filters</button>
             {% if request.args.get('cuisine') and request.args.get('cuisine') != 'ALL' or
