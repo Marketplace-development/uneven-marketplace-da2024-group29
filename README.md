@@ -18,9 +18,7 @@ Volg deze stappen om de applicatie lokaal te draaien:
    git clone https://github.com/Marketplace-development/uneven-marketplace-da2024-group29.git
 
 ## Mapstructuur
-Mapstructuur
-------------
-
+```plaintext
 uneven-marketplace-da2024-group29/
 ├── app/
 │   ├── __init__.py
