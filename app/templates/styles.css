@@ -116,19 +116,19 @@ textarea.input-field {
 
 .save-meal-badge {
   position: absolute;
-  top: 10px; 
-  left: 50%; 
-  transform: translateX(-50%);
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 0.9rem;
-  z-index: 10;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  text-align: center;
+  top: 0; /* Bovenaan de kaart */
+  left: 0; /* Links starten */
+  width: 100%; /* Volledige breedte */
+  background-color: red; /* Achtergrondkleur */
+  color: white; /* Tekstkleur */
+  font-weight: bold; /* Vetgedrukte tekst */
+  padding: 5px 0; /* Verticaal wat padding */
+  font-size: 1.2rem; /* Grotere tekst */
+  text-align: center; /* Tekst centreren */
+  border-radius: 15px 15px 0 0; /* Alleen de bovenste hoeken afgerond */
+  z-index: 10; /* Zorg dat het bovenop staat */
 }
+
 
 label, .text-white, #distanceValue {
   font-weight: bold;

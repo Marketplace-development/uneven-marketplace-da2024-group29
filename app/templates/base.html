@@ -10,6 +10,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
 
   <style>
     body {
@@ -85,10 +87,11 @@
                 <img src="{{ url_for('static', filename='pictures/logo.png') }}?v=1" alt="Logo">
             </a>
             <div class="navbar-center">
-                <a href="/" class="btn btn-custom">Meals</a>
                 <a href="/add-meal" class="btn btn-custom">Share Meal</a>
+                <a href="/" class="btn btn-custom">Meals</a>
+                <a href="{{ url_for('main.meal_map') }}" class="btn btn-custom">Meal Map</a>
                 <a href="{{ url_for('main.about_us') }}" class="btn btn-custom">About Us</a>
-                <a href="{{ url_for('main.meal_map') }}" class="btn btn-custom">Meal Map</a> <!-- Nieuwe knop toegevoegd -->
+
             </div>
             <div class="d-flex align-items-center">
                 <a href="{{ url_for('main.profile') }}" class="btn btn-outline-success">My Profile</a>
