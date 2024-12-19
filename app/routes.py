@@ -140,8 +140,8 @@ def register():
         session["user_id"] = new_user.user_id
         vendor_id = new_user.user_id
         customer_id = new_user.user_id
-        flash("User registered successfully!")
 
+        flash("Registration successful!", "success")
         return redirect(url_for("main.index"))
         
     return render_template("Register.html")
