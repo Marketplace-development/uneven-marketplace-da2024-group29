@@ -541,28 +541,31 @@ def profile():
     )
 
 
+
+
 @main.route("/delete_meal/<int:meal_id>", methods=["POST"])
 def delete_meal(meal_id):
     user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to perform this action.", "error")
+        flash("You must be logged in to perform this action.", "danger")
         return redirect(url_for("main.login"))
 
     meal = Meal_offerings.query.filter_by(meal_id=meal_id, vendor_id=user_id).first()
-    if not meal:
-        flash("Meal not found or you are not authorized to delete it.", "danger")
+    if not meal or meal.status == MealStatus.DELETED:
+        flash("Meal not found or already deleted.", "danger")
         return redirect(url_for("main.profile"))
 
     try:
         meal.status = MealStatus.DELETED
-        meal.deleted_at = datetime.utcnow()
+        meal.deleted_at = datetime.utcnow()  # Controleer dat je een `deleted_at`-kolom hebt
         db.session.commit()
-        flash("Meal deleted successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash(f"An error occurred while deleting the meal. Please try again.", "danger")
 
-    
+        flash(f"Meal '{meal.name}' deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()  # Rollback database in geval van fout
+        flash("An error occurred while deleting the meal. Please try again.", "danger")
+        print(f"Error while deleting meal: {e}")  # Log de fout in de console voor debugging
+
     return redirect(url_for("main.profile"))
 
 

@@ -194,7 +194,7 @@
                                 <strong>Rating:</strong> 
                                 {{ meal.reviews[0].score ~ ' ⭐' if meal.reviews else 'No rating yet' }}
                             </p>
-                            {% if meal.status == "AVAILABLE" %}
+                            {% if meal.status.value == "AVAILABLE" %}
                             <form action="{{ url_for('main.delete_meal', meal_id=meal.id) }}" method="post">
                                 <button type="submit" class="btn btn-danger w-100" style="background-color: red; color: white; border: none; padding: 10px 20px; cursor: pointer;">
                                     Delete
