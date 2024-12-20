@@ -19,75 +19,6 @@ supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 main = Blueprint("main", __name__)
 
 
-def get_coordinates(address):
-    api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
-    if not api_key:
-        current_app.logger.error("Google Maps API key is missing!")
-        return None, None
-
-    encoded_address = quote(address)
-
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
-
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        current_app.logger.error(f"Google Maps API request failed. Status code: {response.status_code}")
-        print(f"API Response: {response.text}")
-        return None, None
-
-    data = response.json()
-    if data.get("status") != "OK":
-        error_message = data.get("error_message", "Unknown error")
-        current_app.logger.error(f"Google Maps API returned an error: {error_message}")
-        return None, None
-
-    results = data.get("results")
-    if results:
-        location = results[0]["geometry"]["location"]
-        return location["lat"], location["lng"]
-    
-    current_app.logger.error(f"No results found for address: {address}")
-    return None, None
-
-
-def get_distances(origin, destinations, api_key):
-    destinations_str = '|'.join(destinations)
-    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origin)}&destinations={quote(destinations_str)}&key={api_key}"
-    
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"API request failed: {response.status_code}")
-        return None
-
-    data = response.json()
-    if data.get("status") != "OK":
-        print(f"API error: {data.get('error_message', 'Unknown error')}")
-        return None
-
-    distances = []
-    for row in data.get("rows", []):
-        for element in row.get("elements", []):
-            if element.get("status") == "OK":
-                distances.append(element["distance"]["value"])
-            else:
-                distances.append(None)
-    return distances
-
-
-
-def mark_expired_meals():
-    available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
-    print(f"DEBUG - Available Meals: {len(available_meals)}")
-
-    for meal in available_meals:
-        print(f"DEBUG - Checking Meal ID: {meal.meal_id}, Name: {meal.name}")
-        meal.mark_as_expired()
-    
-    db.session.commit()
-
-
-
 @main.route("/register", methods=["GET", "POST"])
 def register():
     print(f"Session user_id: {session.get('user_id')}")
@@ -166,94 +97,6 @@ def login():
 def logout():
     session.pop("user_id", None) 
     return redirect(url_for("main.about_us"))
-
-
-@main.route("/base")
-def base():
-    return render_template("base.html")
-
-def upload_to_supabase_storage(bucket_name, file, filename):
-    response = supabase.storage.from_(bucket_name).upload(filename, file)
-    if response.get("error"):
-        print("Error uploading file:", response["error"])
-        return None
-    return supabase.storage.from_(bucket_name).get_public_url(filename)
-
-
-@main.route("/add-meal", methods=["GET", "POST"])
-def add_meal():
-    user_id = session.get("user_id")
-    if request.method == "POST":
-        name = request.form.get("name")
-        description = request.form.get("description")
-        picture = request.files.get("picture")
-        cuisine = request.form.get("cuisine")
-        pickup_date = request.form.get("pickup_date")
-        pickup_start_time = request.form.get("pickup_start_time")
-        pickup_end_time = request.form.get("pickup_end_time")
-
-        if not all([name, description, cuisine, pickup_date, pickup_start_time, pickup_end_time]):
-            flash("Fill in required fields!", "error")
-            return redirect(url_for("main.add_meal"))
-        
-        if not user_id:
-            flash("You must be logged in to add a meal.", "error")
-            return redirect(url_for("main.login"))
-
-        try:
-            parsed_date = datetime.strptime(pickup_date, "%Y-%m-%d").date()
-            start_time = datetime.strptime(pickup_start_time, "%H:%M").time()
-            end_time = datetime.strptime(pickup_end_time, "%H:%M").time()
-
-            if end_time <= start_time:
-                flash("Pickup end time must be later than the start time.", "error")
-                return redirect(url_for("main.add_meal"))
-        except ValueError:
-            flash("Invalid date or time format.", "error")
-            return redirect(url_for("main.add_meal"))
-
-        picture_url = "static/pictures/logo.png"
-        if picture:
-            def sanitize_filename(filename):
-                cleaned_filename = re.sub(r'[^\w\-_\.]', '_', filename)
-                return cleaned_filename
-            
-            original_filename = picture.filename
-            sanitized_filename = sanitize_filename(original_filename)
-
-            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{sanitized_filename}"
-            
-            response = supabase.storage.from_("picture").upload(filename, picture.read())
-            if not response:
-                flash("Error uploading image to Supabase.", "error")
-                return redirect(url_for("main.add_meal"))
-            picture_url = supabase.storage.from_("picture").get_public_url(filename)
-
-        existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
-
-        if not existing_vendor:
-            vendor = Vendor(vendor_id=user_id)
-            db.session.add(vendor)
-            db.session.commit()
-
-        new_meal = Meal_offerings(
-            name=name,
-            description=description,
-            picture=picture_url, 
-            vendor_id=user_id,
-            cuisine=CuisineType[cuisine],
-            pickup_date = parsed_date,
-            pickup_start_time = start_time,
-            pickup_end_time = end_time
-        )
-
-        db.session.add(new_meal)
-        db.session.commit()
-
-        flash("Meal added successfully!", "success")
-        return redirect(url_for("main.index"))
-
-    return render_template("Share_Meal.html", cuisines=CuisineType)
 
 
 @main.route('/', methods=["GET", "POST"])
@@ -352,6 +195,104 @@ def index():
         return redirect(url_for("main.about_us"))
 
 
+@main.route("/base")
+def base():
+    return render_template("base.html")
+
+
+@main.route("/add-meal", methods=["GET", "POST"])
+def add_meal():
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        name = request.form.get("name")
+        description = request.form.get("description")
+        picture = request.files.get("picture")
+        cuisine = request.form.get("cuisine")
+        pickup_date = request.form.get("pickup_date")
+        pickup_start_time = request.form.get("pickup_start_time")
+        pickup_end_time = request.form.get("pickup_end_time")
+
+        if not all([name, description, cuisine, pickup_date, pickup_start_time, pickup_end_time]):
+            flash("Fill in required fields!", "error")
+            return redirect(url_for("main.add_meal"))
+        
+        if not user_id:
+            flash("You must be logged in to add a meal.", "error")
+            return redirect(url_for("main.login"))
+
+        try:
+            parsed_date = datetime.strptime(pickup_date, "%Y-%m-%d").date()
+            start_time = datetime.strptime(pickup_start_time, "%H:%M").time()
+            end_time = datetime.strptime(pickup_end_time, "%H:%M").time()
+
+            if end_time <= start_time:
+                flash("Pickup end time must be later than the start time.", "error")
+                return redirect(url_for("main.add_meal"))
+        except ValueError:
+            flash("Invalid date or time format.", "error")
+            return redirect(url_for("main.add_meal"))
+
+        picture_url = "static/pictures/logo.png"
+        if picture:
+            def sanitize_filename(filename):
+                cleaned_filename = re.sub(r'[^\w\-_\.]', '_', filename)
+                return cleaned_filename
+            
+            original_filename = picture.filename
+            sanitized_filename = sanitize_filename(original_filename)
+
+            filename = f"{user_id}_{datetime.utcnow().isoformat()}_{sanitized_filename}"
+            
+            response = supabase.storage.from_("picture").upload(filename, picture.read())
+            if not response:
+                flash("Error uploading image to Supabase.", "error")
+                return redirect(url_for("main.add_meal"))
+            picture_url = supabase.storage.from_("picture").get_public_url(filename)
+
+        existing_vendor = Vendor.query.filter_by(vendor_id=user_id).first()
+
+        if not existing_vendor:
+            vendor = Vendor(vendor_id=user_id)
+            db.session.add(vendor)
+            db.session.commit()
+
+        new_meal = Meal_offerings(
+            name=name,
+            description=description,
+            picture=picture_url, 
+            vendor_id=user_id,
+            cuisine=CuisineType[cuisine],
+            pickup_date = parsed_date,
+            pickup_start_time = start_time,
+            pickup_end_time = end_time
+        )
+
+        db.session.add(new_meal)
+        db.session.commit()
+
+        flash("Meal added successfully!", "success")
+        return redirect(url_for("main.index"))
+
+    return render_template("Share_Meal.html", cuisines=CuisineType)
+
+def upload_to_supabase_storage(bucket_name, file, filename):
+    response = supabase.storage.from_(bucket_name).upload(filename, file)
+    if response.get("error"):
+        print("Error uploading file:", response["error"])
+        return None
+    return supabase.storage.from_(bucket_name).get_public_url(filename)
+
+
+def mark_expired_meals():
+    available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
+    print(f"DEBUG - Available Meals: {len(available_meals)}")
+
+    for meal in available_meals:
+        print(f"DEBUG - Checking Meal ID: {meal.meal_id}, Name: {meal.name}")
+        meal.mark_as_expired()
+    
+    db.session.commit()
+
 
 @main.route("/meal/<int:meal_id>", methods=["GET", "POST"])
 def meal_details(meal_id):
@@ -406,6 +347,64 @@ def claim_meal(meal_id):
     
     flash("Meal successfully claimed!", "success")
     return redirect(url_for("main.index", meal_id=meal_id))
+
+
+@main.route("/pick-up/<int:meal_id>", methods=["GET"])
+def pick_up(meal_id):
+    meal = Meal_offerings.query.get_or_404(meal_id)
+
+    vendor = User.query.get_or_404(meal.vendor_id)
+
+    today = datetime.utcnow().date()
+    tomorrow = today + timedelta(days=1)
+
+
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to view this page.", "error")
+        return redirect(url_for("main.login"))
+
+    transaction = Transaction.query.filter_by(meal_id=meal_id, customer_id=user_id).first()
+    if not transaction:
+        flash("You are not authorized to view this page.", "error")
+        return redirect(url_for("main.index"))
+
+    pickup_time = meal.pickup_start_time
+
+    return render_template(
+        "Pick_up.html",
+        meal=meal,
+        vendor=vendor,
+        today=today,
+        tomorrow=tomorrow,
+        pickup_time=pickup_time
+    )
+
+
+@main.route("/delete_meal/<int:meal_id>", methods=["POST"])
+def delete_meal(meal_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to perform this action.", "danger")
+        return redirect(url_for("main.login"))
+
+    meal = Meal_offerings.query.filter_by(meal_id=meal_id, vendor_id=user_id).first()
+    if not meal or meal.status == MealStatus.DELETED:
+        flash("Meal not found or already deleted.", "danger")
+        return redirect(url_for("main.profile"))
+
+    try:
+        meal.status = MealStatus.DELETED
+        meal.deleted_at = datetime.utcnow()  # Controleer dat je een `deleted_at`-kolom hebt
+        db.session.commit()
+
+        flash(f"Meal '{meal.name}' deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()  # Rollback database in geval van fout
+        flash("An error occurred while deleting the meal. Please try again.", "danger")
+        print(f"Error while deleting meal: {e}")  # Log de fout in de console voor debugging
+
+    return redirect(url_for("main.profile"))
 
 
 @main.route("/profile", methods=["GET", "POST"])
@@ -541,34 +540,6 @@ def profile():
     )
 
 
-
-
-@main.route("/delete_meal/<int:meal_id>", methods=["POST"])
-def delete_meal(meal_id):
-    user_id = session.get("user_id")
-    if not user_id:
-        flash("You must be logged in to perform this action.", "danger")
-        return redirect(url_for("main.login"))
-
-    meal = Meal_offerings.query.filter_by(meal_id=meal_id, vendor_id=user_id).first()
-    if not meal or meal.status == MealStatus.DELETED:
-        flash("Meal not found or already deleted.", "danger")
-        return redirect(url_for("main.profile"))
-
-    try:
-        meal.status = MealStatus.DELETED
-        meal.deleted_at = datetime.utcnow()  # Controleer dat je een `deleted_at`-kolom hebt
-        db.session.commit()
-
-        flash(f"Meal '{meal.name}' deleted successfully!", "success")
-    except Exception as e:
-        db.session.rollback()  # Rollback database in geval van fout
-        flash("An error occurred while deleting the meal. Please try again.", "danger")
-        print(f"Error while deleting meal: {e}")  # Log de fout in de console voor debugging
-
-    return redirect(url_for("main.profile"))
-
-
 @main.route("/rate-vendor/<int:vendor_id>", methods=["POST"])
 def rate_vendor(vendor_id):
     user_id = session.get("user_id")
@@ -632,34 +603,57 @@ def meal_map():
     return render_template("meal_map.html")
 
 
+def get_coordinates(address):
+    api_key = "AIzaSyDZoTidAslIv8u7dHvcY9_AdLaE5f8Nikw"
+    if not api_key:
+        current_app.logger.error("Google Maps API key is missing!")
+        return None, None
 
-@main.route("/pick-up/<int:meal_id>", methods=["GET"])
-def pick_up(meal_id):
-    meal = Meal_offerings.query.get_or_404(meal_id)
+    encoded_address = quote(address)
 
-    vendor = User.query.get_or_404(meal.vendor_id)
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={encoded_address}&key={api_key}"
 
-    today = datetime.utcnow().date()
-    tomorrow = today + timedelta(days=1)
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        current_app.logger.error(f"Google Maps API request failed. Status code: {response.status_code}")
+        print(f"API Response: {response.text}")
+        return None, None
+
+    data = response.json()
+    if data.get("status") != "OK":
+        error_message = data.get("error_message", "Unknown error")
+        current_app.logger.error(f"Google Maps API returned an error: {error_message}")
+        return None, None
+
+    results = data.get("results")
+    if results:
+        location = results[0]["geometry"]["location"]
+        return location["lat"], location["lng"]
+    
+    current_app.logger.error(f"No results found for address: {address}")
+    return None, None
 
 
-    user_id = session.get("user_id")
-    if not user_id:
-        flash("You must be logged in to view this page.", "error")
-        return redirect(url_for("main.login"))
+def get_distances(origin, destinations, api_key):
+    destinations_str = '|'.join(destinations)
+    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origin)}&destinations={quote(destinations_str)}&key={api_key}"
+    
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"API request failed: {response.status_code}")
+        return None
 
-    transaction = Transaction.query.filter_by(meal_id=meal_id, customer_id=user_id).first()
-    if not transaction:
-        flash("You are not authorized to view this page.", "error")
-        return redirect(url_for("main.index"))
+    data = response.json()
+    if data.get("status") != "OK":
+        print(f"API error: {data.get('error_message', 'Unknown error')}")
+        return None
 
-    pickup_time = meal.pickup_start_time
-
-    return render_template(
-        "Pick_up.html",
-        meal=meal,
-        vendor=vendor,
-        today=today,
-        tomorrow=tomorrow,
-        pickup_time=pickup_time
-    )
+    distances = []
+    for row in data.get("rows", []):
+        for element in row.get("elements", []):
+            if element.get("status") == "OK":
+                distances.append(element["distance"]["value"])
+            else:
+                distances.append(None)
+    return distances
