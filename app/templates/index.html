@@ -142,7 +142,7 @@
 function initMap() {
     const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 7,
-        center: { lat: 50.8503, lng: 4.3517 }, // focus on Belgium as standard location
+        center: { lat: 50.8503, lng: 4.3517 }, // Belgium standard location
     });
 
     fetch("{{ url_for('main.available_meals') }}")

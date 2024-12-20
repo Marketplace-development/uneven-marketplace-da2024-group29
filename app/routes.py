@@ -275,6 +275,7 @@ def add_meal():
 
     return render_template("Share_Meal.html", cuisines=CuisineType)
 
+
 def upload_to_supabase_storage(bucket_name, file, filename):
     response = supabase.storage.from_(bucket_name).upload(filename, file)
     if response.get("error"):
@@ -396,14 +397,14 @@ def delete_meal(meal_id):
 
     try:
         meal.status = MealStatus.DELETED
-        meal.deleted_at = datetime.utcnow()  # Controleer dat je een `deleted_at`-kolom hebt
+        meal.deleted_at = datetime.utcnow()
         db.session.commit()
 
         flash(f"Meal '{meal.name}' deleted successfully!", "success")
     except Exception as e:
-        db.session.rollback()  # Rollback database in geval van fout
+        db.session.rollback()
         flash("An error occurred while deleting the meal. Please try again.", "danger")
-        print(f"Error while deleting meal: {e}")  # Log de fout in de console voor debugging
+        print(f"Error while deleting meal: {e}")
 
     return redirect(url_for("main.profile"))
 

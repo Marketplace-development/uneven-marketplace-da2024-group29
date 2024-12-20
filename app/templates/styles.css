@@ -1,7 +1,7 @@
 /* General body styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #c8f4d9; /* Light green background */
+  background-color: #c8f4d9;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -12,9 +12,9 @@ body {
   max-width: 800px;
   margin: 50px auto;
   padding: 40px;
-  background-color: #eafded; /* Slightly lighter green container */
+  background-color: #eafded;
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Logo styling */
@@ -27,21 +27,21 @@ body {
 /* Heading styles */
 h1 {
   font-size: 3.5em;
-  color: #1a663a; /* Dark green for main heading */
+  color: #1a663a;
   margin: 0;
   font-weight: bold;
 }
 
 h2 {
   font-size: 1.5em;
-  color: #d17d16; /* Warm orange for subtitle */
+  color: #d17d16;
   margin: 10px 0 30px;
 }
 
 /* Button styling */
 .button {
   display: block;
-  background-color: #28a745; /* Green button background */
+  background-color: #28a745;
   color: white;
   font-size: 1.7em;
   padding: 15px 30px;
@@ -56,7 +56,7 @@ h2 {
 }
 
 .button:hover {
-  background-color: #1e7d34; /* Darker green on hover */
+  background-color: #1e7d34;
 }
 
 /* Form styling */
@@ -76,7 +76,7 @@ form {
 /* Label styling */
 .input-label {
   font-size: 1.5em;
-  color: #333; /* Darker gray for labels */
+  color: #333;
   width: 30%;
   text-align: right;
   padding-right: 15px;
@@ -87,14 +87,14 @@ form {
   width: 65%;
   padding: 15px;
   font-size: 1.3em;
-  border: 2px solid #28a745; /* Border matches button color */
+  border: 2px solid #28a745;
   border-radius: 10px;
   outline: none;
 }
 
 /* Input field focus styling */
 .input-field:focus {
-  border-color: #1e7d34; /* Darker green for focus */
+  border-color: #1e7d34;
 }
 
 /* Image container for vegetables */
@@ -105,7 +105,7 @@ form {
 .image {
   width: 100%;
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow around the image */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Specific for textareas */
