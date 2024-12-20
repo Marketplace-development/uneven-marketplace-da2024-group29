@@ -283,6 +283,7 @@ def upload_to_supabase_storage(bucket_name, file, filename):
     return supabase.storage.from_(bucket_name).get_public_url(filename)
 
 
+# Algorithm
 def mark_expired_meals():
     available_meals = Meal_offerings.query.filter_by(status=MealStatus.AVAILABLE).all()
     print(f"DEBUG - Available Meals: {len(available_meals)}")
