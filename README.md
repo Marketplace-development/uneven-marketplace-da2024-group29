@@ -17,6 +17,9 @@ Volg deze stappen om de applicatie lokaal te draaien:
    ```bash
    git clone https://github.com/Marketplace-development/uneven-marketplace-da2024-group29.git
 
+2. Link Supabase:
+   https://supabase.com/dashboard/project/rniucvwgcukfmgiscgzj
+
 ## Mapstructuur
 ```plaintext
 uneven-marketplace-da2024-group29/
@@ -34,4 +37,5 @@ uneven-marketplace-da2024-group29/
 ├── requirements.txt
 ├── run.py
 ├── test_connection.py
+├── Supabase
 
